@@ -1,0 +1,39 @@
+meta:
+  title: "What an autonomous run actually costs"
+  description: "The profit and loss of a corpus of autonomous runs, including the
+    waste. Every figure is recomputed from the run store rather than typed."
+  ogDescription: "The profit and loss of a corpus of autonomous runs, including the waste."
+  canonical: "/articles/what-a-run-costs/"
+
+slug: "what-a-run-costs"
+order: 1
+title: "What an autonomous run actually costs"
+standfirst: "Nobody publishes the bill. This is the whole of one, across every
+  run in the corpus, with the money that bought nothing left in."
+
+evidence:
+  runs:
+    - "the-fleet-round"
+    - "the-long-build"
+    - "the-engine-run"
+  figures:
+    - "totalCostUsd"
+    - "totalSessions"
+    - "costPerSession"
+    - "costPerCheckpoint"
+
+sections:
+  - heading: "The bill"
+    body:
+      - "The figures in this section are recomputed from the run store every
+        time the site is built. None of them was typed here, and a figure whose
+        key the harvest cannot produce fails the build rather than rendering
+        blank."
+  - heading: "The waste"
+    body:
+      - "The interesting half of a bill is the part that bought nothing. A run
+        that only publishes its successes has published an advertisement, and
+        the number a reader needs in order to plan their own work is the one
+        that includes the stage that went nowhere."
+
+readNext: []

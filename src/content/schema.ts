@@ -116,6 +116,139 @@ export const homePageSchema = z.object({
   })
 });
 
+/* ---------------------------------------------------------------------------
+   This site's own three collections (SPEC Part III).
+
+   `concepts` is the spine: ten pages, each the same five moves — the idea, the
+   problem, the mechanism in Conductor, the evidence, something to try.
+   `articles` and `reports` are long-form, and a report is an article with a
+   generalised scenario label on the front of it.
+   --------------------------------------------------------------------------- */
+
+/** A run of prose.
+    ---------------------------------------------------------------------------
+    An array rather than one string with blank lines in it, and the reason is
+    the editor: the panel draws one box per element, so a writer moves a
+    paragraph by moving a row instead of hunting for the right newline in a
+    textarea the height of a phone. It is also what makes `data-sk-edit` able
+    to name a single paragraph — `theIdea[1]` — rather than the whole block.
+
+    The bounds are the shape of the page, not a style opinion. SPEC Part III
+    says the idea is three to six paragraphs; a two-paragraph idea has not been
+    explained and a nine-paragraph one is the article that concept should have
+    been. */
+const paragraphs = (min: number, max: number) =>
+  z.array(z.string().min(1)).min(min).max(max);
+
+/** A pointer into `shaahink/conductor`, which is public and therefore citable.
+    ---------------------------------------------------------------------------
+    `path` and `line` together are the claim — "the mechanism is here" — and
+    `note` is what a reader is meant to see when they arrive. S4.4 re-verifies
+    every one of these against a named commit, because a line number is the
+    most perishable fact on the site. */
+export const citation = z.object({
+  path: z.string(),
+  line: z.number().int().positive(),
+  note: z.string()
+});
+
+/** An evidence KEY. Never a value.
+    ---------------------------------------------------------------------------
+    This regex is the mechanism behind the site's first litmus test. Content
+    names a key; `src/data/corpus.json` — recomputed from the run store by the
+    harvest — carries the number. A figure that cannot be typed cannot drift,
+    and a page naming a key the corpus does not have fails the build (S3.3).
+
+    Enforcing it here rather than trusting the comment above it matters,
+    because the failure mode is a writer in a hurry doing the obvious thing.
+    Every literal they might reach for is refused by shape: a key cannot start
+    with a digit (`3016.29`, `18`), cannot carry currency or percent signs
+    (`$425.12`, `30%`), and has no spaces or slashes (`18 runs`, `72/81`).
+    What passes is an identifier: `softBreaks`, `rollovers`, `fleet-round-four`. */
+export const evidenceKey = z
+  .string()
+  .regex(
+    /^[a-z][A-Za-z0-9]*(?:[.-][A-Za-z0-9]+)*$/,
+    "evidence names a key from the corpus, never a value"
+  );
+
+/** What a page cites: runs by their published label, figures by name. */
+export const evidence = z.object({
+  runs: z.array(evidenceKey).default([]),
+  figures: z.array(evidenceKey).default([])
+});
+
+/** A heading and the prose under it. Long-form pages are a list of these, and
+    the list is also what the in-page table of contents is built from. */
+export const section = z.object({
+  heading: z.string(),
+  body: paragraphs(1, 12)
+});
+
+/** A concept page: the five moves, in order (SPEC Part III).
+    ---------------------------------------------------------------------------
+    `theIdea` comes first and mentions Conductor nowhere. That ordering is the
+    third litmus test made structural — delete `inConductor` from an entry and
+    what is left must still be worth reading, which is only true if the idea
+    was written for a reader who has never heard of the tool. */
+export const conceptSchema = z.object({
+  meta,
+  /* The file name is already the URL. This repeats it inside the file so a
+     renamed file is caught by a test rather than silently re-routing a page
+     that other entries link to by slug. */
+  slug: z.string(),
+  /** Reading order across the whole spine, which is also the nav order. */
+  order: z.number().int().positive(),
+  title: z.string(),
+  /** The market's other names for the same idea — the words in the job ads.
+      A reader who searched for "prompt engineering at scale" should find the
+      page that answers it under a different heading. */
+  alsoKnownAs: z.array(z.string()).default([]).meta({ title: "Also known as" }),
+  oneLine: z.string().meta({ title: "The one-line summary" }),
+  theIdea: paragraphs(3, 6).meta({ title: "The idea, with no Conductor in it" }),
+  theProblem: paragraphs(1, 4).meta({ title: "What goes wrong without it" }),
+  inConductor: z
+    .object({
+      mechanism: paragraphs(1, 4),
+      citations: z.array(citation).min(1)
+    })
+    .meta({ title: "How Conductor does it" }),
+  evidence,
+  tryIt: z
+    .array(z.object({ command: z.string(), note: z.string() }))
+    .min(1)
+    .max(3)
+    .meta({ title: "Something the reader can run" }),
+  /* Slugs of other concepts. Empty is allowed while the spine is being
+     written; S2.2 adds the check that a non-empty one resolves to a real
+     entry and fails the build when it does not. */
+  readNext: z.array(z.string()).default([]).meta({ title: "Read next" })
+});
+
+/** A long-form piece (SPEC Part V). A standfirst and titled sections. */
+export const articleSchema = z.object({
+  meta,
+  slug: z.string(),
+  order: z.number().int().positive(),
+  title: z.string(),
+  standfirst: z.string().meta({ title: "The standfirst under the title" }),
+  evidence,
+  sections: z.array(section).min(1),
+  readNext: z.array(z.string()).default([]).meta({ title: "Read next" })
+});
+
+/** A run report (SPEC Part VI).
+    ---------------------------------------------------------------------------
+    Same shape as an article plus `scenario`, and that extra field is the whole
+    anonymisation rule wearing a schema's clothing: a report is published as a
+    situation a stranger can map onto their own, never as the run it was. The
+    rule is not enforced here — no regex knows a client's name — it is enforced
+    by S6.1's grep over the built output and by the harvest failing closed on a
+    run with no entry in `anonymise.json`. */
+export const reportSchema = articleSchema.extend({
+  scenario: z.string().meta({ title: "The published scenario label" })
+});
+
 /* Which YAML file backs which collection, for the editor.
    ---------------------------------------------------------------------------
    Astro's loaders know this too, but only inside the build — the handler needs
@@ -144,5 +277,48 @@ export const editable = {
        paths; the kit drops anything else. */
     entryUrl: "/"
     // omit: ["hero.image.w", "hero.image.h"]
+  },
+
+  /* The three collections below are `dir` rather than `file`: one YAML per
+     entry, and the file name is the entry id and the URL segment both.
+
+     No `entryLabels`. It exists for ids that do not read as their own name —
+     `home.fr` is the case it was built for — and these are already sentences:
+     an owner scanning `context-engineering`, `what-a-run-costs` and
+     `the-fleet-round` knows which is which. A hand-kept label per entry would
+     be a second copy of `title` that goes stale on the day someone renames one
+     and not the other.
+
+     `omit` is the same judgement everywhere here: `slug` and `order` are
+     structure wearing a value's clothing — `order` is the reading order of the
+     spine and the nav, and `slug` is the URL. `evidence` is omitted whole
+     rather than by its leaves, because it is not prose at all: those strings
+     are keys into the corpus, and an owner who edits one does not get a
+     different number, they get a build that fails. Same for the citations —
+     `path` and `line` are a claim about someone else's source file, verified
+     against a named commit at S4.4, and a form is the wrong place to change
+     one. The prose beside them stays editable. */
+  concepts: {
+    label: "Concepts",
+    schema: conceptSchema,
+    dir: "src/content/concepts",
+    entryUrl: "/concepts/{entry}",
+    omit: ["slug", "order", "evidence", "inConductor.citations"]
+  },
+
+  articles: {
+    label: "Articles",
+    schema: articleSchema,
+    dir: "src/content/articles",
+    entryUrl: "/articles/{entry}",
+    omit: ["slug", "order", "evidence"]
+  },
+
+  reports: {
+    label: "Run reports",
+    schema: reportSchema,
+    dir: "src/content/reports",
+    entryUrl: "/runs/{entry}",
+    omit: ["slug", "order", "evidence"]
   }
 };

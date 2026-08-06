@@ -1,0 +1,176 @@
+﻿=== S2.1 evidence: the three collections, and the gates that hold them ===
+
+--- RED 1: a figure typed into real content instead of named as a key ---
+src/content/concepts/context-engineering.yaml, evidence.figures[0] set to '123 soft breaks'
+
+
+[InvalidContentEntryDataError] concepts → context-engineering data does not match collection schema.
+  evidence.figures.0: evidence names a key from the corpus, never a value
+  Error reference:
+    https://docs.astro.build/en/reference/errors/invalid-content-entry-data-error/
+
+
+
+(reverted)
+
+--- RED 2: a fourth collection added to the loader and not to the editable map ---
+src/content.config.ts exports a 
+otices collection; schema.ts's editable map does not have it.
+This is the failure AGENTS.md names: it builds, it renders, and it is silently uneditable.
+
+✔ schema.ts imports nothing but Zod (1.489ms)
+✖ every collection the build defines is also editable (1.1137ms)
+✔ every editable collection points at content that exists (0.4681ms)
+✔ evidence names a key, never a value (0.9122ms)
+✔ a concept is the five moves, and every one of them is required (3.561ms)
+✔ a concept's idea is three to six paragraphs, and cites at least one line (0.5127ms)
+✔ a concept cannot type a figure into its evidence (0.3434ms)
+✔ articles and reports are the same shape, and a report also names its scenario (1.1935ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 7
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 165.6468
+
+✖ failing tests:
+
+test at test\collections.test.mjs:53:1
+✖ every collection the build defines is also editable (1.1137ms)
+  AssertionError [ERR_ASSERTION]: adding a collection touches three places — the schema, the loader, and the `editable` map. This is the third one.
+  + actual - expected
+  
+    [
+      'articles',
+      'concepts',
+      'homePage',
+  +   'notices',
+      'reports'
+    ]
+  
+      at TestContext.<anonymous> (file:///C:/code/conductor-site/test/collections.test.mjs:62:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+      at Test.postRun (node:internal/test_runner/test:1330:19)
+      at Test.run (node:internal/test_runner/test:1258:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:385:3) {
+    generatedMessage: false,
+
+(reverted)
+
+--- GREEN: npm run check ---
+
+> check
+> astro check && node --test "test/**/*.test.mjs"
+
+22:45:31 [content] Syncing content
+22:45:31 [content] Synced content
+22:45:31 [types] Generated 465ms
+22:45:31 [check] Getting diagnostics for Astro files in C:\Code\conductor-site...
+Result (14 files): 
+- 0 errors
+- 0 warnings
+- 0 hints
+
+✔ schema.ts imports nothing but Zod (1.9734ms)
+✔ every collection the build defines is also editable (0.2599ms)
+✔ every editable collection points at content that exists (0.5572ms)
+✔ evidence names a key, never a value (1.2482ms)
+✔ a concept is the five moves, and every one of them is required (4.5402ms)
+✔ a concept's idea is three to six paragraphs, and cites at least one line (0.651ms)
+✔ a concept cannot type a figure into its evidence (0.4529ms)
+✔ articles and reports are the same shape, and a report also names its scenario (1.469ms)
+✔ tokens.css declares both of the Face's default schemes (2.1718ms)
+✔ every block declares all sixteen roles, and no role the Face does not have (0.3317ms)
+✔ the repeated latte blocks are identical (0.376ms)
+✔ every role clears the Face's legibility bar on its own base (0.6601ms)
+✔ the quiet ladder is ordered: pending recedes furthest (0.3473ms)
+✔ the bar bites: stock Catppuccin Latte yellow fails it, the shipped yellow passes (0.2432ms)
+✔ latte's five darkened roles are the Face's values, not upstream Catppuccin's (0.2974ms)
+✔ the layout has an inline script to pin (1.0537ms)
+✔ every inline script's sha256 is declared in the CSP (0.7774ms)
+✔ the CSP pins no hash that no longer belongs to a script (0.245ms)
+✔ the inline snippet still does the two things that must beat first paint (0.403ms)
+✔ the site has stylesheets to check (0.9461ms)
+✔ no colour literal outside tokens.css (1.5007ms)
+✔ no font-size literal outside type.css (0.4322ms)
+✔ no font-family names a face; every family comes through a cssVariable (0.3394ms)
+✔ every font cssVariable astro.config declares is consumed by type.css (0.6336ms)
+✔ no physical left/right properties (0.846ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 220.1409
+
+--- GREEN: npm run build ---
+
+> build
+> astro build
+
+22:45:35 [@shaahink/sitekit:check-placeholders] no placeholder copy in 4 content entrys
+22:45:35 [content] Syncing content
+22:45:35 [content] Synced content
+22:45:35 [types] Generated 488ms
+22:45:35 [build] output: "static"
+22:45:35 [build] mode: "static"
+22:45:35 [build] directory: C:\Code\conductor-site\dist\
+22:45:35 [build] Collecting build info...
+22:45:35 [build] ✓ Completed in 530ms.
+22:45:35 [build] Building static entrypoints...
+22:45:36 [assets] Copying fonts (3 files)...
+22:45:36 [vite] ✓ built in 326ms
+22:45:36 [vite] ✓ built in 100ms
+22:45:36 [build] Rearranging server assets...
+
+ generating static routes 
+22:45:36   ├─ /404.html (+19ms) 
+22:45:36   ├─ /edit/index.html22:45:36 [WARN] [csp] A resource was added to `style-src-elem`, but `style-src` also defines custom resources ('self'). Because `style-src-elem` overrides `style-src` for its scope (browsers do not fall back), those resources will not apply there. Add them to `style-src-elem` as well if needed.
+22:45:36 [WARN] [csp] A resource was added to `style-src-attr`, but `style-src` also defines custom resources ('self'). Because `style-src-attr` overrides `style-src` for its scope (browsers do not fall back), those resources will not apply there. Add them to `style-src-attr` as well if needed.
+ (+6ms) 
+22:45:36   ├─ /robots.txt (+3ms) 
+22:45:36   ├─ /sitemap.xml (+6ms) 
+22:45:36   ├─ /index.html (+5ms) 
+22:45:36 ✓ Completed in 120ms.
+
+22:45:36 [build] ✓ Completed in 591ms.
+22:45:36 [@shaahink/sitekit:editor-route] edit/index.html: dropped 3 build-wide style hashes from style-src-elem, which were switching off the 'unsafe-inline' Google's sign-in stylesheet needs
+22:45:36 [WARN] [@shaahink/sitekit:editor-route] sitekit: /sk-editor.webmanifest has no icons, because this site ships none of favicon.svg, icon.svg, favicon.png or favicon.ico in its publicDir. The editor will work and will never be offered as an installable app. Add one of those files, or pass editorRoute({ app: { icons: [...] } }).
+22:45:36 [@shaahink/sitekit:check-annotations] 4 annotations on 1 page all resolve
+22:45:36 [build] 3 page(s) built in 1.18s
+22:45:36 [build] Complete!
+
+--- generated files regenerate with no diff ---
+
+> headers
+> sitekit-headers
+
+vercel.json ← headers.config.mjs (951 bytes)
+
+> content
+> sitekit-normalize
+
+content already normalized
+
+> editor
+> sitekit-editor-css
+
+editor stylesheet → public/editor-panel.css (36170 bytes)
+editor stylesheet → public/editor-inline.css (15999 bytes)
+git status --short:
+ M conductor.plan.json
+ M docs/SPEC.md
+ M docs/evidence/token-budget-measured-2026-08-06.md
+ M src/content.config.ts
+ M src/content/schema.ts
+?? docs/evidence/S2.1-collections.txt
+?? src/content/articles/
+?? src/content/concepts/
+?? src/content/reports/
+?? test/collections.test.mjs

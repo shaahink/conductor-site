@@ -1,0 +1,95 @@
+meta:
+  title: "Context engineering"
+  description: "Deciding what an agent is allowed to know, and paying for it. How
+    a context window is budgeted rather than filled, and what Conductor does
+    about it."
+  ogDescription: "Deciding what an agent is allowed to know, and paying for it."
+  canonical: "/concepts/context-engineering/"
+
+slug: "context-engineering"
+order: 3
+title: "Context engineering"
+alsoKnownAs:
+  - "context management"
+  - "prompt engineering at scale"
+oneLine: "Deciding what an agent is allowed to know, and paying for it."
+
+theIdea:
+  - "A context window is not memory. It is a bill. Everything an agent reads
+    stays in front of it for the rest of the conversation, and the whole of it
+    is re-sent on every turn, so a file opened in the first minute is paid for
+    again in the last one. That single fact is why the cost of a long agent
+    session is closer to the square of its length than to its length."
+  - "Context engineering is the work of deciding what an agent is allowed to
+    know. Not what it could usefully know, which is everything, but what earns
+    its place against that bill. The unit of the decision is a document, a tool
+    result or a prior turn, and the decision is made before the agent starts
+    rather than by the agent while it works, because an agent asked to be frugal
+    with its own context has to read something to find out what it can skip."
+  - "The three moves that matter are ordering, summarising and carrying forward.
+    Ordering means the material an agent needs first arrives first, so it can
+    act before it has read everything. Summarising means a long history is
+    replaced by a shorter true statement of it. Carrying forward means the
+    findings of one session survive into the next in a form small enough to
+    afford, which is what separates a system that learns from one that starts
+    over."
+  - "Done well, none of this looks clever. It looks like a short prompt that
+    happens to contain the right things, handed to an agent that gets to work
+    immediately."
+
+theProblem:
+  - "Without it the failure is quiet and expensive. An agent reads the whole
+    repository because nothing told it not to, spends most of its budget before
+    its first edit, and is interrupted mid-task by a ceiling it hit early. The
+    work it did is not wrong; there is just less of it than the bill suggests."
+  - "The second failure is worse because it survives the session. What one agent
+    learned goes nowhere, so the next one rediscovers it, including the dead
+    ends. A wrong theory disproved in the morning is chased again in the
+    afternoon by something that had no way to know."
+
+inConductor:
+  mechanism:
+    - "Every session prompt is rendered from a template with named slots: the
+      stage, the checkpoint, the read order, the handoff written by the last
+      session, the knowledge ledger and the run's open bugs. Nothing is
+      concatenated ad hoc, which means the shape of what an agent knows is a
+      thing you can read, diff and change."
+    - "Two of the details are load-bearing. A placeholder that no value resolved
+      refuses the prompt outright rather than shipping a half-written
+      instruction to an agent that will follow it anyway. And the ledger and
+      open bugs are assembled first, so that when the prompt hits its byte cap
+      it is the transcript tail that is dropped, never the accumulated knowledge
+      — the compounding part is the part protected from truncation."
+  citations:
+    - path: "src/Conductor.Core/PromptBuilder.cs"
+      line: 220
+      note: "An unresolved placeholder throws rather than rendering. A prompt with a
+        hole in it is refused, not sent."
+    - path: "src/Conductor.Core/PromptBuilder.cs"
+      line: 276
+      note: "The ledger and the run's open bugs are added first, so the byte cap can
+        never truncate away what earlier sessions learned."
+    - path: "src/Conductor.Core/BgLogs.cs"
+      line: 55
+      note: "Every rendered prompt is written to disk as session-NNN.prompt.md, so
+        what an agent was actually told is an artifact, not a guess."
+
+evidence:
+  runs:
+    - "the-long-build"
+    - "the-engine-run"
+  figures:
+    - "softBreaks"
+    - "rollovers"
+
+tryIt:
+  - command: "cat .conductor/logs/session-003.prompt.md"
+    note: "The exact prompt a session was given, byte for byte. Reading one is the
+      fastest way to see how much of an agent's budget was spent before it was
+      asked to do anything."
+  - command: 'conductor note "the constraint that surprised you"'
+    note: "Writes one line into the knowledge ledger, which the next session's
+      prompt carries. This is the carry-forward move with nothing else in the
+      way."
+
+readNext: []

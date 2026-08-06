@@ -1,0 +1,49 @@
+meta:
+  title: "The fleet round"
+  description: "A four-site web fleet with one shared component library, taken
+    through a round of coordinated changes by an autonomous run. What it cost
+    and what it caught."
+  ogDescription: "A four-site web fleet, one shared component library, one round
+    of coordinated changes."
+  canonical: "/runs/the-fleet-round/"
+
+slug: "the-fleet-round"
+order: 1
+title: "The fleet round"
+scenario: "A four-site web fleet, one shared component library, one round of
+  coordinated changes"
+standfirst: "The shape of the work, not the client. A change that has to land in
+  the same way on several sites at once is the case where an orchestrator earns
+  its keep, and the case where a half-applied change is worst."
+
+evidence:
+  runs:
+    - "the-fleet-round"
+  figures:
+    - "checkpointsDone"
+    - "sessions"
+    - "costUsd"
+    - "gatesGreen"
+
+sections:
+  - heading: "The situation"
+    body:
+      - "Several small sites share one component library and one set of build
+        conventions. A change to the shared machinery has to reach every site,
+        and each site has its own content, its own deployment and its own way of
+        being slightly different from the others. Doing it by hand is a day of
+        careful, boring work in which the last site gets less attention than the
+        first."
+      - "The sites and their owners are described by shape here and nowhere by
+        name. That is a rule of this site rather than a courtesy: the runs
+        behind these reports were done on private repositories for private
+        people, and a scenario a stranger can map onto their own situation is
+        more useful to them than a name they do not recognise anyway."
+  - heading: "What it cost"
+    body:
+      - "The figures come from the corpus, recomputed from the run store. The
+        gate counts are the ones worth reading twice: a round of coordinated
+        changes is exactly the shape of work where a check that runs everywhere
+        is the difference between a change and a regression."
+
+readNext: []
