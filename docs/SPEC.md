@@ -223,9 +223,24 @@ least one number nobody else publishes.
    tokens, it buys churn. Raised to 9M the same repo fell to 12.8–15.3M and one stage rolled zero
    of six.
 
+   And the sharpest measured fact, which is the one to build the ending on: across all three runs
+   of that site repo, **every single killed session had already been nudged, and not one of them
+   stopped.** The cooperative break is the *only* path that ends a capped session on its own
+   terms — a hard ceiling cross is a kill mid-turn, and the agent's own commit step never runs. So
+   a nudge placed below the median closer does not merely waste a session. It arrives so
+   routinely, and so far before the work could plausibly be finished, that the agent learns to
+   ride past it — and then the rail that was supposed to be cooperative converts **zero**.
+
    Two rules a reader can copy: set the nudge to clear the **median closing session**, not the
    floor; and keep **headroom ≥1.5–2× the measured wrap-up**, because wrap-up cost is absolute
    while expressing the reserve as a *ratio* shrinks it exactly when it must stay constant.
+
+   `conductor budget` prints all of this per window — `nudge vs floor`, `vs median closer`,
+   headroom against measured wrap-up — and raises `NUDGE BELOW THE MEDIAN CLOSER` and
+   `THE RAIL IS DELIVERED AND IGNORED` by name. **This site's own run was tuned by that verb while
+   it was being built** (2026-08-06: ceiling held at 16M, ratio 0.63 → 0.75, nudge 10M → 12M to
+   clear its measured 11.7M largest closer). Say so on the page — the tool tuning the run that
+   writes about the tool is the loop closing, and it is the honest version of the claim.
 4. **"The ledger that lied"** — when a run's own record of itself is wrong. A rolled-over session
    returned before its verdict pass (`SessionRunner.cs:411`), so it recorded neither its commits
    nor its claims. The ledger therefore says **no rollover ever committed** — 34 rollovers and 11

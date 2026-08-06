@@ -98,3 +98,46 @@ $3,016.29 · 648/677 gates green · 53 rollovers · 123 soft breaks (`SoftBreakR
 Cross-check: a naive `CheckpointConfirmed` event count returns **65** where the engine answers
 **287 of 300** — confirmed by direct query, and the reason checkpoint counts come from
 `conductor history --json`.
+
+---
+
+## `conductor budget --repo all`, run 2026-08-06 — the authoritative per-window split
+
+This supersedes the hand-built table above wherever they differ. The verb splits each run at the
+session where a ceiling first appears and divides each window's own tokens by its own closed
+checkpoints — the exact error that flattered the original analysis by 2.5×.
+
+| run · window | ceiling / nudge | sess | ckpt | tok/ckpt | floor | median closer | rollover | wrap-up |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| NINE STREETS 1–10 | uncapped | 9 | 10 | 13.0M | 6.95M | 15.4M | 0 | — |
+| NINE STREETS 11–60 | **6M / 4.57M** | 50 | 15 | 19.5M | 0.68M | 5.36M | **32/50 (64%)** | 0.9M (n=15) |
+| NINE STREETS 61–69 | 9M / 6.36M | 9 | 5 | 14.3M | 5.95M | 7.66M | 2/9 (22%) | 1.69M (n=6) |
+| THE SECOND REEL | 9M / 6.38M | 14 | 12 | 9.85M | 6.99M | 8.16M | 5/14 (36%) | 1.94M (n=9) |
+| A NAME AND A WAY OUT | 16M / 9.96M | 13 | 19 | 7.47M | 4.57M | 11.1M | 1/13 (8%) | 1.82M (n=9) |
+| graph-v2 1–26 | uncapped | 20 | 20 | 24.6M | 13.8M | 24.9M | 0 | — |
+| graph-v2 27–28 | 20M / 14.1M | 2 | 2 | 15.7M | 14.7M | 15.7M | 0 | 1.56M (n=2) |
+| **conductor-site 1–2** | **16M / 10M** | **2** | **4** | **4.92M** | **8.01M** | **9.85M** | **0** | **1.63M (n=1)** |
+
+Verdicts the verb printed, in its own words:
+
+- NINE STREETS 6M → 9M: *"what the change bought: **1.4× better** tokens per delivered checkpoint."*
+- graph-v2 uncapped → 20M: *"what the change bought: **1.6× better**."*
+- **`THE RAIL IS DELIVERED AND IGNORED`** on all three site runs: *"all killed sessions had already
+  been nudged and not one of them stopped. The cooperative break is the only path that ends a
+  capped session on its own terms, and here it converted **zero**."* This is the measured fact
+  article 3 should end on.
+- **`NUDGE BELOW THE MEDIAN CLOSER`** fires on *every* capped window in the fleet except this
+  repo's — 0.83×, 0.78×, 0.89×, 0.90×. It was a systematic error, not a one-off.
+
+### This run's own tuning — applied 2026-08-06 mid-run
+
+```
+now: cap 16M · nudge 10M (0.63) · nudge vs floor 1.25x · vs median closer 1.02x · headroom 5.95M
+  > the ceiling is right and the nudge is not: keep maxSessionTokens at 16M and move
+    softBreakRatio 0.63 -> 0.75 - the nudge goes 10M -> 12M, which clears the 11.7M
+    largest closer, headroom 4M is 2.4x the measured 1.63M wrap-up.
+```
+
+**Applied.** `softBreakRatio` 0.62 → **0.75**, ceiling held at 16M, `maxRunCostUsd` 400 → **550**.
+Note the plan declared 0.62 and the rail's measured firing point was 0.63 — the hook rides a tool
+call and lands on the first turn *past* the threshold, so always prefer the measured point.
