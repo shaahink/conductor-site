@@ -1,10 +1,10 @@
 ﻿# Conductor — conductor-site - a field guide to agentic engineering run report
 
-_Updated 2026-08-06 22:40 UTC · branch `main` · HEAD `4cfdc00`_
+_Updated 2026-08-06 23:10 UTC · branch `main` · HEAD `b232b80`_
 
 **Status:** Backoff
 **Stage:** S3 —  · attempts used 0 · working ▸ S3.3
-**Checkpoints:** 10/28 done · **Sessions run:** 5 · **Cost:** $39.4042 (agent $39.3995 + gates $0.0047) · **Tokens:** 727,947 in / 350,626 out
+**Checkpoints:** 10/28 done · **Sessions run:** 6 · **Cost:** $39.4042 (agent $39.3995 + gates $0.0047) · **Tokens:** 727,947 in / 350,626 out
 
 ## Stage progress
 
@@ -104,6 +104,7 @@ _Updated 2026-08-06 22:40 UTC · branch `main` · HEAD `4cfdc00`_
 | 3 | S2 | Deliver | 1 | 08-06 21:34 | 0:22 | Advanced | S2.1 S2.2 | 4 | site-fast:OK · generated:OK | $8.9986 | $0.0014 | 161,303/77,725 |
 | 4 | S2 | Deliver | 1 | 08-06 21:57 | 0:23 | Advanced | S2.3 S2.4 | 4 | site-fast:OK · generated:OK | $8.0416 | $0.0013 | 159,651/78,744 |
 | 5 | S3 | Deliver | 1 | 08-06 22:20 | 0:19 | LimitBackoff |  | 0 |  | $6.9597 |  | 146,851/68,499 |
+| 6 | S3 | Resume | 1 | 08-06 23:10 | 0:00 | LimitBackoff |  | 0 |  | $0.0000 |  |  |
 
 ## Money
 
@@ -111,12 +112,13 @@ _What this run has cost, from its own `costs` rows. Same numbers as `conductor m
 
 | scope | sessions | tokens | cache reads | cost | checkpoints | tok/ckpt | $/ckpt |
 |---|---|---|---|---|---|---|---|
-| **run total** | 4 | 40.1M | 97.8% | $32.44 | 8 | 5.01M | $4.06 |
+| **run total** | 5 | 47.9M | 97.7% | $39.40 | 8 | 5.98M | $4.93 |
 | stage S1 | 2 | 19.7M | 98.0% | $15.40 | 4 | 4.92M | $3.85 |
 | stage S2 | 2 | 20.4M | 97.7% | $17.04 | 4 | 5.09M | $4.26 |
-| 2026-08 | 4 | 40.1M | 97.8% | $32.44 | 8 | 5.01M | $4.06 |
+| stage S3 | 1 | 7.79M | 97.2% | $6.96 | - | - | - |
+| 2026-08 | 5 | 47.9M | 97.7% | $39.40 | 8 | 5.98M | $4.93 |
 
-_Where the money goes: agent $32.44 (100%) · gate $0.00 (0%) · blended $0.81/M tokens._
+_Where the money goes: agent $39.40 (100%) · gate $0.00 (0%) · blended $0.82/M tokens._
 
 ## Timeline
 
@@ -146,6 +148,8 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 08-06 23:20:36  • session #4 S2 → Advanced · done S2.3,S2.4 · 4 commit(s)  (23m24s)
 08-06 23:20:36  ▸ stage S3 entered
 08-06 23:20:36  • session #5 S3 Deliver started (attempt 1/4)
+08-06 23:40:13  • session #5 S3 → LimitBackoff  (19m36s)
+08-07 00:10:10  • session #6 S3 Resume started (attempt 1/4)
 ```
 
 ## Health
@@ -153,7 +157,7 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 _Execution-health signals, folded from the event log (`.conductor/events.jsonl`)._
 
 ```
-sessions 5 · retries 0 (0 %) · overall Ok
+sessions 6 · retries 0 (0 %) · overall Ok
 ✓ no health concerns detected
 ```
 
@@ -163,8 +167,8 @@ _Live git snapshot (branch, working tree, sync vs upstream)._
 
 ```
 branch: main
-working tree: ?? src/components/EvidenceStrip.astro, ?? src/lib/evidence.ts
-vs upstream: 3 ahead
+working tree: M TRACKER.md, ?? src/components/EvidenceStrip.astro, ?? src/lib/evidence.ts
+vs upstream: up to date
 ```
 
 ### Commits by session
