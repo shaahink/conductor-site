@@ -30,6 +30,7 @@ import {
   evidenceKey,
   reportSchema
 } from "../src/content/schema.ts";
+import { figuresIn, proseOf, refuseTypedFigures } from "../src/lib/figures.ts";
 
 const schemaSource = readFileSync(new URL("../src/content/schema.ts", import.meta.url), "utf8");
 const configSource = readFileSync(new URL("../src/content.config.ts", import.meta.url), "utf8");
@@ -186,6 +187,60 @@ test("a concept cannot type a figure into its evidence", () => {
   const typed = wholeConcept();
   typed.evidence.figures = ["3016.29"];
   assert.equal(conceptSchema.safeParse(typed).success, false);
+});
+
+test("nor into the sentence beside it", () => {
+  /* The same rule one field over, and the easier mistake: naming a key is a
+     thing you have to remember to do, writing the number is what writing is.
+     src/lib/collections.ts runs this over every entry as the build renders it. */
+  for (const figure of [
+    "The corpus cost $3,016.29 across every run in it.",
+    "It came in 23% under what the previous approach spent.",
+    "That is a 1.6x improvement on tokens per delivered checkpoint.",
+    "648/677 gates came back green.",
+    "The blended rate worked out at 4.85 per million.",
+    "Eighteen runs, 340 sessions, and not one of them free."
+  ]) {
+    assert.notDeepEqual(figuresIn(figure), [], `${JSON.stringify(figure)} should be refused`);
+  }
+
+  /* What must still be writable. A number spelled as a word is prose; a single
+     digit is how a version and a part number are written; and the shape check
+     says so rather than pretending the gap is not there. */
+  for (const fine of [
+    "Three moves do most of the work.",
+    "Astro 7, and the schemas import nothing but Zod.",
+    "SPEC Part I sets the three litmus tests this page is held to."
+  ]) {
+    assert.deepEqual(figuresIn(fine), [], `${JSON.stringify(fine)} should be allowed`);
+  }
+});
+
+test("a command may carry digits; a sentence may not", () => {
+  const entry = wholeConcept();
+  entry.tryIt = [
+    { command: "cat .conductor/logs/session-003.prompt.md", note: "The prompt, byte for byte." }
+  ];
+  entry.inConductor.citations = [
+    { path: "src/Conductor.Core/PromptBuilder.cs", line: 220, note: "Why." }
+  ];
+
+  /* A session number in a command and a source path in a citation are the two
+     places digits reach a reader as something other than a claim. Neither is
+     prose, and the walk leaves both out. */
+  const paths = proseOf(entry).map(([path]) => path);
+  assert.ok(!paths.includes("tryIt[0].command"), "a command is not a claim about the corpus");
+  assert.ok(!paths.includes("inConductor.citations[0].path"), "nor is a source file");
+  assert.ok(paths.includes("tryIt[0].note"), "but the sentence under it is");
+
+  assert.doesNotThrow(() => refuseTypedFigures("concepts/a-concept.yaml", entry));
+
+  entry.theProblem = ["It wasted $51.98 doing it."];
+  assert.throws(
+    () => refuseTypedFigures("concepts/a-concept.yaml", entry),
+    /theProblem\[0\] types a currency amount/,
+    "the failure has to name the field, or the writer cannot act on it"
+  );
 });
 
 test("articles and reports are the same shape, and a report also names its scenario", () => {

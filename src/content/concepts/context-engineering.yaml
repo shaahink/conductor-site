@@ -12,27 +12,35 @@ title: "Context engineering"
 alsoKnownAs:
   - "context management"
   - "prompt engineering at scale"
+  - "context window management"
 oneLine: "Deciding what an agent is allowed to know, and paying for it."
 
 theIdea:
   - "A context window is not memory. It is a bill. Everything an agent reads
     stays in front of it for the rest of the conversation, and the whole of it
     is re-sent on every turn, so a file opened in the first minute is paid for
-    again in the last one. That single fact is why the cost of a long agent
-    session is closer to the square of its length than to its length."
+    again in the last one. Caching makes that cheaper and does not make it free:
+    the re-read is still metered, still counted, and on a long session it is the
+    largest line on the invoice."
   - "Context engineering is the work of deciding what an agent is allowed to
     know. Not what it could usefully know, which is everything, but what earns
     its place against that bill. The unit of the decision is a document, a tool
-    result or a prior turn, and the decision is made before the agent starts
-    rather than by the agent while it works, because an agent asked to be frugal
-    with its own context has to read something to find out what it can skip."
-  - "The three moves that matter are ordering, summarising and carrying forward.
-    Ordering means the material an agent needs first arrives first, so it can
-    act before it has read everything. Summarising means a long history is
-    replaced by a shorter true statement of it. Carrying forward means the
-    findings of one session survive into the next in a form small enough to
-    afford, which is what separates a system that learns from one that starts
-    over."
+    result or a prior turn, and the decision belongs to whoever composes the
+    prompt rather than to the agent reading it. An agent asked to be frugal with
+    its own context has to read something to find out what it can skip."
+  - "Three moves do most of the work. Ordering: the material needed first
+    arrives first, so the agent can act before it has read everything, and what
+    it reads is a decision somebody made rather than a search it performs.
+    Summarising: a long history is replaced by a shorter true statement of it.
+    Carrying forward: what one session found survives into the next in a form
+    small enough to afford. The third move is the one that separates a system
+    that learns from a system that starts over."
+  - "There is a fourth move that is really a discipline. The prompt is an
+    artifact. If you cannot read the exact bytes an agent was given — not the
+    template it came from, not a reconstruction, the rendered text — then every
+    question about why it behaved the way it did is answered by guessing. A
+    system that composes prompts and does not keep them has arranged to be
+    debugged blind."
   - "Done well, none of this looks clever. It looks like a short prompt that
     happens to contain the right things, handed to an agent that gets to work
     immediately."
@@ -41,56 +49,93 @@ theProblem:
   - "Without it the failure is quiet and expensive. An agent reads the whole
     repository because nothing told it not to, spends most of its budget before
     its first edit, and is interrupted mid-task by a ceiling it hit early. The
-    work it did is not wrong; there is just less of it than the bill suggests."
-  - "The second failure is worse because it survives the session. What one agent
-    learned goes nowhere, so the next one rediscovers it, including the dead
-    ends. A wrong theory disproved in the morning is chased again in the
-    afternoon by something that had no way to know."
+    work it did is not wrong. There is just less of it than the bill suggests."
+  - "The second failure survives the session. What one agent learned goes
+    nowhere, so the next one rediscovers it, including the dead ends. A wrong
+    theory disproved in the morning is chased again in the afternoon by
+    something that had no way to know the question was settled."
+  - "The third looks like a bug in something else. A prompt assembled by
+    appending has a length limit somewhere, and when it is reached what gets
+    dropped is whatever was appended last. Put the accumulated knowledge at the
+    end, where it reads naturally, and the cap quietly deletes the one part that
+    was supposed to compound — on the longest runs first, because those are the
+    runs with the most to carry."
 
 inConductor:
   mechanism:
     - "Every session prompt is rendered from a template with named slots: the
-      stage, the checkpoint, the read order, the handoff written by the last
-      session, the knowledge ledger and the run's open bugs. Nothing is
-      concatenated ad hoc, which means the shape of what an agent knows is a
-      thing you can read, diff and change."
-    - "Two of the details are load-bearing. A placeholder that no value resolved
-      refuses the prompt outright rather than shipping a half-written
-      instruction to an agent that will follow it anyway. And the ledger and
-      open bugs are assembled first, so that when the prompt hits its byte cap
-      it is the transcript tail that is dropped, never the accumulated knowledge
-      — the compounding part is the part protected from truncation."
+      stage, the checkpoint, the required reading in order, the handoff the last
+      session wrote, the knowledge ledger and the run's open bugs. The read
+      order is plan configuration rather than an instruction to go and look, so
+      the shape of what an agent knows is something you can read, diff and
+      change without touching the engine."
+    - "A slot that resolved to nothing refuses the prompt outright. A
+      half-written instruction is worse than no instruction, because an agent
+      will follow it anyway and the result looks like work."
+    - "That refusal is right, and it was not free. Being strict about a
+      placeholder means knowing the difference between a template, where a name
+      in braces is a slot, and a value substituted into one, where a brace is
+      something a person typed. Before the engine drew that line, a literal
+      brace in a stage's notes passed the plan check and then stopped a run at a
+      stage boundary, with the refusal on stderr and nowhere anyone was looking.
+      Values are now held as they go in: nothing expands them, so a brace inside
+      one cannot be mistaken for a hole."
+    - "Ordering under the cap is the last piece, and it is the reverse of the
+      obvious arrangement. The ledger and the open bugs are assembled first, and
+      the cap cuts from the end — so what a full prompt loses is the tail of the
+      transcript, never what earlier sessions worked out. Every rendered prompt
+      is then written to disk beside the session it started, which is what makes
+      any of this checkable rather than asserted."
   citations:
     - path: "src/Conductor.Core/PromptBuilder.cs"
-      line: 220
-      note: "An unresolved placeholder throws rather than rendering. A prompt with a
-        hole in it is refused, not sent."
+      line: 107
+      note: "The required reading is assembled from the plan, in the order the plan
+        lists it. What an agent reads first is a decision somebody made and can
+        change."
     - path: "src/Conductor.Core/PromptBuilder.cs"
-      line: 276
-      note: "The ledger and the run's open bugs are added first, so the byte cap can
-        never truncate away what earlier sessions learned."
+      line: 220
+      note: "A placeholder nothing resolved throws rather than rendering. A prompt
+        with a hole in it is refused, not sent."
+    - path: "src/Conductor.Planning/PromptPlaceholders.cs"
+      line: 53
+      note: "The other half of that strictness: a brace inside a substituted value is
+        prose and is held as written. This is the line the engine learned to
+        draw after one was read as a hole and stopped a run."
+    - path: "src/Conductor.Core/PromptBuilder.cs"
+      line: 283
+      note: "The knowledge ledger goes in first, ahead of everything a session might
+        otherwise rather have."
+    - path: "src/Conductor.Core/PromptBattery.cs"
+      line: 55
+      note: "And the byte cap cuts from the end, which is what makes going in first
+        mean surviving."
     - path: "src/Conductor.Core/BgLogs.cs"
       line: 55
-      note: "Every rendered prompt is written to disk as session-NNN.prompt.md, so
-        what an agent was actually told is an artifact, not a guess."
+      note: "Every composed prompt is written to disk as session-NNN.prompt.md, so
+        what an agent was actually told is an artifact rather than a
+        reconstruction."
 
 evidence:
   runs:
     - "the-long-build"
     - "the-engine-run"
   figures:
-    - "softBreaks"
-    - "rollovers"
+    - "sessions"
+    - "cacheRead"
+    - "ledgerEntries"
 
 tryIt:
   - command: "cat .conductor/logs/session-003.prompt.md"
-    note: "The exact prompt a session was given, byte for byte. Reading one is the
+    note: "The exact prompt one session was given, byte for byte. Reading one is the
       fastest way to see how much of an agent's budget was spent before it was
       asked to do anything."
   - command: 'conductor note "the constraint that surprised you"'
-    note: "Writes one line into the knowledge ledger, which the next session's
-      prompt carries. This is the carry-forward move with nothing else in the
-      way."
+    note: "One line into the knowledge ledger, which the next session's prompt
+      carries near the top. This is the carry-forward move with nothing else in
+      the way."
+  - command: "conductor doctor"
+    note: "Checks the plan's own prose for anything the renderer could not resolve,
+      before a run starts rather than at a stage boundary hours into one."
 
 readNext:
   - "token-economics"

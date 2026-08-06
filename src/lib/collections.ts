@@ -10,6 +10,7 @@
    Vercel function imports that one from outside the build. The two are
    deliberately different jobs. */
 import { getCollection, type CollectionEntry } from "astro:content";
+import { refuseTypedFigures } from "./figures.js";
 
 /** The collections a reader browses. `homePage` and `sectionPages` are the
     site's own furniture and are not listed anywhere. */
@@ -91,6 +92,31 @@ export async function ordered<C extends Listed>(collection: C): Promise<Collecti
 
   for (const entry of entries) {
     const { slug, order, readNext } = entry.data;
+
+    /* SPEC Part I, litmus test 1, made mechanical for the prose as well as for
+       the `evidence` field. See src/lib/figures.ts for what counts and for the
+       one gap it leaves. */
+    refuseTypedFigures(`${collection}/${entry.id}.yaml`, entry.data);
+
+    /* And litmus test 3, made structural. "A concept page is useful without
+       Conductor": delete `inConductor` from an entry and what is left has to
+       still be worth reading, which is only true if the idea was written for
+       someone who has never heard of the tool. schema.ts already puts `theIdea`
+       first for this reason; this is the half that can actually be checked.
+
+       Only `theIdea`. `theProblem` is a judgement — a failure is sometimes
+       clearest told as one that happened — and SPEC Part III asks for the
+       tool-free discipline on the idea specifically. */
+    if ("theIdea" in entry.data) {
+      const index = entry.data.theIdea.findIndex((para) => /conductor/i.test(para));
+      if (index >= 0) {
+        throw new Error(
+          `${collection}/${entry.id}.yaml: theIdea[${index}] names Conductor. The idea has to ` +
+            `read for someone who has never heard of it — the mechanism belongs in ` +
+            `inConductor, which is the section a reader is allowed to skip.`
+        );
+      }
+    }
 
     const expected = `${base}${entry.id}/`;
     if (entry.data.meta.canonical !== expected) {
