@@ -29,13 +29,14 @@ const SRC = join(ROOT, "src");
 const COLOUR_SOURCE = join("src", "styles", "tokens.css");
 const SIZE_SOURCE = join("src", "styles", "type.css");
 
-/* The review widget's chrome is the template's own sealed component: it
-   re-declares every inherited property precisely so the site's CSS cannot
-   leak in and its own cannot leak out, and it ships a deliberately neutral
-   palette for a site to restyle later. Restyling it in this site's roles is
-   real work, not a token sweep, and it is tracked as a bug rather than
-   smuggled in here. */
-const SEALED = [join("src", "scripts", "feedback-chrome.css")];
+/* The review widget's chrome was sealed out of all three rules while it still
+   wore the template's neutral palette (bug #1). It has now been restyled in
+   this site's roles, so it is checked like every other stylesheet — with one
+   exemption, and only one: its **sizes** are its own. 16px on an input is what
+   stops iOS zooming the page when the input takes focus, and a 12px badge on a
+   floating tool is not a step in a prose scale. Its colours and its families
+   are not exempt, which is the half that was actually at issue. */
+const SIZE_EXEMPT = [join("src", "scripts", "feedback-chrome.css").split(sep).join("/")];
 
 function stripComments(css) {
   return css.replace(/\/\*[\s\S]*?\*\//g, "");
@@ -49,7 +50,6 @@ function siteCss() {
     if (!entry.isFile()) continue;
     const full = join(entry.parentPath ?? entry.path, entry.name);
     const rel = relative(ROOT, full);
-    if (SEALED.includes(rel)) continue;
     if (entry.name.endsWith(".css")) {
       out.push({ file: rel.split(sep).join("/"), css: readFileSync(full, "utf8") });
     } else if (entry.name.endsWith(".astro")) {
@@ -84,6 +84,7 @@ test("no colour literal outside tokens.css", () => {
 test("no font-size literal outside type.css", () => {
   for (const { file, css } of SHEETS) {
     if (file === SIZE_SOURCE.split(sep).join("/")) continue;
+    if (SIZE_EXEMPT.includes(file)) continue;
     for (const decl of stripComments(css).matchAll(/font-size\s*:\s*([^;}]+)/g)) {
       const value = decl[1].trim();
       assert.ok(

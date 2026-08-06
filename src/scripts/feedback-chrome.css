@@ -1,9 +1,38 @@
-/* Review mode — the widget chrome, in a DELIBERATELY NEUTRAL palette: this
-   is the one piece of visual design the template ships, and it is dull on
-   purpose so the site restyles it in its own terms (strings live in
-   feedback-chrome.js). Everything is prefixed .rv- and the root re-declares
-   inherited properties, so the site's CSS can't leak in and the widget can't
-   leak out. A separate file (not an injected <style>) so the CSP's
+/* Review mode — the widget chrome, in this site's terms (bug #1, S1).
+   Strings and mechanics live in `@shaahink/sitekit/widget`; this file is the
+   whole of its face, and the template shipped it in a deliberately neutral
+   grey so each site would restyle it. It now wears the same sixteen roles as
+   every other rule in this repo, so it follows the theme toggle and reads in
+   both mocha and latte — the template's palette was a fixed dark chrome that
+   sat on a latte page like a hole.
+
+   **Roles, never hexes.** There is not a colour literal left in this file;
+   `#101010` was correct in mocha and wrong in latte, which is the rule the
+   Face enforces on itself. `test/tokens.test.mjs` now checks this file for
+   colour literals and for raw family names like every other stylesheet. It
+   still skips it for the *size* rule, and that exemption is real rather than
+   convenient: 16px on an input is what stops iOS zooming the page when it
+   takes focus, and a 12px badge is not a step in a prose scale.
+
+   **No shadows** (SPEC Part II). A panel that floats over arbitrary page
+   content still has to separate from it, so the lift comes from `--surface`
+   plus a hairline in `--selection` rather than from a black blur — and a
+   black blur has no role name anyway, which is how it would have smuggled the
+   literals back in.
+
+   **Semantic colours mean status, never decoration.** `--accent` marks the
+   thing in hand: the launcher, the element being pointed at, the pin, Send.
+   `--yellow` is the picking mode, because that is the widget waiting on the
+   reader. `--green` is the note that actually left the building. Nothing else
+   is coloured.
+
+   **Mono is machine truth**, here as everywhere: the picked element's name,
+   the note count, the pin numbers. Prose in the widget is the sans.
+
+   Everything is prefixed .rv- and the root re-declares inherited properties,
+   so the site's CSS can't leak in and the widget can't leak out. The roles
+   arrive through custom properties, which is the one crossing that is
+   deliberate. A separate file (not an injected <style>) so the CSP's
    style-src 'self' covers it.
 
    Horizontal properties are logical (inset-inline, border-inline,
@@ -17,10 +46,10 @@
   inset: 0;
   z-index: 2147483000;
   pointer-events: none;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--sans, system-ui, sans-serif);
   font-size: 16px;
   line-height: 1.45;
-  color: #f4f4f4;
+  color: var(--text);
   font-weight: 400;
   font-style: normal;
   letter-spacing: normal;
@@ -31,7 +60,7 @@
 .rv-root *::before,
 .rv-root *::after { box-sizing: border-box; }
 /* No colour in the reset: it would outrank the single-class rules below and
-   paint every label with the root's ink, including on light buttons. */
+   paint every label with the root's ink, including on accent buttons. */
 .rv-root button { font: inherit; margin: 0; cursor: pointer; }
 
 /* Launcher */
@@ -44,9 +73,8 @@
   align-items: stretch;
   pointer-events: auto;
   border-radius: 999px;
-  background: #f4f4f4;
-  color: #101010;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55);
+  background: var(--accent);
+  color: var(--base);
   overflow: hidden;
 }
 .rv-bar button {
@@ -60,12 +88,20 @@
   gap: 8px;
   white-space: nowrap;
 }
-.rv-bar button:hover { background: rgba(16, 16, 16, 0.08); }
-.rv-bar .rv-more { padding: 0 14px; border-inline-start: 1px solid rgba(16, 16, 16, 0.18); font-size: 12px; }
-.rv-dot { width: 8px; height: 8px; border-radius: 50%; background: #666666; flex: none; }
+/* Hover and the separator rule are the ink of whatever the pill is painted
+   in, held back — so they follow the pill through the picking state without a
+   second pair of rules. */
+.rv-bar button:hover { background: color-mix(in srgb, var(--base) 12%, transparent); }
+.rv-bar .rv-more {
+  padding: 0 14px;
+  border-inline-start: 1px solid color-mix(in srgb, var(--base) 25%, transparent);
+  font-size: 12px;
+}
+.rv-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--base); flex: none; }
 .rv-badge {
-  background: #666666;
-  color: #101010;
+  background: var(--base);
+  color: var(--text);
+  font-family: var(--mono, ui-monospace, monospace);
   font-size: 12px;
   font-weight: 700;
   border-radius: 999px;
@@ -83,8 +119,10 @@
   60% { transform: scale(1.35); }
   100% { transform: scale(1); }
 }
-.rv-bar.is-picking { background: #666666; color: #101010; }
-.rv-bar.is-picking .rv-dot { background: #101010; animation: rv-pulse 1.4s infinite; }
+/* Picking is the one moment the widget is waiting on the reader rather than
+   the other way round, so it is `--yellow`: attention, which is a status. */
+.rv-bar.is-picking { background: var(--yellow); color: var(--base); }
+.rv-bar.is-picking .rv-dot { background: var(--base); animation: rv-pulse 1.4s infinite; }
 @keyframes rv-pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.25; }
@@ -97,12 +135,11 @@
   bottom: 76px;
   bottom: calc(76px + env(safe-area-inset-bottom));
   pointer-events: auto;
-  background: #1a1a1a;
+  background: var(--surface);
   border-radius: 14px;
   padding: 6px;
   min-width: 220px;
-  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(244, 244, 244, 0.14);
+  border: 1px solid var(--selection);
 }
 .rv-menu button {
   display: block;
@@ -110,16 +147,16 @@
   text-align: start;
   background: none;
   border: 0;
-  color: #f4f4f4;
+  color: var(--text);
   padding: 11px 13px;
   border-radius: 9px;
   font-size: 15px;
 }
-.rv-menu button:hover { background: rgba(244, 244, 244, 0.08); }
+.rv-menu button:hover { background: var(--selection); }
 .rv-menu .rv-count {
   padding: 9px 13px 5px;
   font-size: 12px;
-  color: #9a9a9a;
+  color: var(--overlay);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -128,17 +165,18 @@
 .rv-hl {
   position: fixed;
   pointer-events: none;
-  border: 2px solid #666666;
+  border: 2px solid var(--accent);
   border-radius: 4px;
-  background: rgba(120, 120, 120, 0.14);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
   transition: all 0.09s ease-out;
 }
 .rv-hl-tag {
   position: absolute;
   top: -24px;
   inset-inline-start: -2px;
-  background: #666666;
-  color: #101010;
+  background: var(--accent);
+  color: var(--base);
+  font-family: var(--mono, ui-monospace, monospace);
   font-size: 11px;
   font-weight: 600;
   padding: 2px 7px;
@@ -155,7 +193,10 @@
 .rv-scrim {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  /* `--mantle` is the role that recedes in both schemes, so the veil dims a
+     mocha page and pales a latte one rather than dropping black on both. The
+     sheet sits a step above it in `--surface` and keeps its hairline. */
+  background: color-mix(in srgb, var(--mantle) 80%, transparent);
   pointer-events: auto;
   animation: rv-fade 0.16s ease-out;
 }
@@ -166,10 +207,9 @@
 .rv-sheet {
   position: absolute;
   pointer-events: auto;
-  background: #1a1a1a;
+  background: var(--surface);
   border-radius: 16px;
-  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(244, 244, 244, 0.14);
+  border: 1px solid var(--selection);
   width: min(380px, calc(100vw - 32px));
   display: flex;
   flex-direction: column;
@@ -197,19 +237,20 @@
   align-items: center;
   gap: 8px;
   padding: 11px 14px;
-  background: #141414;
-  border-bottom: 1px solid rgba(244, 244, 244, 0.1);
+  background: var(--mantle);
+  border-block-end: 1px solid var(--selection);
   font-size: 13px;
-  color: #9a9a9a;
+  color: var(--overlay);
 }
 .rv-ctx-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.rv-ctx-text b { color: #f4f4f4; font-weight: 600; }
+/* The element the reader pointed at, named the way the DOM names it. */
+.rv-ctx-text b { color: var(--text); font-family: var(--mono, ui-monospace, monospace); font-weight: 600; }
 .rv-up {
   flex: none;
   background: none;
-  border: 1px solid rgba(244, 244, 244, 0.24);
+  border: 1px solid var(--selection);
   border-radius: 7px;
-  color: #f4f4f4;
+  color: var(--text);
   width: 30px;
   height: 30px;
   font-size: 14px;
@@ -218,17 +259,17 @@
   align-items: center;
   justify-content: center;
 }
-.rv-up:hover { background: rgba(244, 244, 244, 0.08); }
+.rv-up:hover { background: var(--selection); }
 
 .rv-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
 .rv-root textarea,
 .rv-root input[type="text"] {
   font: inherit;
   font-size: 16px;
-  color: #f4f4f4;
+  color: var(--text);
   width: 100%;
-  background: #101010;
-  border: 1px solid rgba(244, 244, 244, 0.2);
+  background: var(--base);
+  border: 1px solid var(--selection);
   border-radius: 10px;
   padding: 10px 12px;
   display: block;
@@ -237,16 +278,16 @@
 }
 .rv-root textarea { min-height: 96px; resize: vertical; }
 .rv-root textarea:focus,
-.rv-root input:focus { outline: 2px solid #666666; outline-offset: -1px; border-color: transparent; }
+.rv-root input:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
 .rv-root textarea::placeholder,
-.rv-root input::placeholder { color: #9a9a9a; }
+.rv-root input::placeholder { color: var(--overlay); }
 
-.rv-attach { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: #9a9a9a; }
+.rv-attach { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--overlay); }
 .rv-attach-btn {
   background: none;
-  border: 1px dashed rgba(244, 244, 244, 0.3);
+  border: 1px dashed var(--selection);
   border-radius: 9px;
-  color: #9a9a9a;
+  color: var(--overlay);
   padding: 8px 12px;
   font-size: 13px;
   display: flex;
@@ -254,7 +295,7 @@
   gap: 7px;
   min-height: 38px;
 }
-.rv-attach-btn:hover { background: rgba(244, 244, 244, 0.06); border-style: solid; }
+.rv-attach-btn:hover { background: var(--selection); border-style: solid; }
 .rv-thumb { position: relative; flex: none; }
 .rv-thumb img {
   display: block;
@@ -263,7 +304,7 @@
   max-width: 110px;
   object-fit: cover;
   border-radius: 8px;
-  border: 1px solid rgba(244, 244, 244, 0.2);
+  border: 1px solid var(--selection);
 }
 .rv-thumb button {
   position: absolute;
@@ -272,8 +313,8 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: #f4f4f4;
-  color: #101010;
+  background: var(--text);
+  color: var(--base);
   border: 0;
   font-size: 13px;
   line-height: 1;
@@ -282,13 +323,13 @@
   justify-content: center;
   padding: 0;
 }
-.rv-drop { outline: 2px dashed #666666; outline-offset: -6px; }
+.rv-drop { outline: 2px dashed var(--accent); outline-offset: -6px; }
 
 .rv-foot { display: flex; align-items: center; gap: 10px; padding: 0 14px 13px; }
-.rv-foot .rv-msg { flex: 1; font-size: 12.5px; color: #bbbbbb; min-width: 0; }
+.rv-foot .rv-msg { flex: 1; font-size: 12.5px; color: var(--overlay); min-width: 0; }
 .rv-send {
-  background: #f4f4f4;
-  color: #101010;
+  background: var(--accent);
+  color: var(--base);
   border: 0;
   border-radius: 999px;
   padding: 0 20px;
@@ -296,13 +337,15 @@
   font-size: 15px;
   font-weight: 600;
 }
-.rv-send:hover { background: #ffffff; }
+.rv-send:hover { background: color-mix(in srgb, var(--accent) 88%, var(--text)); }
 .rv-send[disabled] { opacity: 0.5; cursor: default; }
-.rv-ghost { background: none; border: 0; color: #9a9a9a; padding: 0 6px; min-height: 44px; font-size: 14px; }
-.rv-ghost:hover { color: #f4f4f4; text-decoration: underline; }
+.rv-ghost { background: none; border: 0; color: var(--overlay); padding: 0 6px; min-height: 44px; font-size: 14px; }
+.rv-ghost:hover { color: var(--text); text-decoration: underline; }
 
 /* Success state — deliberately unmissable, so there is never a doubt about
-   whether a note actually left the building. */
+   whether a note actually left the building. `--green` is the site's success
+   role and this is the one place in the widget that has succeeded at
+   anything. */
 .rv-done {
   padding: 34px 24px 30px;
   text-align: center;
@@ -316,7 +359,7 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: #666666;
+  background: var(--green);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -325,7 +368,7 @@
 }
 .rv-check svg { width: 28px; height: 28px; display: block; }
 .rv-check path {
-  stroke: #101010;
+  stroke: var(--base);
   stroke-width: 3.2;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -337,12 +380,12 @@
 @keyframes rv-draw {
   to { stroke-dashoffset: 0; }
 }
-.rv-done h3 { margin: 0; font-size: 19px; font-weight: 700; color: #f4f4f4; }
-.rv-done p { margin: 0; font-size: 14px; color: #9a9a9a; max-width: 30ch; }
+.rv-done h3 { margin: 0; font-size: 19px; font-weight: 700; color: var(--text); }
+.rv-done p { margin: 0; font-size: 14px; color: var(--overlay); max-width: 30ch; }
 .rv-done-quote {
   margin-top: 10px;
   font-size: 13px;
-  color: #9a9a9a;
+  color: var(--overlay);
   font-style: italic;
   max-width: 34ch;
   overflow: hidden;
@@ -353,7 +396,7 @@
 }
 .rv-done-bar {
   height: 3px;
-  background: #666666;
+  background: var(--green);
   border-radius: 2px;
   width: 0;
   margin-top: 16px;
@@ -364,16 +407,19 @@
   to { width: 100%; }
 }
 
-/* Sent pins */
+/* Sent pins. The ring is `--base` rather than a shadow: a pin lands on
+   whatever the page happens to be showing, and the ring is what keeps it
+   legible over a photograph. */
 .rv-pin {
   position: absolute;
   width: 24px;
   height: 24px;
   margin: -12px 0 0 -12px;
   border-radius: 50%;
-  background: #666666;
-  color: #101010;
-  border: 2px solid rgba(244, 244, 244, 0.92);
+  background: var(--accent);
+  color: var(--base);
+  border: 2px solid var(--base);
+  font-family: var(--mono, ui-monospace, monospace);
   font-size: 12px;
   font-weight: 700;
   display: flex;
@@ -381,7 +427,6 @@
   justify-content: center;
   pointer-events: auto;
   cursor: default;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 .rv-pins { position: absolute; inset: 0; pointer-events: none; }
 
@@ -395,21 +440,21 @@
   bottom: calc(80px + env(safe-area-inset-bottom));
   pointer-events: auto;
   max-width: calc(100vw - 32px);
-  background: #f4f4f4;
-  color: #101010;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--selection);
   padding: 11px 17px;
   border-radius: 999px;
   font-size: 14px;
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.55);
   display: flex;
   align-items: center;
   gap: 12px;
   animation: rv-fade 0.16s ease-out;
 }
-.rv-toast a { color: #555555; }
+.rv-toast a { color: var(--blue); }
 .rv-toast button {
   background: none;
-  border: 1px solid rgba(16, 16, 16, 0.4);
+  border: 1px solid var(--selection);
   border-radius: 999px;
   padding: 4px 11px;
   font-size: 12.5px;
