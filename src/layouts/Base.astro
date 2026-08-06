@@ -6,6 +6,7 @@
    Deliberately design-free. The template ships machinery; the site's face —
    layout, palette, type, navigation — is this site's own work, and it should
    look like nothing else in the fleet. */
+import { Font } from "astro:assets";
 import { absolute } from "@shaahink/sitekit/seo";
 import Footer from "../components/Footer.astro";
 import "../styles/styles.css";
@@ -49,6 +50,13 @@ const ogImageUrl = ogImage && absolute(Astro.site!, ogImage);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
+
+    <!-- The two faces, built same-origin. Both preload: the sans carries the
+         body from the first paint and the mono carries the wordmark and the
+         evidence figures beside it. astro.config's `fonts` block assembles
+         each cssVariable; nothing here or in the CSS names a family. -->
+    <Font cssVariable="--font-sans" preload />
+    <Font cssVariable="--font-mono" preload />
 
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />

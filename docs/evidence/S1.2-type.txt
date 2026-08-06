@@ -1,0 +1,29 @@
+﻿# S1.2 - typography and spacing, proved
+
+## 1. the Fonts API hash trap, in the built output
+The built CSS hashes the family name, so site CSS must consume the cssVariable:
+--font-sans:"Source Sans 3-514be13c4afd4c18","Source Sans 3-514be13c4afd4c18 fallback: Arial","Source Sans 3-514be13c4afd4c18 fallback: Arial Bold","Segoe UI","Helvetica Neue",Arial,sans-serif
+--font-mono:"JetBrains Mono-e1c49e55591a93c7","JetBrains Mono-e1c49e55591a93c7 fallback: Courier New",ui-monospace,SFMono-Regular,Consolas,monospace
+
+## 2. red on a planted violation (a hex, an 18px, a raw family, a margin-left)
+
+ℹ pass 9
+ℹ fail 4
+  AssertionError [ERR_ASSERTION]: src/styles/_planted-violation.css writes a colour literal (#cba6f7). Colours are 
+roles from tokens.css — a hex is correct in mocha and wrong in latte.
+  AssertionError [ERR_ASSERTION]: src/styles/_planted-violation.css writes `font-size: 18px`. Sizes are steps from 
+type.css, asked for by name.
+  AssertionError [ERR_ASSERTION]: src/styles/_planted-violation.css writes `font-family: "Source Sans 3", sans-serif`. 
+Astro hashes family names at build time, so a raw name silently renders the fallback. Consume the cssVariable.
+  AssertionError [ERR_ASSERTION]: src/styles/_planted-violation.css uses a physical property (margin-left:). Use the 
+logical equivalent — inline-start/inline-end — so RTL costs nothing.
+
+
+
+## 3. green with the violation removed
+
+ℹ tests 13
+ℹ pass 13
+ℹ fail 0
+
+

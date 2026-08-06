@@ -1,0 +1,75 @@
+/* The type scale, the space scale and the measure — every one of them named.
+
+   Nothing in this site writes a raw size. A component asks for
+   `var(--text-h2)` or `var(--space-m)`, which is what makes the scale a scale
+   rather than a folder of coincidences. test/tokens.test.mjs fails if a
+   font-size or a colour literal appears anywhere but here and tokens.css.
+
+   ⚠ The families come through `var(--font-sans)` and `var(--font-mono)`,
+   assembled by astro.config's `fonts` block. Astro hashes family names at
+   build time — the built CSS says `"Source Sans 3-514be13c4afd4c18"` — so a
+   token naming the raw family renders the fallback forever and nothing
+   complains. Never write a family name in this file. */
+
+:root {
+  /* ── families ─────────────────────────────────────────────────────────
+     Humanist sans for reading. Mono for machine truth only: costs, token
+     counts, run ids, gate names, CLI lines, checkpoint tables, the evidence
+     strip. The reader learns that mono means "recomputed from a run store",
+     which is a meaning worth not spending on decoration. */
+  --sans: var(--font-sans);
+  --mono: var(--font-mono);
+
+  /* ── the type scale ───────────────────────────────────────────────────
+     Fluid between a 360px and a 1200px viewport, in `vi` rather than `vw`
+     because this fleet's CSS stays on logical axes. Body lands 17px → 18px,
+     the size SPEC Part II asks for; the rest is a ~1.2 ratio at the small
+     end opening to ~1.25 at the display sizes. */
+  --text-micro: 0.8125rem; /* 13px — table keys, footnote labels */
+  --text-small: 0.9375rem; /* 15px — captions, the evidence strip's labels */
+  --text-body: clamp(1.0625rem, 1.0357rem + 0.119vi, 1.125rem);
+  --text-lead: clamp(1.1875rem, 1.1339rem + 0.2381vi, 1.3125rem);
+  --text-h3: clamp(1.25rem, 1.1696rem + 0.3571vi, 1.4375rem);
+  --text-h2: clamp(1.5rem, 1.3393rem + 0.7143vi, 1.875rem);
+  --text-h1: clamp(2rem, 1.6786rem + 1.4286vi, 2.75rem);
+
+  /* ── leading and weight ───────────────────────────────────────────────
+     1.65 on body copy: the site's main job is long-form reading. */
+  --leading-body: 1.65;
+  --leading-snug: 1.35;
+  --leading-tight: 1.15;
+
+  --weight-body: 400;
+  --weight-medium: 600;
+  --weight-bold: 700;
+
+  /* Mono runs optically larger than the sans at the same size, so machine
+     truth set inline is stepped down to sit on the same line as its prose. */
+  --mono-inline-size: 0.9em;
+
+  /* ── the measure ──────────────────────────────────────────────────────
+     SPEC Part II allows 62–72ch and this site reads at 68. The two ends are
+     named too, for a caption that wants to run narrow and a table that wants
+     the full width. */
+  --measure: 68ch;
+  --measure-narrow: 62ch;
+  --measure-wide: 72ch;
+
+  /* ── the space scale ──────────────────────────────────────────────────
+     A 4px rhythm. "Panels breathe" is the Face's own discipline and it is
+     the reason there is a --space-3xl at all. */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-s: 1rem;
+  --space-m: 1.5rem;
+  --space-l: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+
+  /* ── the one border ───────────────────────────────────────────────────
+     No gradients, no shadows, no rounded card soup (SPEC Part II). Sections
+     are separated by a hairline in --surface and by space. */
+  --rule: 1px solid var(--surface);
+}

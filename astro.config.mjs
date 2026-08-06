@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from "astro/config";
+import { defineConfig, fontProviders } from "astro/config";
 import { checkAnnotations, checkPlaceholders, editorRoute } from "@shaahink/sitekit/astro";
 import { editable } from "./src/content/schema.js";
 
@@ -73,33 +73,57 @@ export default defineConfig({
      Shiki-vs-CSP warning. Remove if the site gains markdown content. */
   markdown: { syntaxHighlight: false },
 
-  /* Fonts are design, so the template ships none — the system stack applies
-     until the site chooses faces. When it does, use the Fonts API so they are
-     built and served same-origin:
+  /* Two faces, and the split between them is the site's argument rather than
+     a taste call (SPEC Part II).
 
-     import { fontProviders } from "astro/config";
-     fonts: [{ provider: fontProviders.google(), name: "…",
-               cssVariable: "--font-…", weights: […], subsets: […],
-               fallbacks: […] }],
+     Source Sans 3 is the body: a humanist sans, which is what long-form
+     reading wants and what a monospace wall defeats. Long-form reading is
+     this site's main job.
 
-     and add <Font cssVariable="…" /> to the layout head. Pin subsets
-     explicitly if any script beyond latin matters — a dropped subset is
-     silent tofu.
+     JetBrains Mono is reserved for machine truth — costs, token counts, run
+     ids, gate names, CLI lines, checkpoint tables, the evidence strip. When a
+     reader sees mono on this site they are looking at something recomputed
+     from a run store, so the typeface itself carries meaning. Spending a
+     second family on that is the point; using mono decoratively would spend
+     it and buy nothing.
+
+     Built same-origin by the Fonts API, which the template's same-origin CSP
+     requires. Subsets are pinned: a dropped subset is silent tofu.
 
      ⚠ The built CSS hashes the family names, so site CSS must consume the
      cssVariable — never the raw name. A token like
-     `--serif: "Cormorant Garamond", Georgia, serif` silently renders Georgia
-     forever (Bez shipped exactly that in session 3; session 4's screenshot
-     verification caught it). Write `--serif: var(--font-cormorant)` and put
-     the fallback stack in the font entry above, where the variable is
-     assembled.
+     `--sans: "Source Sans 3", system-ui, sans-serif` silently renders the
+     fallback forever (Bez shipped exactly that in session 3; session 4's
+     screenshot verification caught it). src/styles/type.css writes
+     `--sans: var(--font-sans)`, and the fallback stacks live below, where the
+     variable is assembled. test/tokens.test.mjs fails the build's sibling
+     check if a raw family name ever appears in site CSS.
 
-     Preloading: pass `preload` on the layout's <Font /> components for the
-     faces that paint above the fold, and only those — every preload competes
-     with the hero image. Filter by subset or style, never by weight: the
-     API records each merged file under its first face's weight, so a weight
-     filter silently misses. Per-locale sites preload conditionally, so each
-     locale pays only for its own families. */
+     Both are preloaded: both paint above the fold on every page — the body
+     immediately, and the mono in the top bar's wordmark and the evidence
+     figures. Filter by subset or style if that ever narrows, never by weight:
+     the API records each merged file under its first face's weight, so a
+     weight filter silently misses. */
+  fonts: [
+    {
+      provider: fontProviders.google(),
+      name: "Source Sans 3",
+      cssVariable: "--font-sans",
+      weights: [400, 600, 700],
+      styles: ["normal", "italic"],
+      subsets: ["latin"],
+      fallbacks: ["Segoe UI", "Helvetica Neue", "Arial", "sans-serif"]
+    },
+    {
+      provider: fontProviders.google(),
+      name: "JetBrains Mono",
+      cssVariable: "--font-mono",
+      weights: [400, 700],
+      styles: ["normal"],
+      subsets: ["latin"],
+      fallbacks: ["ui-monospace", "SFMono-Regular", "Consolas", "monospace"]
+    }
+  ],
 
   security: {
     csp: {

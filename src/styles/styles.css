@@ -1,23 +1,187 @@
-/* The sixteen colour roles, both schemes. Everything below and every
-   component reads them by name — see tokens.css for why a hex literal
-   outside that file is a bug. */
+/* The site's face. Two rules this fleet does not bend (PLAN §3.5):
+
+   - Logical properties only — margin-inline-start, padding-block-end,
+     inset-inline — never left/right. RTL then costs nothing if a locale ever
+     needs it.
+   - html.js gates progressive-enhancement styles: the class is added by an
+     inline script before first paint, so no-JS visitors simply see
+     everything.
+
+   And two this site adds, because it is a site about traceable claims and
+   should be able to survive its own gate:
+
+   - Every colour is a role from tokens.css, never a hex. `#CBA6F7` is right
+     in mocha and wrong in latte.
+   - Every size is a step from type.css, never a literal.
+
+   test/tokens.test.mjs enforces both, and `npm run check` runs it. */
+
 @import "./tokens.css";
-
-/* The design system goes here — and it is deliberately empty in the template.
-   Each site in the fleet looks different on purpose (PLAN §1 goal 2): no
-   shared palette, no shared type, no house style. The moment the template
-   ships a face, every site starts sharing it.
-
-   Two rules the design must honour (PLAN §3.5):
-   - Logical properties only — margin-inline-start, padding-inline-end,
-     inset-inline — never left/right physical properties. RTL then costs
-     nothing when a locale needs it.
-   - html.js gates progressive-enhancement styles (scroll reveals and the
-     like): the class is added by an inline script before first paint, so
-     no-JS visitors simply see everything. */
+@import "./type.css";
 
 *,
 *::before,
-*::after { box-sizing: border-box; }
+*::after {
+  box-sizing: border-box;
+}
 
-* { margin: 0; }
+* {
+  margin: 0;
+}
+
+html {
+  /* The one exception to "no literal sizes": the root step the whole scale is
+     expressed against. Left at the browser's own value on purpose — a reader
+     who set their default text size larger meant it. */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--base);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: var(--text-body);
+  font-weight: var(--weight-body);
+  line-height: var(--leading-body);
+  /* Humanist sans at reading size wants its own metrics, not the browser's
+     synthetic ones. */
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  min-block-size: 100vb;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── headings ──────────────────────────────────────────────────────────── */
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--text-h1);
+  letter-spacing: -0.015em;
+}
+
+h2 {
+  font-size: var(--text-h2);
+  letter-spacing: -0.01em;
+  line-height: var(--leading-snug);
+}
+
+h3 {
+  font-size: var(--text-h3);
+  line-height: var(--leading-snug);
+}
+
+h4 {
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+}
+
+/* ── prose ─────────────────────────────────────────────────────────────── */
+
+p,
+li {
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--blue);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+strong {
+  font-weight: var(--weight-medium);
+}
+
+small {
+  font-size: var(--text-small);
+}
+
+hr {
+  border: 0;
+  border-block-start: var(--rule);
+}
+
+/* ── machine truth ─────────────────────────────────────────────────────────
+   Mono is the site's second signal: when a reader sees it, they are looking
+   at something a harvest recomputed from a run store, not at prose. Keeping
+   that promise means never reaching for it because a line "looks technical".
+   The evidence strip (S3) is the component this rule exists for. */
+
+code,
+kbd,
+samp,
+pre,
+.mono {
+  font-family: var(--mono);
+  font-variant-ligatures: none;
+}
+
+code,
+kbd,
+samp {
+  font-size: var(--mono-inline-size);
+}
+
+pre {
+  font-size: var(--text-small);
+  line-height: var(--leading-snug);
+  overflow-x: auto;
+}
+
+pre code {
+  font-size: inherit;
+}
+
+/* ── focus, and motion nobody asked for ────────────────────────────────── */
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── the reading column ────────────────────────────────────────────────────
+   One column, 62–72ch, centred. Concept and article pages are this and
+   nothing else; the sticky table of contents sits beside it on wide
+   viewports without narrowing it. */
+
+.measure {
+  inline-size: min(100%, var(--measure));
+  margin-inline: auto;
+}
+
+.stack > * + * {
+  margin-block-start: var(--space-m);
+}
+
+.visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
