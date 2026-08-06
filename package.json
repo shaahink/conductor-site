@@ -1,0 +1,25 @@
+{
+  "name": "site-template",
+  "private": true,
+  "type": "module",
+  "description": "TODO: one line on whose site this is. Astro 7, content in typed collections; the feedback machinery comes from @shaahink/sitekit.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "headers": "sitekit-headers",
+    "content": "sitekit-normalize",
+    "editor": "sitekit-editor-css"
+  },
+  "dependencies": {
+    "@shaahink/sitekit": "0.27.0",
+    "astro": "7.1.5",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "@types/node": "22.20.1",
+    "typescript": "6.0.3"
+  }
+}

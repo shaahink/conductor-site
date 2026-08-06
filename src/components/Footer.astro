@@ -1,0 +1,29 @@
+---
+/* The footer. The sk credit comes from @shaahink/sitekit/credits so the whole
+   fleet's credit line changes together — the visible anchor plus the
+   schema.org JSON-LD naming sk as the site's creator (PLAN §3.3).
+   Presentation stays with the site: style .sk-credit however the design
+   wants, but the anchor itself is always the kit's. */
+import { creditsFor } from "@shaahink/sitekit/credits";
+import { absolute } from "@shaahink/sitekit/seo";
+
+/* TODO: the client's name. The url is derived, not stated: astro.config's
+   `site` is the only place the origin lives, so a domain change never
+   touches this file. */
+const site = { name: "New Site", url: absolute(Astro.site!) };
+
+/* The whole credit sentence is the kit's since 0.23.0 — a site no longer
+   writes the words around the name — and since 0.24.0 it is English on every
+   site whatever language the page is in. There is nothing to pass and nothing
+   to translate: it is the studio's signature, not the page's speech. */
+const credit = creditsFor({ siteName: site.name, siteUrl: site.url });
+---
+
+<footer>
+  <p>&copy; <span id="current-year"></span> {site.name} · <Fragment set:html={credit} /></p>
+</footer>
+
+<script>
+  const year = document.getElementById("current-year");
+  if (year) year.textContent = String(new Date().getFullYear());
+</script>

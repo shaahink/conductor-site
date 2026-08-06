@@ -1,0 +1,439 @@
+/* Inline editing — the layer an owner sees on their own page.
+   ---------------------------------------------------------------------------
+   Two stylesheets in one file, linked twice from the same URL:
+
+   1. Inside the bar's **shadow root**, where it styles the toolbar. The bar is
+      in a shadow root because it has to look identical on four sites that
+      share no CSS at all — one site's `button { }` or `* { box-sizing }` would
+      otherwise redesign the owner's controls for them.
+   2. In the page's **head**, where it styles the annotated elements. Those
+      live in the light DOM by definition — they are the site's own headings
+      and paragraphs — so they cannot be reached from inside the shadow root.
+
+   Linked rather than imported, and copied into public/ by `sitekit-editor-css`
+   for the same reason editor.css is: Astro folds every processed stylesheet's
+   hash into every page's CSP, and inline editing must not change the policy of
+   the public pages it runs on. A same-origin <link> is covered by the
+   `style-src 'self'` every site already sets.
+
+   Everything reads `--sk-editor-*` with a fallback rather than declaring its
+   own defaults, so a site that has re-skinned the panel gets the same skin
+   here — custom properties inherit through the shadow boundary — and a site
+   that has not still gets a working tool.
+
+   Logical properties throughout (PLAN §3.5): nimagiti is RTL, and inline
+   editing in Farsi is the case this has to get right rather than the case it
+   gets away with. */
+
+/* ── The annotated elements, in the page ────────────────────────────────── */
+
+/* `!important` is not a shortcut here. These rules land in a stylesheet the
+   site knows nothing about, against selectors the site may well have styled
+   more specifically — and an owner who cannot see what is editable has no way
+   in. The properties are deliberately ones no layout depends on. */
+
+[data-sk-edit-state] {
+  cursor: text !important;
+  border-radius: 2px;
+  transition: background-color 120ms ease, box-shadow 120ms ease;
+}
+
+/* Editable and untouched: enough to be findable, not enough to be a redesign.
+   An outline rather than a border or underline, because outlines take no space
+   and so cannot reflow the page an owner is trying to read. */
+[data-sk-edit-state="idle"] {
+  box-shadow: 0 0 0 1px var(--sk-editor-accent, #6f93c9);
+  background-color: color-mix(in srgb, var(--sk-editor-accent, #6f93c9) 8%, transparent);
+}
+
+[data-sk-edit-state="idle"]:hover {
+  box-shadow: 0 0 0 2px var(--sk-editor-accent, #6f93c9);
+  background-color: color-mix(in srgb, var(--sk-editor-accent, #6f93c9) 16%, transparent);
+}
+
+/* Being typed in. The ring is thicker rather than a different colour, so it
+   still reads as the same thing in the same state machine. */
+[data-sk-edit-state="active"] {
+  box-shadow: 0 0 0 2px var(--sk-editor-accent-lit, #8fb0e0);
+  background-color: color-mix(in srgb, var(--sk-editor-accent, #6f93c9) 18%, transparent);
+  outline: none !important;
+}
+
+/* Changed and not yet saved. Amber is the one place this file spends a colour
+   on meaning: "this is different from what the site currently says". */
+[data-sk-edit-state="changed"] {
+  box-shadow: 0 0 0 2px #d99a2b;
+  background-color: color-mix(in srgb, #d99a2b 16%, transparent);
+}
+
+/* A field the panel has to handle: markup inside, or a kind no amount of
+   typing into a paragraph can express. Struck through with a dotted ring so it
+   is obviously *not* broken, just not this surface's job. */
+[data-sk-edit-state="panel"] {
+  cursor: not-allowed !important;
+  box-shadow: 0 0 0 1px var(--sk-editor-muted, rgba(231, 232, 236, 0.46));
+  background-color: color-mix(in srgb, #808080 12%, transparent);
+}
+
+/* The annotation points somewhere the content no longer has. This must shout:
+   a silent no-op is the failure mode the runbook warns about, where an owner
+   types into something that will never save. */
+[data-sk-edit-state="broken"] {
+  cursor: not-allowed !important;
+  box-shadow: 0 0 0 2px #c0392b;
+  background-color: color-mix(in srgb, #c0392b 20%, transparent);
+}
+
+/* ── The bar, inside its shadow root ───────────────────────────────────── */
+
+:host {
+  /* The site knows nothing about this element and must not be able to reach
+     it. `all: initial` on the host resets every inherited property in one
+     line — font, colour, direction, letter-spacing — so a site with an
+     inherited `letter-spacing: 0.2em` on <body> does not stretch the owner's
+     controls. */
+  all: initial;
+
+  position: fixed;
+  inset-block-end: 0;
+  inset-inline: 0;
+  z-index: 2147483000;
+  display: block;
+  /* The insets live here rather than on the bar. As margins on the bar they
+     silently cancelled its `margin-inline: auto` and pinned it to the left on
+     wide screens — an explicit margin beats an auto one. */
+  padding-inline: max(env(safe-area-inset-left, 0px), 0.5rem)
+    max(env(safe-area-inset-right, 0px), 0.5rem);
+  padding-block-end: max(env(safe-area-inset-bottom, 0px), 0.5rem);
+  /* Only the bar itself takes clicks; the padding must not swallow taps on the
+     page underneath it. */
+  pointer-events: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.bar {
+  pointer-events: auto;
+  box-sizing: border-box;
+  margin-inline: auto;
+  max-inline-size: 46rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--sk-editor-line, rgba(231, 232, 236, 0.14));
+  border-radius: 10px;
+  background: var(--sk-editor-raise, #171a1f);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+  color: var(--sk-editor-ink, #e7e8ec);
+  font-family: var(--sk-editor-font, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  /* Amended in 0.17.0. This used to read "the bar's own chrome is one
+     language, as the panel's is", and that was honest when it was written: no
+     site had ever passed a string table because no site reasonably would.
+     0.17.0 ships French and Farsi in the kit, so the chrome speaks the page's
+     language now — and a Farsi bar inside a left-to-right box is a worse
+     failure than an English one.
+
+     The `ltr` default stays rather than moving to a `dir` attribute alone.
+     `:host { all: initial }` resets direction, which is load-bearing: it is
+     what stops a site's own `direction` reaching the owner's controls. An
+     author rule beats the UA rule a bare attribute relies on, so the override
+     below has to be an author rule too. Content direction still lives on the
+     fields, which are `dir="auto"` either way. */
+  direction: ltr;
+  text-align: start;
+}
+
+.bar[dir="rtl"] {
+  direction: rtl;
+}
+
+.bar__main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bar__status {
+  margin: 0;
+  flex: 1 1 100%;
+  min-inline-size: 0;
+  color: var(--sk-editor-dim, rgba(231, 232, 236, 0.68));
+  font-size: 0.875rem;
+}
+
+/* Nothing to say means no row. The one state that reaches this is §2.5's first
+   step, where the tour is saying the resting hint in better words one row down
+   (`inline.ts`, `refresh`) — and a blank row above the controls would look like a
+   bar that had lost its sentence rather than one that had yielded it. */
+.bar__status:empty {
+  display: none;
+}
+
+/* The one word in the status line that is the *name of the thing being
+   edited* — worth being the brightest text in the bar, because it is the
+   answer to "what am I changing?". */
+.bar__what {
+  color: var(--sk-editor-ink, #e7e8ec);
+  font-weight: 600;
+}
+
+.bar__actions {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.bar__spacer {
+  display: none;
+}
+
+/* Amended in 0.17.0, and the old rule was `.btn--primary { flex: 1 1 100% }`
+   with a paragraph about how a thumb should not have to aim at Save.
+
+   The reasoning was sound and the measurement contradicted its cost. Full width
+   inside a wrapping `.bar__actions` does not widen Save, it moves it to a row
+   of its own: three rows on a phone, 143px, 17% of the screen and 28% of what
+   is left once a keyboard is up — for a button that at rest was *disabled*
+   (§1.5, §2.2). Save is no longer rendered at all until there is something to
+   save, and when it is rendered it shares the row with one undo and the
+   overflow sheet. Two rows, 93px. The 44px floor every button already has is
+   what a thumb actually needs; the row was never buying that. */
+.btn--primary {
+  flex: 0 1 auto;
+}
+
+/* The count, inside Save. Tabular figures because it is a number that changes
+   under the reader's eye and must not shift the button's width as it does. */
+.bar__count {
+  display: inline-block;
+  margin-inline-start: 0.4rem;
+  padding-inline: 0.35rem;
+  border-radius: 4px;
+  background: rgba(13, 16, 22, 0.28);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Once there is room, everything shares one line — which is what the phone bar
+   now does too, so this block is down to the two rules that are genuinely about
+   width: the status line stops claiming a row of its own, and the spacer
+   appears to push the controls to the end. Desktop is 65px before and after. */
+@media (min-width: 34rem) {
+  .bar__status {
+    flex: 1 1 auto;
+  }
+  .bar__actions {
+    flex: 0 0 auto;
+  }
+  .bar__spacer {
+    display: block;
+    flex: 1 1 auto;
+  }
+}
+
+/* `.bar__link` is Home, and it is an anchor because it goes somewhere — see
+   `BarHome` in inline-bar.ts. It has to look like the controls beside it
+   without being one, so the box is spelled once for both rather than copied.
+   Scoped to the class rather than to `a`, because `.bar__note` also carries
+   anchors — "sign in again", "see the change" — and those are sentences with a
+   link in them, not controls. */
+button,
+.bar__link {
+  appearance: none;
+  margin: 0;
+  /* 44px is the floor an owner's thumb needs; this is that, at any font size
+     the site has not been able to reach. */
+  min-block-size: 2.75rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--sk-editor-line, rgba(231, 232, 236, 0.14));
+  border-radius: 7px;
+  background: transparent;
+  color: var(--sk-editor-ink, #e7e8ec);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* An anchor is not a button, so the 44px floor has to be met by laying the
+   text out rather than by the box growing around it. */
+.bar__link {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+button:hover:not(:disabled),
+.bar__link:hover {
+  border-color: var(--sk-editor-accent, #6f93c9);
+}
+
+button:focus-visible,
+.bar__link:focus-visible {
+  outline: 2px solid var(--sk-editor-accent-lit, #8fb0e0);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.btn--primary {
+  border-color: transparent;
+  background: var(--sk-editor-accent, #6f93c9);
+  color: #0d1016;
+  font-weight: 600;
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--sk-editor-accent-lit, #8fb0e0);
+  border-color: transparent;
+}
+
+/* Discard and revert are destructive-ish and must not be the thing a thumb
+   finds by accident next to Save. Quieter, and never adjacent to it. */
+.btn--quiet {
+  border-color: transparent;
+  color: var(--sk-editor-dim, rgba(231, 232, 236, 0.68));
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding-inline: 0.5rem;
+}
+
+.btn--quiet:hover:not(:disabled) {
+  color: var(--sk-editor-ink, #e7e8ec);
+  border-color: transparent;
+}
+
+.btn--icon {
+  padding-inline: 0.75rem;
+  font-weight: 700;
+}
+
+/* ── The overflow sheet ─────────────────────────────────────────────────── */
+
+/* What is not the job in hand while an owner is mid-edit: undo everything, how
+   this works, the way out. Nothing was removed from the bar to get it to two
+   rows — the rare controls moved here.
+
+   A column of full-width rows rather than a row of small ones. This opens under
+   a thumb on a phone, and two of the three things in it are the ones an owner
+   would least like to hit by accident. */
+.bar__sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-block-end: 0.5rem;
+  padding-block-end: 0.5rem;
+  border-block-end: 1px solid var(--sk-editor-line-soft, rgba(231, 232, 236, 0.07));
+}
+
+.btn--sheet {
+  inline-size: 100%;
+  text-align: start;
+  /* The same alignment for the one row that is an anchor, where `text-align`
+     is not what decides it. */
+  justify-content: flex-start;
+  border-color: transparent;
+  color: var(--sk-editor-dim, rgba(231, 232, 236, 0.68));
+}
+
+.btn--sheet:hover:not(:disabled),
+.bar__link.btn--sheet:hover {
+  color: var(--sk-editor-ink, #e7e8ec);
+  border-color: var(--sk-editor-accent, #6f93c9);
+}
+
+/* ── States the bar reports ─────────────────────────────────────────────── */
+
+.bar__note {
+  margin: 0.5rem 0 0;
+  padding-block-start: 0.5rem;
+  border-block-start: 1px solid var(--sk-editor-line-soft, rgba(231, 232, 236, 0.07));
+  font-size: 0.875rem;
+  color: var(--sk-editor-dim, rgba(231, 232, 236, 0.68));
+}
+
+/* §2.5's tour step. The same box as the note — §2.2 measured a step at 173px
+   against a 93px resting bar, and that number came from a prototype that put the
+   step in the note, so the split must not change the geometry — with the brighter
+   ink of the two, because this is an instruction rather than a report. It is a
+   separate element because the note is where an error, a conflict and a restored
+   draft land, and a first run a dropped connection can silently overwrite is not
+   a first run. */
+.bar__tour {
+  margin: 0.5rem 0 0;
+  padding-block-start: 0.5rem;
+  border-block-start: 1px solid var(--sk-editor-line-soft, rgba(231, 232, 236, 0.07));
+  font-size: 0.875rem;
+  color: var(--sk-editor-ink, #e7e8ec);
+}
+
+/* The ring on the control the last step is about. `box-shadow` rather than
+   `outline`, so it cannot be mistaken for — or overwritten by — the focus ring
+   two rules above it, and so it takes no layout space and cannot reflow the bar
+   it is drawn inside. */
+[data-sk-tour="on"] {
+  border-color: var(--sk-editor-accent, #6f93c9);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sk-editor-accent-lit, #8fb0e0) 45%, transparent);
+}
+
+.bar__note[data-tone="bad"] {
+  color: #f0a2a2;
+}
+
+.bar__note[data-tone="good"] {
+  color: #a8d8a8;
+}
+
+.bar__note a,
+.bar__help a {
+  color: var(--sk-editor-accent-lit, #8fb0e0);
+}
+
+/* Bounded since 0.17.0, and the bound is the whole point. Six lines of prose
+   may be six lines; they are not allowed to be half of somebody's phone. Help
+   open measured 400px — 47.4% of a 390×844 screen — and this brings it to 293px
+   without dropping a word (§2.2). `overscroll-behavior` so scrolling to the end
+   of the help does not then scroll the page underneath it, which on a phone
+   reads as the page jumping while an owner reads.
+
+   The bound is proportional, so it cannot fix the keyboard-up case alone — that
+   is why opening help blurs the focused field (`inline-bar.ts`, `toggleHelp`). */
+.bar__help {
+  margin: 0.5rem 0 0;
+  padding-block-start: 0.5rem;
+  border-block-start: 1px solid var(--sk-editor-line-soft, rgba(231, 232, 236, 0.07));
+  font-size: 0.875rem;
+  color: var(--sk-editor-dim, rgba(231, 232, 236, 0.68));
+  max-block-size: min(32vh, 12rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.bar__help ul {
+  margin: 0;
+  padding-inline-start: 1.1rem;
+}
+
+.bar__help li {
+  margin-block: 0.25rem;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* An owner who has asked for less motion is not asking for less feedback, so
+   the states stay and only the transition goes. */
+@media (prefers-reduced-motion: reduce) {
+  [data-sk-edit-state] {
+    transition: none;
+  }
+}

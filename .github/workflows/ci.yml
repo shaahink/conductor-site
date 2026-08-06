@@ -1,0 +1,27 @@
+# The check Renovate's auto-merge waits for. The pipeline itself is not here:
+# it lives in shaahink/.github as a reusable workflow, because six sites were
+# carrying byte-similar copies of it and a seventh would have copied the
+# sixth's. One file to add the fleet's next gate to, not six to keep in step.
+#
+# What it runs, unchanged: the types hold (astro check), the site builds,
+# vercel.json still matches headers.config.mjs, every content file is still
+# normalized, and the editor's stylesheet still matches the kit's. The
+# reasoning for each gate lives beside it in site-ci.yml.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # The pipeline this calls lives in another repository, so a change there can
+  # break this site without anything here changing — and with only push and
+  # pull_request there was no way to re-ask the question. Dispatch lets the
+  # shared workflow be re-proven from `main` on demand, which is what a
+  # downstream caller is for.
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: shaahink/.github/.github/workflows/site-ci.yml@main
+    with:
+      node-version: "22"

@@ -1,0 +1,1141 @@
+/* The editor's chrome — a working surface, not a designed one.
+   ---------------------------------------------------------------------------
+   This file is the reason CLAUDE.md's "no design system in the kit" rule was
+   scoped: it governs the pages a visitor sees. The editor is an admin surface,
+   and four hand-maintained copies of one panel is exactly what sitekit exists
+   to prevent. Nobody's face is their admin panel.
+
+   So the palette here is deliberately *nobody's*: a neutral dark tool that
+   sits equally oddly next to all four sites rather than belonging to one. A
+   site that wants its own reads the custom properties below — bg, raise, ink,
+   line, accent and font are enough for a different look, because everything
+   derived from them is a translucent overlay rather than a fixed colour.
+
+   Logical properties throughout (PLAN §3.5). The panel's chrome is LTR by
+   default, but nimagiti is RTL and its fields hold Farsi, so nothing here may
+   assume a direction — set `dir` on the page and the panel follows.
+
+   Served from the site's public/ and linked, never imported through Astro:
+   Astro folds every processed stylesheet's hash into *every* page's CSP, so an
+   import here would change the public pages' policy for no reason. A static
+   asset under style-src 'self' costs nothing and keeps that exact. The site's
+   `npm run editor` copies this file; CI diffs it. */
+
+:root {
+  /* The six a re-skin actually needs. */
+  --sk-editor-bg: #101114;
+  --sk-editor-raise: #171a1f;
+  --sk-editor-ink: #e7e8ec;
+  --sk-editor-line: rgba(231, 232, 236, 0.14);
+  --sk-editor-accent: #6f93c9;
+  --sk-editor-font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Derived, and translucent so they follow the six above. Set them too if a
+     light skin is wanted — these assume ink over bg, not the reverse. */
+  --sk-editor-dim: rgba(231, 232, 236, 0.68);
+  --sk-editor-muted: rgba(231, 232, 236, 0.46);
+  --sk-editor-line-soft: rgba(231, 232, 236, 0.07);
+  --sk-editor-accent-lit: #8fb0e0;
+
+  --sk-editor-display: var(--sk-editor-font);
+  --sk-editor-width: 46rem;
+  --sk-editor-gap: 1.25rem;
+  --sk-editor-radius: 3px;
+}
+
+body {
+  margin: 0;
+  background: var(--sk-editor-bg);
+}
+
+.sk-editor {
+  box-sizing: border-box;
+  max-inline-size: var(--sk-editor-width);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 3rem);
+  padding-block: clamp(2rem, 6vw, 4rem) 8rem;
+  font-family: var(--sk-editor-font);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--sk-editor-ink);
+}
+
+.sk-editor *,
+.sk-editor *::before,
+.sk-editor *::after {
+  box-sizing: border-box;
+}
+
+.sk-editor__title {
+  font-family: var(--sk-editor-display);
+  font-size: 1.6rem;
+  font-weight: 400;
+  margin-block: 0 0.5rem;
+}
+
+.sk-editor__note,
+.sk-editor__help,
+.sk-editor__count,
+.sk-editor__status {
+  color: var(--sk-editor-dim);
+  font-size: 0.85rem;
+  margin-block: 0.35rem 0;
+}
+
+.sk-editor__error,
+.sk-editor__issue {
+  color: var(--sk-editor-accent-lit);
+  font-size: 0.85rem;
+  margin-block: 0.35rem 0;
+}
+
+.sk-editor__count.is-full { color: var(--sk-editor-accent-lit); }
+
+/* Who you are, and the way out. */
+.sk-editor__bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-block-end: 0.75rem;
+  border-block-end: 1px solid var(--sk-editor-line);
+}
+
+.sk-editor__who {
+  color: var(--sk-editor-dim);
+  font-size: 0.85rem;
+}
+
+.sk-editor__link {
+  color: var(--sk-editor-ink);
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+.sk-editor__link:hover { color: var(--sk-editor-accent-lit); }
+
+.sk-editor__picker { margin-block: var(--sk-editor-gap); }
+
+/* The other language of this page. One line under the picker on the two
+   bilingual sites, and nothing at all on the other five — `hidden` does that,
+   so the rule below never applies to a site it has no answer for. */
+.sk-editor__siblings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.7rem;
+  align-items: baseline;
+  margin-block: 0.45rem 0;
+  font-size: 0.9rem;
+}
+.sk-editor__siblings[hidden] { display: none; }
+.sk-editor__siblinglabel { color: var(--sk-editor-dim); }
+
+/* Finding a word.
+   ---------------------------------------------------------------------------
+   Under the picker, above the form. **Two lists, and the order is the point:**
+   the entry the picker chose answers on the keystroke and sits first, and the
+   owner's other pages arrive underneath about a second later (A3.2 measured
+   697ms cold, ~250ms warm). Putting the slow half second is what lets the fast
+   half stay instant.
+
+   Each list is capped and scrolls rather than growing. Twenty results at full
+   height is a phone screen and a half of list between an owner and the form
+   they were about to use, which would make the search worse than the scrolling
+   it replaces. */
+.sk-editor__search { margin-block: var(--sk-editor-gap); }
+/* `hidden` is an attribute the panel sets and nothing here may out-specify it:
+   no entry loaded means no field on screen. */
+.sk-editor__search[hidden] { display: none; }
+
+.sk-editor__searchfield { margin-block-end: 0.5rem; }
+
+.sk-editor__searchcount {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--sk-editor-dim);
+}
+.sk-editor__searchcount:empty { display: none; }
+
+.sk-editor__hits {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-block-size: 50vh;
+  overflow-y: auto;
+  /* A list that has been scrolled to its end must not then scroll the panel
+     under it — the owner is aiming at a row, not travelling. */
+  overscroll-behavior: contain;
+}
+.sk-editor__hits[hidden] { display: none; }
+
+.sk-editor__hit {
+  inline-size: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  /* Read from the side the panel starts on, whichever that is. */
+  text-align: start;
+  min-block-size: 44px;
+  padding: 0.5rem 0.7rem;
+  margin-block-end: 0.3rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--sk-editor-ink);
+  background: var(--sk-editor-raise);
+  border: 1px solid var(--sk-editor-line-soft);
+  border-radius: var(--sk-editor-radius);
+  cursor: pointer;
+}
+.sk-editor__hit:hover { border-color: var(--sk-editor-line); }
+.sk-editor__hit:focus-visible {
+  outline: 2px solid var(--sk-editor-accent);
+  outline-offset: 2px;
+}
+
+.sk-editor__hitwhere {
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--sk-editor-dim);
+}
+.sk-editor__hittrail { color: var(--sk-editor-muted); }
+
+/* Which page a match is on, and it leads the line on the second list only.
+   An owner scanning that list already knows what they wrote — they are asking
+   *where*, so the page's name is the one part of the row that is not dimmed.
+
+   No margin: the em dash after it is a real node (see search.ts), because a
+   gap drawn in CSS is not a gap a screen reader reads. */
+.sk-editor__hitpage {
+  color: var(--sk-editor-ink);
+  font-weight: 600;
+}
+
+/* The heading over the other pages' results. It sits between two lists, so it
+   needs the space above that the first count line does not. */
+.sk-editor__searchelsewhere { margin-block-start: 0.6rem; }
+
+/* One line with an end-of-line ellipsis. The snippet is already cut to the
+   words around the match; this is the guard for a value with no spaces in it,
+   which is what a path or a URL is. */
+.sk-editor__hitsnippet {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* `mark`'s own black-on-yellow is a hole in a dark panel, and it is the one
+   element here whose default colours are set by the browser rather than
+   inherited. */
+.sk-editor__hitmark {
+  background: rgba(111, 147, 201, 0.35);
+  color: inherit;
+  border-radius: 2px;
+  padding-inline: 0.1em;
+}
+
+.sk-editor__hitmore {
+  padding: 0.4rem 0.7rem;
+  font-size: 0.85rem;
+  color: var(--sk-editor-muted);
+}
+
+/* The way onto the page itself, and back off it. Amended in 0.17.0, and the
+   old rule was `.sk-editor__onpage` under the picker with a paragraph about
+   how a route nobody finds is not a route.
+
+   The paragraph was right and the placement was measured wrong. §1.6 found
+   this link 1,088–1,246px down the panel on all three sites — off the bottom
+   of a phone screen, behind the welcome notice, the traffic block, the recent
+   changes and the picker itself. It is in the sticky footer now, beside Save,
+   which is the one strip of this panel that is on screen at every scroll
+   position. Still sized for a thumb. */
+.sk-editor__route:empty { display: none; }
+.sk-editor__route {
+  margin: 0;
+  /* After the file name, before Save — and the first to drop to its own line
+     when the three of them do not fit, because it is the only one of the three
+     that is not about the entry being edited. */
+  flex: 0 1 auto;
+}
+.sk-editor__route a {
+  display: inline-block;
+  min-block-size: 44px;
+  /* Vertically centred against a 44px Save without a second flex context. */
+  line-height: 44px;
+  font-size: 0.95rem;
+}
+
+/* Signing in again after a session lapsed mid-edit — inside the footer, where
+   the failed save is, because the work is still in the form above it and a
+   navigation would lose it. */
+.sk-editor__reauth {
+  flex-basis: 100%;
+  margin-block-start: 0.75rem;
+}
+
+/* Fields */
+.sk-editor__field { margin-block-end: var(--sk-editor-gap); }
+
+.sk-editor__field--inline {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.sk-editor__field--inline .sk-editor__label { margin-block-end: 0; order: 2; }
+
+.sk-editor__label {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  margin-block-end: 0.35rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sk-editor-dim);
+}
+
+.sk-editor__optional {
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.75rem;
+  color: var(--sk-editor-muted);
+}
+
+.sk-editor__input {
+  inline-size: 100%;
+  display: block;
+  padding: 0.6rem 0.7rem;
+  font-family: inherit;
+  color: var(--sk-editor-ink);
+  background: var(--sk-editor-raise);
+  border: 1px solid var(--sk-editor-line);
+  border-radius: var(--sk-editor-radius);
+  /* 16px stops iOS Safari zooming the page when a field takes focus. */
+  font-size: max(1rem, 16px);
+}
+
+.sk-editor__input--text {
+  resize: vertical;
+  overflow: hidden;
+  min-block-size: 2.6rem;
+  line-height: 1.5;
+}
+
+.sk-editor__input:focus-visible,
+.sk-editor__check:focus-visible {
+  outline: 2px solid var(--sk-editor-accent);
+  outline-offset: 2px;
+}
+
+.sk-editor__check {
+  inline-size: 1.15rem;
+  block-size: 1.15rem;
+  accent-color: var(--sk-editor-accent);
+  flex: none;
+}
+
+/* A touched field is marked, so it is obvious what a save will send. */
+.sk-editor__field.is-changed .sk-editor__input {
+  border-color: var(--sk-editor-accent);
+}
+
+/* Groups and repeaters */
+.sk-editor__group {
+  margin-block: var(--sk-editor-gap);
+  padding: 1rem;
+  padding-block-start: 0.5rem;
+  border: 1px solid var(--sk-editor-line-soft);
+  border-radius: 4px;
+  /* A fieldset's default min-inline-size is its content, which makes a long
+     unbroken string push the whole panel wider than the viewport. */
+  min-inline-size: 0;
+}
+
+.sk-editor__legend {
+  padding-inline: 0.4rem;
+  font-family: var(--sk-editor-display);
+  font-size: 1.15rem;
+  color: var(--sk-editor-ink);
+}
+
+/* A top-level section, closed.
+   ---------------------------------------------------------------------------
+   The panel was 11,670px on bez and 14,437 on nimagiti with the first on/off
+   switch eleven and a half screens down (§1.4, §1.8). Collapsed, the form is a
+   list of the owner's own sections — so the summary row is the primary view of
+   this editor, and it is sized like one: 44px minimum, which is the same thumb
+   floor the bar's buttons and the repeater's arrows already meet.
+
+   `display: flex` takes the native disclosure marker away, so the glyph below
+   replaces it. That is a trade worth making: a triangle that cannot be put on
+   the correct side of a Persian summary is worse than one we draw ourselves. */
+.sk-editor__group--fold {
+  /* Closed, the box is its own summary and nothing else, so it carries no
+     padding to hold — and the sections sit closer together than two open boxes
+     would, because closed they are a list of the owner's own page rather than a
+     stack of forms. */
+  margin-block: 0.4rem;
+  padding-block: 0;
+}
+.sk-editor__group--fold[open] {
+  margin-block: var(--sk-editor-gap);
+  padding-block: 0.5rem 1rem;
+}
+
+.sk-editor__summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-block-size: 44px;
+  padding-inline: 0;
+  /* No block padding: the switch inside is a 44px square and the row is 44px,
+     so padding here would make the row 55 and lose the pitch this step is
+     measured on. */
+  padding-block: 0;
+  cursor: pointer;
+  /* The row is a control; a stray double-tap should open the section, not
+     select its name. */
+  user-select: none;
+  list-style: none;
+}
+.sk-editor__summary::-webkit-details-marker {
+  display: none;
+}
+.sk-editor__summary:focus-visible {
+  outline: 2px solid var(--sk-editor-accent);
+  outline-offset: 2px;
+}
+
+/* Two glyphs rather than one rotated, because the closed one points the way the
+   language reads and a transform would need mirroring to say that. */
+.sk-editor__summary::before {
+  content: "▸";
+  flex: none;
+  font-size: 0.85em;
+  color: var(--sk-editor-muted);
+}
+[dir="rtl"] .sk-editor__summary::before {
+  content: "◂";
+}
+[open] > .sk-editor__summary::before,
+[dir="rtl"] [open] > .sk-editor__summary::before {
+  content: "▾";
+}
+
+/* The name takes the row and pushes the switch and the marker to the end, so
+   every section's switch is on one vertical line down the panel. */
+.sk-editor__summarylabel {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+/* The switch, in the summary: no box of its own, because the summary is the
+   box — but a 44px square of it, because a checkbox is 18px and this is the one
+   control on the row that changes what the public sees. Measured at 18×18 on
+   the first pass, which is findable and not hittable; the square is what makes
+   the difference, and `sectionSwitch` forwards a tap on it to the input inside. */
+.sk-editor__summary .sk-editor__section {
+  flex: none;
+  justify-content: center;
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+}
+
+.sk-editor__offmark {
+  flex: none;
+  font-family: var(--sk-editor-font);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sk-editor-muted);
+}
+.sk-editor__offmark[hidden] { display: none; }
+
+/* Named by a label, hidden from the eye. Not `display: none`, which would take
+   it out of the accessibility tree along with the sentence it is carrying. */
+.sk-editor__label--offscreen {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sk-editor__row {
+  padding-block: 0.75rem;
+  border-block-start: 1px solid var(--sk-editor-line-soft);
+}
+.sk-editor__row:first-of-type { border-block-start: 0; }
+
+.sk-editor__rowlabel {
+  margin-block: 0 0.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sk-editor-muted);
+}
+
+/* Row controls — buttons, never drag.
+   ---------------------------------------------------------------------------
+   Drag is poor on touch and worse with a screen reader, and this is a feature
+   whose point is that it works from a phone. Everything here is sized for a
+   thumb: 44px, which is the smallest target that is reliably hit without
+   looking. */
+.sk-editor__rowtools {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  justify-content: flex-end;
+  margin-block-end: 0.5rem;
+}
+
+.sk-editor__rowbutton {
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  padding-inline: 0.7rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1;
+  color: var(--sk-editor-dim);
+  background: var(--sk-editor-raise);
+  border: 1px solid var(--sk-editor-line);
+  border-radius: var(--sk-editor-radius);
+  cursor: pointer;
+}
+.sk-editor__rowbutton:hover:not(:disabled) { color: var(--sk-editor-ink); }
+.sk-editor__rowbutton:disabled { opacity: 0.3; cursor: default; }
+.sk-editor__rowbutton:focus-visible {
+  outline: 2px solid var(--sk-editor-accent);
+  outline-offset: 2px;
+}
+
+/* Armed, after the first tap. It says what the second tap does rather than
+   turning red and hoping that is understood. */
+.sk-editor__rowbutton--remove.is-armed {
+  color: var(--sk-editor-bg);
+  background: var(--sk-editor-ink);
+  border-color: var(--sk-editor-ink);
+}
+
+.sk-editor__rowadd {
+  inline-size: 100%;
+  min-block-size: 44px;
+  margin-block-start: 0.75rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--sk-editor-ink);
+  background: transparent;
+  border: 1px dashed var(--sk-editor-line);
+  border-radius: var(--sk-editor-radius);
+  cursor: pointer;
+}
+.sk-editor__rowadd:hover { border-color: var(--sk-editor-accent); }
+.sk-editor__rowadd:focus-visible {
+  outline: 2px solid var(--sk-editor-accent);
+  outline-offset: 2px;
+}
+
+/* A list whose rows have moved is marked whole, because that is how it saves:
+   the array goes as one edit, so one mark is the truth. */
+.sk-editor__group--list.is-changed > .sk-editor__legend { color: var(--sk-editor-accent-lit); }
+.sk-editor__group--list.is-changed { border-color: var(--sk-editor-accent); }
+
+/* Photographs */
+.sk-editor__preview {
+  display: block;
+  inline-size: 100%;
+  max-block-size: 18rem;
+  object-fit: contain;
+  object-position: center;
+  background: var(--sk-editor-raise);
+  border: 1px solid var(--sk-editor-line-soft);
+  border-radius: var(--sk-editor-radius);
+}
+/* No picture yet: a box of the right shape rather than a broken-image glyph,
+   which reads as a fault the owner caused. */
+.sk-editor__image.is-empty .sk-editor__preview {
+  block-size: 8rem;
+  object-fit: none;
+}
+
+.sk-editor__filename {
+  margin-block: 0.4rem 0;
+  font-size: 0.8rem;
+  word-break: break-all;
+  color: var(--sk-editor-muted);
+}
+.sk-editor__filename:empty { display: none; }
+
+/* The real input is behind its own label, which is a genuine control for a
+   keyboard and a screen reader — not a div pretending to be a button. */
+.sk-editor__file {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.sk-editor__choose {
+  display: inline-block;
+  min-block-size: 44px;
+  margin-block-start: 0.6rem;
+  padding: 0.7rem 1.2rem;
+  font-size: 0.95rem;
+  color: var(--sk-editor-ink);
+  background: var(--sk-editor-raise);
+  border: 1px solid var(--sk-editor-line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.sk-editor__choose:hover { border-color: var(--sk-editor-accent); }
+.sk-editor__file:focus-visible + .sk-editor__choose {
+  outline: 2px solid var(--sk-editor-accent);
+  outline-offset: 2px;
+}
+.sk-editor__choose.is-busy { opacity: 0.5; cursor: progress; }
+
+.sk-editor__imagestatus {
+  margin-block: 0.5rem 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--sk-editor-dim);
+}
+.sk-editor__imagestatus:empty { display: none; }
+.sk-editor__imagestatus.is-bad { color: var(--sk-editor-accent-lit); }
+
+/* The description a new photograph still owes. Marked rather than merely
+   mentioned, because the field is often several rows further down. */
+.sk-editor__input.is-wanted {
+  border-color: var(--sk-editor-accent);
+  background: color-mix(in srgb, var(--sk-editor-accent) 12%, var(--sk-editor-raise));
+}
+
+/* A section's on/off switch, at the head of its box.
+   ---------------------------------------------------------------------------
+   Set apart from the fields below it by a rule and its own background, because
+   it is the one control here that changes what the public sees rather than
+   what it says. An owner scanning for a sentence to fix should not find this
+   under their thumb by accident. */
+.sk-editor__section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-block: 0 var(--sk-editor-gap);
+  padding: 0.7rem 0.8rem;
+  background: var(--sk-editor-raise);
+  border: 1px solid var(--sk-editor-line-soft);
+  border-radius: var(--sk-editor-radius);
+}
+.sk-editor__section .sk-editor__label {
+  margin-block-end: 0;
+  order: 2;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.95rem;
+  color: var(--sk-editor-ink);
+}
+.sk-editor__section .sk-editor__check { order: 1; }
+
+.sk-editor__sectionnote {
+  order: 3;
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--sk-editor-dim);
+}
+.sk-editor__sectionnote[hidden] { display: none; }
+
+/* The whole box dims when the section is off. The fields stay editable and
+   still save — an owner writing a section before turning it on is the normal
+   way round — so this says "not public yet", not "not editable". */
+.sk-editor__group.is-off > *:not(.sk-editor__section):not(.sk-editor__legend):not(.sk-editor__sectionnote) {
+  opacity: 0.55;
+}
+.sk-editor__group.is-off > .sk-editor__legend {
+  color: var(--sk-editor-muted);
+}
+
+/* Collapsed, the switch is in the summary and the note is the first thing
+   inside the box — so it needs the separation the switch's own box used to give
+   it, and it must not be dimmed by the rule above: it is the explanation of the
+   state, not part of what the state greys out. */
+.sk-editor__group--fold > .sk-editor__sectionnote {
+  margin-block-end: var(--sk-editor-gap);
+}
+
+/* The save bar stays reachable with a thumb. */
+.sk-editor__footer {
+  position: sticky;
+  inset-block-end: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-block-start: var(--sk-editor-gap);
+  padding-block: 0.9rem;
+  padding-block-end: calc(0.9rem + env(safe-area-inset-bottom));
+  background: linear-gradient(to bottom, transparent, var(--sk-editor-bg) 25%);
+  border-block-start: 1px solid var(--sk-editor-line);
+}
+
+.sk-editor__footer .sk-editor__note { margin: 0; flex: 1 1 12rem; }
+
+.sk-editor__save {
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0.7rem 1.5rem;
+  /* A comfortable tap target on a phone. */
+  min-block-size: 44px;
+  color: var(--sk-editor-bg);
+  background: var(--sk-editor-ink);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.sk-editor__save:hover:not(:disabled) { background: var(--sk-editor-accent-lit); }
+.sk-editor__save:disabled { opacity: 0.4; cursor: default; }
+
+.sk-editor__signin { padding-block: 3rem; }
+/* Google renders its own button in here, and it expects a light context. */
+.sk-editor__gbutton { margin-block-start: 1rem; color-scheme: light; }
+
+/* The way in.
+   ---------------------------------------------------------------------------
+   ⚠ **This class had no rules at all until 0.21.0**, which is why the fleet's
+   primary sign-in — the whole of session 22's work — painted as a bare browser
+   button, on every site, beside Google's polished one. Nothing failed and no
+   test could have caught it: an unstyled button is a working button. It took
+   somebody opening the page and saying it looked messed up.
+
+   Sized like `__save` because it is the same kind of thing — the one control on
+   the screen — and full width because on a phone that is what makes it read as
+   the thing to press rather than as an afterthought. */
+.sk-editor__signinbutton {
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  inline-size: 100%;
+  max-inline-size: 24rem;
+  min-block-size: 48px;
+  margin-block-start: 0.75rem;
+  padding: 0.7rem 1.5rem;
+  color: var(--sk-editor-bg);
+  background: var(--sk-editor-ink);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.sk-editor__signinbutton:hover:not(:disabled) { background: var(--sk-editor-accent-lit); }
+.sk-editor__signinbutton:disabled { opacity: 0.4; cursor: default; }
+
+/* The escape hatch, and it has to look like one: a quiet line of text, not a
+   second call to action. Two buttons both saying "Sign in with Google" is a
+   puzzle rather than a choice. */
+.sk-editor__alt { margin-block-start: 1.5rem; }
+.sk-editor__altsummary {
+  color: var(--sk-editor-dim);
+  font-size: 0.85rem;
+  cursor: pointer;
+  /* A 44px row for a thumb, without the summary looking like a button. */
+  padding-block: 0.6rem;
+}
+.sk-editor__altsummary:hover { color: var(--sk-editor-ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-editor * { transition: none !important; }
+}
+
+/* --- the owner's home (7.7) ------------------------------------------------
+   Above the picker: what this is, did anyone come, did my last change go live.
+   Everything below the first-run panel is optional and simply absent when the
+   data did not arrive, so every rule here has to look right with any of its
+   siblings missing — hence blocks that carry their own spacing rather than a
+   container that distributes it. */
+
+.sk-editor__home { margin-block-end: var(--sk-editor-gap); }
+
+.sk-editor__welcome[hidden] { display: none; }
+
+.sk-editor__welcome {
+  padding: var(--sk-editor-gap);
+  border: 1px solid var(--sk-editor-line);
+  border-radius: var(--sk-editor-radius);
+  background: var(--sk-editor-raise);
+}
+
+.sk-editor__welcometitle {
+  margin: 0 0 0.5rem;
+  font-family: var(--sk-editor-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.sk-editor__welcometext {
+  margin: 0 0 0.6rem;
+  max-inline-size: 42em;
+  color: var(--sk-editor-dim);
+  line-height: 1.55;
+}
+
+/* The notice's two ways out, on one row: be shown how, or say you have read it.
+   Wrapping rather than shrinking, because "Show me how" is three words in
+   English and rather more in French, and 390px is the width that matters. */
+.sk-editor__welcomeactions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.4rem 0 0;
+}
+
+.sk-editor__welcomeclose,
+.sk-editor__welcomeshow {
+  padding: 0.55rem 1.1rem;
+  border: 1px solid var(--sk-editor-line);
+  border-radius: var(--sk-editor-radius);
+  background: transparent;
+  color: var(--sk-editor-ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+/* §2.5's one primary action. The panel's only filled button outside the save
+   bar, and it earns that: it is what the first screen is *for*, and the whole
+   reason 7.7's notice stopped being three paragraphs and a dismissal. An anchor,
+   so the 44px floor has to be laid out rather than grown into. */
+.sk-editor__welcomeshow {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  border-color: transparent;
+  background: var(--sk-editor-accent);
+  color: #0d1016;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.sk-editor__welcomeshow[hidden] { display: none; }
+
+/* The way back to it. A circle in the corner rather than a line of text: it is
+   for the second visit, and it should be findable without being a feature. */
+.sk-editor__help {
+  float: inline-end;
+  inline-size: 1.9rem;
+  block-size: 1.9rem;
+  border: 1px solid var(--sk-editor-line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--sk-editor-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.sk-editor__blocks {
+  display: grid;
+  gap: var(--sk-editor-gap);
+  margin-block-start: var(--sk-editor-gap);
+}
+
+.sk-editor__blocktitle {
+  margin: 0 0 0.5rem;
+  font-family: var(--sk-editor-display);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.sk-editor__blocksub {
+  margin: 0.9rem 0 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--sk-editor-muted);
+}
+
+.sk-editor__stats,
+.sk-editor__pages,
+.sk-editor__changes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sk-editor__stat,
+.sk-editor__page,
+.sk-editor__changeitem {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  align-items: baseline;
+  padding-block: 0.35rem;
+}
+
+.sk-editor__changeitem + .sk-editor__changeitem { border-block-start: 1px solid var(--sk-editor-line-soft); }
+
+.sk-editor__statvalue { font-size: 1.05rem; }
+
+/* Up and down are stated in words as well as colour — `{percent}%` carries its
+   own sign — so the colour is reinforcement rather than the only signal. */
+.sk-editor__change { font-size: 0.85rem; color: var(--sk-editor-muted); }
+.sk-editor__change--up { color: #7fb08a; }
+.sk-editor__change--down { color: #c98b8b; }
+
+.sk-editor__page { color: var(--sk-editor-dim); font-size: 0.92rem; }
+
+.sk-editor__changewhen,
+.sk-editor__changewho,
+.sk-editor__changetext { font-size: 0.92rem; }
+.sk-editor__changewhen,
+.sk-editor__changewho { color: var(--sk-editor-muted); }
+
+.sk-editor__deploy {
+  margin: 0 0 0.6rem;
+  font-size: 0.92rem;
+  color: var(--sk-editor-dim);
+}
+.sk-editor__deploy--success { color: #7fb08a; }
+.sk-editor__deploy--pending { color: var(--sk-editor-dim); }
+.sk-editor__deploy--failure,
+.sk-editor__deploy--error { color: #c98b8b; }
+
+.sk-editor__empty {
+  margin: 0;
+  color: var(--sk-editor-muted);
+  line-height: 1.55;
+}
+
+/* Putting a change back. Closed, it is a link at the end of the row; open, it
+   takes the whole row — because on a phone a sentence sharing a flex line with
+   two buttons wraps into a shape where it is not obvious which button answers
+   it, and this is the one control on this panel that writes to a live site.
+
+   A class rather than `:has()`, so the layout does not depend on a selector
+   whose support is newer than some of the phones this fleet is read on. */
+.sk-editor__restore { margin-inline-start: auto; }
+.sk-editor__restore.is-asking { flex-basis: 100%; margin-inline-start: 0; }
+
+.sk-editor__restoreask {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  align-items: baseline;
+}
+
+.sk-editor__restorequestion {
+  font-size: 0.92rem;
+  color: var(--sk-editor-dim);
+  flex-basis: 100%;
+  line-height: 1.5;
+}
+
+/* The one button in this panel whose press is not undoable by pressing it
+   again, marked as such. Not red: it is not a destructive action, it is a
+   deliberate one, and the panel's own accent is what it uses for the thing it
+   most wants read. */
+.sk-editor__restoreyes { color: var(--sk-editor-accent-lit); }
+
+.sk-editor__restoredone { margin-block-start: 0.6rem; }
+
+.sk-editor__homeactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  align-items: baseline;
+  margin-block: var(--sk-editor-gap) 0;
+}
+
+.sk-editor__requestform {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+  inline-size: 100%;
+  margin-block-start: 0.5rem;
+  /* The save bar is sticky at the block end, so an element scrolled flush to
+     the bottom of the viewport lands *behind* it. This is the bar's own height
+     — 44px button plus its padding — asked for as clearance, so the browser
+     stops with Send above it rather than under it. Both surfaces the browser
+     pass measured were this one bug. */
+  scroll-margin-block-end: 5.5rem;
+}
+
+.sk-editor__requestform .sk-editor__textarea { inline-size: 100%; }
+
+/* `inline-size: 100%` above resolves against this wrapper, which is a flex item
+   sized to its content — so the open form was 344px wide inside a 640px panel,
+   with the share link beside it rather than under it. Only while the form is
+   open: closed, the link keeps its place on the actions line. */
+.sk-editor__request:has(form) { flex: 1 0 100%; }
+
+/* --- the settings sheet (0.23.0) ---------------------------------------- */
+
+/* One control on the bar where "Sign out" used to be, and one screen behind
+   it. The bar is the surface session 17 measured taking a quarter of a phone
+   screen, so six new things had to arrive as one.
+
+   A full-viewport overlay rather than a `<dialog>`: `showModal()` brings a
+   `::backdrop` this file cannot theme through the site's own custom
+   properties, and the top layer sits above the sticky save bar in a way that
+   varies between engines. This is a positioned element in the panel's own
+   stacking context, which is boring and behaves the same everywhere. */
+.sk-editor__sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  /* Bottom on a phone, where a thumb is; centred once there is room. The two
+     are one declaration because `safe center` falls back to the start edge
+     rather than clipping when the card is taller than the viewport. */
+  align-items: safe center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.55);
+  /* The panel scrolls under it; this must not. */
+  overscroll-behavior: contain;
+}
+
+.sk-editor__sheet[hidden] { display: none; }
+
+.sk-editor__sheetcard {
+  box-sizing: border-box;
+  inline-size: min(28rem, 100%);
+  max-block-size: min(85vh, 44rem);
+  overflow-y: auto;
+  padding: 1.25rem;
+  color: var(--sk-editor-ink);
+  background: var(--sk-editor-raise);
+  border: 1px solid var(--sk-editor-line);
+  border-radius: var(--sk-editor-radius);
+}
+
+.sk-editor__sheethead {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.sk-editor__sheettitle {
+  margin: 0;
+  font-family: var(--sk-editor-display);
+  font-size: 1.15rem;
+}
+
+.sk-editor__sheetclose {
+  color: var(--sk-editor-ink);
+  background: none;
+  border: 0;
+  padding: 0.5rem;
+  /* Negative margin so the tap target is 44px while the text still lines up
+     with the heading's baseline. A close button that is hard to hit on a phone
+     is a sheet people leave open. */
+  margin: -0.5rem;
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  font: inherit;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+.sk-editor__sheetclose:hover { color: var(--sk-editor-accent-lit); }
+
+.sk-editor__sheetmessage {
+  margin-block: 0.75rem 0;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--sk-editor-ink);
+  background: var(--sk-editor-line-soft);
+  border-inline-start: 2px solid var(--sk-editor-accent);
+  border-radius: var(--sk-editor-radius);
+}
+.sk-editor__sheetmessage[hidden] { display: none; }
+.sk-editor__sheetmessage--bad { border-inline-start-color: var(--sk-editor-accent-lit); }
+
+.sk-editor__sheetrows { margin-block-start: 0.5rem; }
+
+.sk-editor__sheetsection {
+  padding-block: 1rem;
+  border-block-start: 1px solid var(--sk-editor-line-soft);
+}
+
+.sk-editor__sheetlabel {
+  margin: 0 0 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sk-editor-muted);
+}
+
+/* The sheet's own secondary button. Bordered rather than underlined, because
+   a settings screen is a list of *actions* and an underlined word in a list of
+   sentences reads as a footnote. */
+.sk-editor__sheetbutton {
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.55rem 0.9rem;
+  min-block-size: 44px;
+  margin-block-start: 0.5rem;
+  margin-inline-end: 0.5rem;
+  color: var(--sk-editor-ink);
+  background: none;
+  border: 1px solid var(--sk-editor-line);
+  border-radius: var(--sk-editor-radius);
+  cursor: pointer;
+}
+.sk-editor__sheetbutton:hover:not(:disabled) { border-color: var(--sk-editor-accent); }
+.sk-editor__sheetbutton:disabled {
+  cursor: default;
+  color: var(--sk-editor-muted);
+}
+/* The language you are already reading. `aria-current` carries the meaning for
+   a screen reader and this makes it visible, so the two cannot disagree. */
+.sk-editor__sheetbutton[aria-current="true"] {
+  border-color: var(--sk-editor-accent);
+  color: var(--sk-editor-ink);
+}
+
+.sk-editor__sheetaction { margin-block-start: 0.5rem; }
+
+.sk-editor__langrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.5rem;
+}
+
+.sk-editor__sheetfoot {
+  padding-block-start: 1rem;
+  border-block-start: 1px solid var(--sk-editor-line-soft);
+}
+
+.sk-editor__version {
+  margin-block: 0.75rem 0;
+  font-size: 0.75rem;
+  color: var(--sk-editor-muted);
+}
+
+/* The device's own way in, on the signed-out screen. Sits above Google's step
+   because it is the faster one and the reader set it up on purpose — and it is
+   `sk-editor__signinbutton`, the class 0.21.0 gave rules to after two releases
+   of painting as a bare browser button beside Google's polished one. Reusing
+   it rather than inventing a fifth button style is the whole point of that
+   fix. */
+.sk-editor__device { margin-block: var(--sk-editor-gap) 0; }
+.sk-editor__device .sk-editor__signinbutton { margin-block-start: 0.5rem; }
