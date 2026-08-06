@@ -1,8 +1,8 @@
 meta:
   title: "A field guide to agentic engineering"
   description: "Ten concepts in agentic engineering, each worked end to end in a
-    real orchestrator, with what it cost. Every figure on this site is
-    recomputed from a run store."
+    real orchestrator, with what it cost. Every figure here is recomputed from a
+    run store."
   ogDescription: "Ten concepts, each worked end to end in a real orchestrator,
     with what it cost."
   canonical: "/"

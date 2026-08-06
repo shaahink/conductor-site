@@ -1,0 +1,127 @@
+S2.3 — annotations that resolve, heads that are written, check at zero errors
+session 4, 2026-08-06, on a clean tree at the commit this file lands in
+
+Acceptance: "Every page carries data-sk-edit annotations that resolve, real
+meta.description and meta.ogDescription, and npm run check reports zero errors."
+
+
+1. THE AUDIT THAT STARTED IT
+----------------------------------------------------------------------------
+Every head on the site, measured rather than eyeballed (lengths in characters):
+
+  pages/home                     title=36  desc=160  og=79   /
+  sections/articles              title=12  desc=186  og=77   /articles/
+  sections/concepts              title=12  desc=136  og=87   /concepts/
+  sections/runs                  title=8   desc=145  og=81   /runs/
+  concepts/context-engineering   title=19  desc=148  og=61   /concepts/context-engineering/
+  concepts/token-economics       title=35  desc=151  og=81   /concepts/token-economics/
+  articles/what-a-run-costs      title=37  desc=137  og=72   /articles/what-a-run-costs/
+  reports/the-fleet-round        title=15  desc=156  og=86   /runs/the-fleet-round/
+
+Two findings, both fixed:
+
+  - sections/articles ran to 186 characters, past where a search snippet is
+    cut. It was being truncated mid-clause on the one page whose whole job is
+    to tell a reader what four articles are about.
+  - pages/home sat at exactly 160, which is not wrong today and fails on the
+    next word anybody adds.
+
+Nothing was a placeholder and no ogDescription was missing, so the audit half
+of this checkpoint found less than the enforcement half. That is the finding
+worth recording: eight heads were written by hand, eight were fine, and there
+was no reason to believe the ninth would be.
+
+ogImage is absent on all eight, deliberately. Per-section social images are
+S7.1's checkpoint, and the schema keeps the field optional until then.
+
+
+2. WHERE THE BAR NOW LIVES
+----------------------------------------------------------------------------
+src/content/schema.ts — the shared `meta`, so one bar covers every collection
+and the editor refuses a bad edit at the same moment the build does:
+
+  description     60..160   the snippet a search result shows
+  ogDescription   45..120   the line a social card has room for
+  neither may equal the title
+  canonical       /^\/([A-Za-z0-9-]+\/)*$/  site-relative, both slashes
+
+src/lib/collections.ts — the half a schema cannot see, because only the build
+knows the routes: an entry's `meta.canonical` must be the URL it is served at.
+The route base is not a constant; it is the section page's own canonical, so
+`/runs/the-fleet-round/` is checked against the `/runs/` that runs.yaml
+publishes and a section that moves takes its entries with it.
+
+test/meta.test.mjs — six tests: the bar bites at both ends, neither line may be
+the title, a canonical is a directory path, and annotation coverage.
+
+
+3. THE GATES, RUN
+----------------------------------------------------------------------------
+$ npm run check
+  Result (26 files):
+  - 0 errors
+  - 0 warnings
+  - 0 hints
+  tests 31 | pass 31 | fail 0
+
+$ npm run build
+  [@shaahink/sitekit:check-annotations] 56 annotations on 8 pages all resolve
+  10 page(s) built
+
+$ npm run content
+  content already normalized
+
+
+4. EACH NEW GATE BROKEN ON PURPOSE
+----------------------------------------------------------------------------
+BREAK 1 — a canonical pointing at a route the page is not served at.
+Set reports/the-fleet-round's canonical to /reports/the-fleet-round/:
+
+  reports/the-fleet-round.yaml says canonical: "/reports/the-fleet-round/", but
+  the page is served at "/runs/the-fleet-round/". The canonical is also the
+  og:url and the sitemap entry, so nothing on the page shows this being wrong.
+
+  build exit: -1073740791  (a failed Astro build does not exit 1 here)
+
+BREAK 2 — a description stubbed back to a placeholder-shaped line.
+Set concepts/token-economics' description to "Token economics.":
+
+  [InvalidContentEntryDataError] concepts -> token-economics data does not
+  match collection schema.
+  meta.description: Too small: expected string to have >=60 characters
+
+BREAK 3 — every data-sk-edit stripped from src/pages/concepts/[entry].astro
+(0 annotations left in the file):
+
+  test/meta.test.mjs
+  x every page showing a content entry says which entry, and can be edited on
+    the page
+    AssertionError: src/pages/concepts/[entry].astro names a content entry for
+    the editor but renders not one data-sk-edit, so there is nothing on it to
+    click.
+
+  and the kit's own gate, on that same tree:
+  [WARN] concepts/context-engineering/index.html scopes "concepts" but carries
+         no data-sk-edit
+  [WARN] concepts/token-economics/index.html scopes "concepts" but carries no
+         data-sk-edit
+  ...build green.
+
+That last pair is the reason the test exists, and it is a correction to what
+this repo believed: `checkAnnotations` does NOT silently ignore an unannotated
+page — it warns twice and then passes. Right call for a kit shared across a
+fleet, where a site may scope a page it has not finished annotating. Wrong one
+here, where a page that stopped being editable is a regression. The test is
+that warning promoted to a failure, not a gap being filled.
+
+All three breaks reverted; `git status` clean of them before the commit.
+
+
+5. WHAT THIS CHECKPOINT DID NOT DO
+----------------------------------------------------------------------------
+- No ogImage anywhere; S7.1.
+- The 60/160/45/120 bounds are the published truncation points of somebody
+  else's renderer, not something measured from this corpus. They are a house
+  style with a reason, and they are the only numbers on this page that are not
+  recomputed from anything. Said plainly here because the site's first rule
+  applies to its own gates too.

@@ -35,15 +35,50 @@
 
 import { z } from "zod";
 
-/** Per-page <head> facts. og fields feed the social cards. */
-export const meta = z.object({
-  title: z.string(),
-  description: z.string(),
-  ogType: z.string().default("website"),
-  ogDescription: z.string(),
-  ogImage: z.string().optional(),
-  canonical: z.string()
-});
+/** Per-page <head> facts. og fields feed the social cards.
+    ---------------------------------------------------------------------------
+    The bounds are not decoration. A description is the sentence a search result
+    shows and a social card is the sentence someone decides on, and both are
+    truncated by somebody else's rules — so the length is part of whether the
+    field is *written* rather than merely filled in. Left unbounded, the two
+    ways these go wrong are both silent: a description that is the title again,
+    which reads as a page nobody described, and one that runs past the snippet
+    and is cut mid-clause where the reader is looking.
+
+    ~160 characters is where Google's snippet stops; ~120 is where a card's
+    second line does. The floors are lower and cruder, and they exist to refuse
+    a stub — a five-word description is a field somebody skipped, and skipping
+    it is invisible on the built page because nothing on screen shows it.
+
+    `ogDescription` is allowed to repeat `description` — often it should, and
+    the shorter card version of the same sentence is the usual right answer.
+    What neither may be is the title, which is already on the card above it. */
+const notTheTitle = (label: string) =>
+  ({
+    error: `${label} restates the title. The title is already on the page and on the card above this line; this is the sentence that says what the page is for.`
+  });
+
+export const meta = z
+  .object({
+    title: z.string().min(1),
+    description: z.string().min(60).max(160),
+    ogType: z.string().default("website"),
+    ogDescription: z.string().min(45).max(120),
+    ogImage: z.string().optional(),
+    /* A site-relative path with both slashes on it, because this template
+       builds with format "directory" and Base.astro resolves it against
+       astro.config's `site` to make the canonical, the og:url and the sitemap
+       entry. A missing trailing slash publishes a URL that redirects to the
+       one the page is actually served at. */
+    canonical: z
+      .string()
+      .regex(
+        /^\/([A-Za-z0-9-]+\/)*$/,
+        "canonical is a site-relative path with a leading and trailing slash, e.g. /concepts/agent-memory/"
+      )
+  })
+  .refine((m) => m.description.trim() !== m.title.trim(), notTheTitle("description"))
+  .refine((m) => m.ogDescription.trim() !== m.title.trim(), notTheTitle("ogDescription"));
 
 /* Name a field with `.meta({ title })` wherever its key is not already a word
    the owner would use. This is not cosmetic: the inline editor puts the label

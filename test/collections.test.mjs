@@ -122,12 +122,16 @@ test("evidence names a key, never a value", () => {
   }
 });
 
-/** A concept with all five moves in it, used as the shape to break. */
+/** A concept with all five moves in it, used as the shape to break.
+    The head is written out rather than stubbed because `meta` carries its own
+    bar now (test/meta.test.mjs) — a fixture with "What it is." in it would be
+    refused before it reached the assertion it was built for. */
 const wholeConcept = () => ({
   meta: {
     title: "A concept",
-    description: "What it is.",
-    ogDescription: "What it is.",
+    description:
+      "A stand-in concept used by the tests to break the shape on purpose, written out at the length the head bar in schema.ts asks for.",
+    ogDescription: "A stand-in concept the tests use as the shape to break.",
     canonical: "/concepts/a-concept/"
   },
   slug: "a-concept",
@@ -188,8 +192,9 @@ test("articles and reports are the same shape, and a report also names its scena
   const article = {
     meta: {
       title: "A piece",
-      description: "About something.",
-      ogDescription: "About something.",
+      description:
+        "A stand-in article used by the tests to prove that a report published without its scenario label is refused by the schema behind it.",
+      ogDescription: "A stand-in article the tests use to check the report shape.",
       canonical: "/articles/a-piece/"
     },
     slug: "a-piece",

@@ -1,8 +1,8 @@
 meta:
   title: "The articles"
-  description: "Longer pieces on what autonomous runs cost, why verification has
-    to be a separate program, how a token budget gets measured, and what to do
-    when a system's own record of itself is wrong."
+  description: "Longer pieces on what an autonomous run costs, why verification
+    has to be a separate program, how a token budget gets measured, and
+    telemetry that lied."
   ogDescription: "Longer pieces on cost, verification, budgets, and telemetry you
     cannot trust."
   canonical: "/articles/"

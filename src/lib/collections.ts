@@ -60,7 +60,7 @@ export async function sectionPage(collection: Listed) {
 /** One collection in reading order, with everything about it that can be wrong
     checked on the way past.
     ---------------------------------------------------------------------------
-    Three failures, all of them silent otherwise:
+    Four failures, all of them silent otherwise:
 
     - a file renamed without its `slug`, which leaves every `readNext` pointing
       at it broken and the page itself still building perfectly;
@@ -68,7 +68,18 @@ export async function sectionPage(collection: Listed) {
       the whole shape of the spine — depend on the order the loader happened to
       read the directory in;
     - a `readNext` naming an entry that does not exist, which is a dead link
-      published at the exact moment a reader has decided to keep going.
+      published at the exact moment a reader has decided to keep going;
+    - a `meta.canonical` that is not the URL the page is served at, which is the
+      quietest of the four. Nothing on the rendered page shows it. The canonical
+      link, the `og:url` and the sitemap entry are all built from it, so one
+      stale path tells every crawler and every social card that the page it just
+      read lives somewhere else.
+
+    The route half of that last one is not a constant here. It comes from the
+    section page that lists the collection, whose own `meta.canonical` is the
+    index URL and the nav's href — so `/runs/the-fleet-round/` is checked
+    against the `/runs/` that `runs.yaml` publishes, and a section that moves
+    moves its entries with it rather than leaving them behind.
 
     Each throws with the entry and the offending value named, because a build
     failure a reader of the log cannot act on is only half a gate. */
@@ -76,9 +87,19 @@ export async function ordered<C extends Listed>(collection: C): Promise<Collecti
   const entries = await getCollection(collection);
   const ids = new Set(entries.map((entry) => entry.id));
   const seenOrder = new Map<number, string>();
+  const base = (await sectionPage(collection)).data.meta.canonical;
 
   for (const entry of entries) {
     const { slug, order, readNext } = entry.data;
+
+    const expected = `${base}${entry.id}/`;
+    if (entry.data.meta.canonical !== expected) {
+      throw new Error(
+        `${collection}/${entry.id}.yaml says canonical: "${entry.data.meta.canonical}", but the ` +
+          `page is served at "${expected}". The canonical is also the og:url and the sitemap ` +
+          `entry, so nothing on the page shows this being wrong.`
+      );
+    }
 
     if (slug !== entry.id) {
       throw new Error(
