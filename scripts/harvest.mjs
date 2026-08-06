@@ -131,10 +131,15 @@ function readStore(db, runId) {
     rollovers: one(
       `select count(*) as n from sessions where run_id = ? and outcome = 'RolledOver'`
     ).n,
-    /* Sessions that recorded agent tokens. The corpus has 340 sessions and 315
-       of them are costed; every rate on this site names which of the two it
-       divided by, because both are defensible and a page that mixes them is
-       wrong twice (SPEC Appendix A). */
+    /* Sessions that recorded agent tokens: 314 of the corpus's 340. Every rate
+       on this site names which of the two it divided by, because both are
+       defensible and a page that mixes them is wrong twice (SPEC Appendix A).
+
+       The definition is the whole figure. Counting sessions with any agent cost
+       row answers 326; counting those with cost above zero answers 325; this
+       one, tokens above zero, answers 314. Appendix A's 315 is none of the
+       three, which is why the note on the published figure says what it
+       counted rather than repeating a number somebody else arrived at. */
     costedSessions: one(
       `select count(distinct session_number) as n from costs
         where run_id = ? and category = 'agent'

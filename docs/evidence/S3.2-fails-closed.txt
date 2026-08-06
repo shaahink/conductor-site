@@ -1,0 +1,109 @@
+S3.2 - anonymisation, and proving it fails closed
+=================================================
+
+The rule (SPEC Part VI, Appendix B trap 11): a run in Conductor's store with no
+entry in anonymise.json is EXCLUDED from this site. Not renamed, not published
+with its id showing, not "we will label it later" - absent.
+
+anonymise.json maps 18 run id prefixes to what this site may call them. It holds
+no repo path, no plan name and no client anything; `label` is the key content
+cites in `evidence.runs`, `scenario` is the sentence a reader maps their own
+situation onto, `repoKey` is the generalised repo identity, and `disposition`
+says whether a run the store still calls `running` was abandoned or paused.
+
+
+1. The rule runs on its own, unarranged
+---------------------------------------
+
+  $ npm run harvest
+  harvest: 18 runs published, 1 excluded by anonymise.json (f5066ddc) · 340
+  sessions · $3,016.29 · 648/677 gates green
+
+  f5066ddc is the run building this site. It is in the store, it is not in the
+  map, and it is therefore not in the corpus - which is why the totals are the
+  corpus as measured rather than the corpus plus whatever this session has spent.
+  Nobody arranged that for the demonstration; it is the ordinary path.
+
+
+2. The test hands it a run nobody named
+---------------------------------------
+
+  test/harvest.test.mjs drives buildCorpus(), which is pure - no store is opened,
+  no conductor verb runs, no real run is involved. Two fabricated runs go in and
+  only one of them is in the map.
+
+  $ node --test test/harvest.test.mjs
+  ✔ a run with no entry in anonymise.json is excluded from the corpus
+  ✔ an excluded run contributes nothing to any corpus total
+  ✔ publishing nothing at all is refused rather than divided by zero
+  ✔ a run still marked running has to say whether it was abandoned or paused
+  ✔ two runs cannot be published under one label, and a label needs a repoKey
+  ✔ no run id reaches the published corpus
+  ✔ nothing path-shaped or machine-shaped reaches the published corpus
+  ✔ every mapped run is published, and every published run was mapped
+  ✔ a corpus key and a run key never share a name
+  # pass 9  fail 0
+
+  The second one is the one that matters to whoever owns the run. An exclusion
+  that dropped the name and kept the spend would still be publishing the run, in
+  the only form that counts - so the test asserts that its sessions, its dollars,
+  its bugs, its rollovers, its cache reads and its repo are all absent from the
+  totals, not merely that its label is.
+
+
+3. Break it and the test goes red, naming the leak
+--------------------------------------------------
+
+  With the exclusion in buildCorpus() replaced by a fallback that invents a label
+  from the run id - the plausible-looking mistake, and the one that leaves every
+  log identical:
+
+  $ node --test test/harvest.test.mjs
+  ✖ a run with no entry in anonymise.json is excluded from the corpus
+      actual:   [ 'the-mapped-one', 'bbbbbbbb' ]
+      expected: [ 'the-mapped-one' ]
+  ✖ an excluded run contributes nothing to any corpus total
+      actual: 2   expected: 1
+  ✖ publishing nothing at all is refused rather than divided by zero
+      Missing expected exception: /publishes no runs/
+  # fail 3
+
+  The unmapped run is named in the failure. That is the whole point of the test:
+  the thing it catches is invisible everywhere else.
+
+
+4. Two more layers underneath it
+--------------------------------
+
+  With only buildCorpus() broken, the harvest CLI still published 18 runs - the
+  collect() step never opens a database for a run the map does not name, so the
+  unmapped run had not been read in the first place. Breaking that layer too, so
+  that every run in the store is collected AND buildCorpus invents labels:
+
+  $ npm run harvest -- --check
+  Error: anonymise.json: run f5066ddc ("f5066ddc") is still marked running in the
+  store, so it needs a "disposition" - "abandoned" or "paused". The store cannot
+  tell a July run whose engine exited from one somebody means to resume, and
+  publishing the wrong one of those is publishing a lie about whether the work is
+  finished.
+  exit 1
+
+  Three independent refusals, and a run has to get past all of them to be
+  published under a name nobody chose. scripts/harvest.mjs was restored from HEAD
+  afterwards and both the tests and `--check` are green again.
+
+
+5. What the map is allowed to say
+---------------------------------
+
+  Four runs in this corpus are still marked `running` in the store. Three are
+  July runs whose engine exited without closing the record - abandoned - and the
+  fourth is genuinely paused at 25 of 32. Nothing in the store separates those
+  two, so anonymise.json declares it and an undeclared one is refused. The
+  published corpus therefore says `abandoned` and `paused` in the places where
+  the store would have said `running`, which is SPEC Appendix A's requirement
+  that the reports never present the July runs as in flight.
+
+  Checked mechanically, on what is actually committed: no run id appears anywhere
+  in corpus.json, and no "AppData", "C:\", "C:/", "/Users/" or ".conductor"
+  appears in either published file. This repo is public from commit one.
