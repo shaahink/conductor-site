@@ -8,6 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check && node --test \"test/**/*.test.mjs\"",
+    "harvest": "node scripts/harvest.mjs",
     "test": "node --test \"test/**/*.test.mjs\"",
     "headers": "sitekit-headers",
     "content": "sitekit-normalize",

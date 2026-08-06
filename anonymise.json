@@ -1,0 +1,99 @@
+{
+  "$schema-note": "Run id prefix -> what this site is allowed to call that run. The harvest fails closed: a run in the store with no entry here is excluded from src/data/corpus.json entirely, so it can never be published under its real name. Nothing private belongs in this file either - no repo paths, no plan names, no client anything. `label` is the key content cites in `evidence.runs`; `scenario` is the sentence a reader maps their own situation onto; `repoKey` is the generalised identity of the repo, and distinct repoKeys are what the site counts as repos. `disposition` is required when the store still marks a run `running`, because the store cannot tell an abandoned run from a paused one - a July run whose engine exited without closing the record looks exactly like a run somebody means to come back to.",
+  "runs": {
+    "0031daaa": {
+      "label": "the-first-false-start",
+      "scenario": "A first attempt at an orchestrator plan, one session long, stopped before it had cost anything",
+      "repoKey": "orchestrator-prototype",
+      "disposition": "abandoned"
+    },
+    "1e942d7e": {
+      "label": "the-second-false-start",
+      "scenario": "The same plan tried again three sessions later, still with no checkpoint declared and no gate green",
+      "repoKey": "orchestrator-prototype",
+      "disposition": "abandoned"
+    },
+    "02cf8280": {
+      "label": "the-aborted-start",
+      "scenario": "A run aborted inside its first minute, kept because a corpus that hides its dead starts is not a corpus",
+      "repoKey": "orchestrator-prototype"
+    },
+    "1a7c1714": {
+      "label": "the-abandoned-prototype",
+      "scenario": "A prototype run that reached six of eleven checkpoints and was left there when the work moved elsewhere",
+      "repoKey": "orchestrator-prototype",
+      "disposition": "abandoned"
+    },
+    "fc2e69df": {
+      "label": "the-one-session-chore",
+      "scenario": "Shared CI and a 404 page added to a site template in a single session",
+      "repoKey": "site-template"
+    },
+    "13a91f1d": {
+      "label": "the-fleet-backlog",
+      "scenario": "A web fleet's accumulated backlog worked to the end of the list across four sites",
+      "repoKey": "web-fleet"
+    },
+    "3dd4564a": {
+      "label": "the-fleet-round",
+      "scenario": "A four-site web fleet, one shared component library, one round of coordinated changes",
+      "repoKey": "web-fleet"
+    },
+    "e9e21d10": {
+      "label": "the-orchestrator-core",
+      "scenario": "The orchestrator's own core built by the orchestrator: sessions, gates and the event store",
+      "repoKey": "orchestrator"
+    },
+    "8cefa5de": {
+      "label": "the-terminal-face",
+      "scenario": "A terminal interface for a long-running engine, written in a second language against the first one's store",
+      "repoKey": "orchestrator"
+    },
+    "a007ef6c": {
+      "label": "the-fleet-round-after",
+      "scenario": "The round after the round: the same web fleet, a shorter list, and a run that closed every checkpoint it opened",
+      "repoKey": "web-fleet"
+    },
+    "7951c3ca": {
+      "label": "the-long-build",
+      "scenario": "A large interactive feature built inside an existing site - the run that ended at 45 of 46, and why the last one did not close",
+      "repoKey": "studio-site"
+    },
+    "bae63ba0": {
+      "label": "the-engine-run",
+      "scenario": "A static-analysis engine for a compiled language, with an evaluation suite as the release gate",
+      "repoKey": "analysis-engine"
+    },
+    "1ddd2036": {
+      "label": "the-second-feature",
+      "scenario": "A second interactive feature on the same site, planned after the first one had taught the plan what to say",
+      "repoKey": "studio-site"
+    },
+    "79cacf31": {
+      "label": "the-ci-cleanup",
+      "scenario": "Continuous integration made honest across a set of related repos, the cheapest complete run in the corpus",
+      "repoKey": "ci-health"
+    },
+    "df9c4af8": {
+      "label": "the-accounting-run",
+      "scenario": "The engine taught to account for itself - what it did, what it cost - and paused, not finished, at 25 of 32",
+      "repoKey": "orchestrator",
+      "disposition": "paused"
+    },
+    "7195e538": {
+      "label": "the-third-feature",
+      "scenario": "A third feature on the same site, including the way back out of it, closed at twenty of twenty",
+      "repoKey": "studio-site"
+    },
+    "f1c4d068": {
+      "label": "the-demo",
+      "scenario": "The engine demonstrating itself against a throwaway repo, six sessions, no model spend",
+      "repoKey": "orchestrator"
+    },
+    "2349f46b": {
+      "label": "the-rehearsal",
+      "scenario": "A rehearsal of one engine feature end to end before it was let near real work",
+      "repoKey": "orchestrator"
+    }
+  }
+}

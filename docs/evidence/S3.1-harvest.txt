@@ -1,0 +1,122 @@
+﻿S3.1 - the harvest
+==================
+
+Recomputed on 2026-08-06 from Conductor's run store on this machine.
+scripts/harvest.mjs -> src/data/corpus.json. Nothing below is typed by hand.
+
+$ npm run harvest
+harvest: 18 runs published, 1 excluded by anonymise.json (f5066ddc) · 340 sessions · $3,016.29 · 648/677 gates green
+
+$ npm run harvest -- --check
+evidence: corpus.json is current — 18 runs, 340 sessions, $3,016.29.
+
+Corpus figures, straight out of src/data/corpus.json:
+
+  totalRuns                       18   runs
+  totalRepos                       7   repositories
+  totalSessions                  340   sessions
+  costedSessions                 314   sessions that recorded agent tokens
+  totalCheckpointsDone       287/300   checkpoints closed
+  totalCheckpointsPlanned        300   checkpoints planned
+  totalCostUsd             $3,016.29   spent across the corpus
+  totalTokensIn                47.5M   tokens in
+  totalTokensOut               17.8M   tokens out
+  totalCacheRead                3.8B   cache read
+  totalGatesGreen            648/677   gates green
+  totalGatesRun                  677   gates run
+  totalGatesRed                   29   gates red
+  totalRollovers                  53   rollovers
+  totalSoftBreaks                123   soft breaks
+  totalOwnerApprovals              7   owner approvals
+  totalBugsFiled                 167   bugs filed
+  totalLedgerEntries           1,100   ledger entries
+  costPerSession               $8.87   per session
+  costPerCheckpoint           $10.51   per checkpoint closed
+
+Per-run, in the order the runs started:
+
+  label                       status      sess  ckpt      cost    gates  soft  roll
+  the-first-false-start     abandoned     1   0/0     $0.00      0/0     0     0
+  the-second-false-start    abandoned     3   0/0     $0.17      0/4     0     1
+  the-aborted-start         aborted       1   0/0     $0.00      0/0     0     0
+  the-abandoned-prototype   abandoned    11  6/11   $139.68    27/27     0     0
+  the-one-session-chore     completed     1   2/2     $2.91      3/3     0     0
+  the-fleet-backlog         completed    24 29/29   $224.28    20/20     0     0
+  the-fleet-round           completed    28 25/25   $425.12    32/32     0     0
+  the-orchestrator-core     completed    28 26/26   $360.14    94/96     0     0
+  the-fleet-round-after     completed    17 17/17   $222.63    38/38     0     0
+  the-terminal-face         completed    41 24/24   $297.24  104/110    30    11
+  the-long-build            completed    69 45/46   $421.46    59/59    55    34
+  the-engine-run            completed    26 22/22   $358.42    72/81     2     0
+  the-second-feature        completed    15 17/17    $97.48    24/24    15     6
+  the-ci-cleanup            completed    12 20/20    $37.99    23/28     3     0
+  the-third-feature         completed    15 20/20   $110.93    43/43    11     1
+  the-accounting-run        paused       32 25/32   $317.84   97/100     7     0
+  the-demo                  completed     6   3/3     $0.00      6/6     0     0
+  the-rehearsal             completed    10   6/6     $0.00      6/6     0     0
+
+Against SPEC Appendix A, measured during planning
+-------------------------------------------------
+
+  Reproduced to the digit, with no figure typed into this repo:
+
+    18 runs          7 repos          340 sessions      287/300 checkpoints
+    $3,016.29        47.5M in         17.8M out         3.8B cache-read
+    648/677 gates    53 rollovers     123 soft breaks   7 owner approvals
+    167 bugs filed
+
+  Every per-run row of Appendix A's table also matches: sessions, checkpoints,
+  cost and gate counts, run by run.
+
+  Two figures in Appendix A do NOT reproduce, and the harvest is what found it:
+
+    per session       Appendix A says $9.37     3016.29 / 340 = $8.87
+    per checkpoint    Appendix A says ~$10.85   3016.29 / 287 = $10.51
+
+  Both are divisions of Appendix A's own totals, and both totals are exact, so
+  the rates are arithmetic rather than a disagreement about the data. corpus.json
+  carries the recomputed $8.87 and $10.51, each with its denominator written into
+  the figure's own note. Filed as bug #3. This is the site's first litmus test
+  working on the site's own specification.
+
+  A third: Appendix A says 315 sessions "recorded agent tokens". Across the 18
+  published runs the store answers 326 sessions with any agent cost row, 325 with
+  cost above zero, and 314 with agent tokens above zero. corpus.json publishes
+  costedSessions = 314 under exactly that last definition and says which it used;
+  every rate divides by the 340 and names it.
+
+How it reads the store
+----------------------
+
+  Run-level truth      conductor history --json --limit 0
+  Everything else      each run.db opened { readOnly: true }, every query
+                       filtered by run_id
+  Names                anonymise.json; a run with no entry is excluded
+
+  Three traps closed, all of them silent otherwise:
+
+  1. One run.db holds several runs. The store is keyed by repo and plan, and the
+     legacy import consolidated runs into shared files - the web fleet's three
+     rounds live in one database. An unfiltered count of bugs answers 50 where
+     that run filed 23.
+  2. sessions.soft_break is 0 for every row in the entire store. Soft breaks are
+     events (SoftBreakRequested), not a column. A harvest reading the column
+     publishes zero and looks correct.
+  3. Checkpoints come from the history JSON. A CheckpointConfirmed event count
+     answers 65 store-wide where the engine answers 295 of 328 - re-measured
+     here, not taken on trust.
+
+  And one rule enforced rather than documented: refuseBudgetShaped() throws if
+  the harvest ever mints a key matching floor / median / wrap-up / *Rate /
+  perMillion / blended / nudge / *cap / headroom / tokensPerCheckpoint. Those
+  come from `conductor budget` and `conductor money`. The store cannot even see
+  a cap - runs.limits_json is NULL for every imported run.
+
+What is excluded, and why that is the interesting part
+------------------------------------------------------
+
+  The run that is building this site (f5066ddc) is in the store and is not in
+  anonymise.json, so it is excluded - which is why the totals above are the
+  corpus as measured and not the corpus plus whatever this session has spent so
+  far. Fail-closed is not a special case here; it is the ordinary path, and it
+  ran on the first harvest without anybody arranging it.
