@@ -394,6 +394,18 @@ export function buildCorpus(collected, anonymise) {
     kept.push(run);
   }
 
+  /* Failing closed all the way down. With nothing published the corpus rates
+     divide by zero and NaN reaches the page as the word "NaN", which is the one
+     outcome worse than an empty site — a figure that is visibly wrong is at
+     least visibly wrong; a figure that is quietly nonsense is what this whole
+     mechanism exists to prevent. */
+  if (kept.length === 0) {
+    throw new Error(
+      `anonymise.json publishes no runs: ${collected.length} run(s) were collected and none of ` +
+        `them is in the map. Excluded: ${excluded.join(", ") || "(none collected)"}.`
+    );
+  }
+
   const corpus = corpusFigures(kept, repoKeys);
   assertDisjoint(corpus, runs);
   refuseBudgetShaped(corpus, runs);
