@@ -16,6 +16,10 @@
   //    parks the run. Everything site-specific rides in promptExtra and readOrder instead.
   //  * The `evidence` gate is scoped to S4+ because the script it runs is built during S3.
   //    S3.4 proves it goes red when stale; from S4 it is enforced on every session.
+  //  * `defaultWorkflow` IS SET ON PURPOSE. Leaving it unset defaults to `deliver-verify`, which
+  //    spawns a separate paid Verify agent session after EVERY deliver - roughly doubling the
+  //    session count for a re-audit the engine's own verdict already performs. The `deliver`
+  //    workflow below is the one both proven site runs in this fleet used.
   "version": "1.0",
   "planVersion": 1,
   "name": "conductor-site - a field guide to agentic engineering",
@@ -59,14 +63,48 @@
   "progress": { "kind": "markdown-table" },
 
   "stages": [
-    { "id": "S1", "name": "The face" },
-    { "id": "S2", "name": "The content model", "dependsOn": ["S1"] },
-    { "id": "S3", "name": "The harvest", "dependsOn": ["S2"] },
-    { "id": "S4", "name": "The concept spine", "dependsOn": ["S3"] },
-    { "id": "S5", "name": "The articles", "dependsOn": ["S4"] },
-    { "id": "S6", "name": "The reports", "dependsOn": ["S5"] },
-    { "id": "S7", "name": "Ship", "dependsOn": ["S6"], "ownerGated": true }
+    {
+      "id": "S1", "name": "The face",
+      "notes": "docs/SPEC.md Part II is the whole brief. The sixteen colour roles come from C:/code/conductor/face-go/internal/widgets/color.go for BOTH mocha and latte - never from the Catppuccin website, because the shipped latte is darkened in-hue to clear a contrast bar stock latte fails. Name the role in every rule; a hardcoded hex is right in one scheme and wrong in the other. Body text is a humanist sans at a 62-72ch measure; monospace is reserved for machine truth so the typeface itself carries meaning. S1.4 deletes the two checkPlaceholders allow lines the template ships."
+    },
+    {
+      "id": "S2", "name": "The content model", "dependsOn": ["S1"],
+      "notes": "docs/SPEC.md Part III. Three collections - concepts, articles, reports. Schemas import Zod ONLY and nothing Astro-shaped, because api/content.ts imports them outside the build where astro:content does not exist; the template's own schema.ts explains this at length, so read it before editing. Adding a collection touches three places: the schema, the loader in content.config.ts, and the editable map. Miss the third and it silently is not editable. The concept schema carries evidence as KEYS, never values - that is the mechanism behind the whole site's first rule."
+    },
+    {
+      "id": "S3", "name": "The harvest", "dependsOn": ["S2"],
+      "notes": "docs/SPEC.md Part VI. Run-level truth comes from `conductor history --json --limit 0`; per-run detail comes from read-only SQLite (mode=ro) against each runDb for costs by category, gate pass rates, bugs, scores, event type counts and rolled-over sessions. Checkpoint counts MUST come from the JSON: a naive CheckpointConfirmed event count answers 65 where the engine answers 287 of 300, measured during planning. anonymise.json fails closed. S3.4 must prove the evidence gate red BOTH ways - stale corpus, and a cited key that is missing."
+    },
+    {
+      "id": "S4", "name": "The concept spine", "dependsOn": ["S3"],
+      "notes": "docs/SPEC.md Part IV lists the ten concepts and what each cites. Every page makes the same five moves: the idea (true anywhere, no Conductor), the problem, the mechanism in Conductor with file:line citations, the evidence keys, and something the reader can run. Apply the three litmus tests in Part I to each page before claiming it - especially the third: delete the Conductor section and what is left must still be worth reading. Verify each file:line citation actually resolves in C:/code/conductor before committing it."
+    },
+    {
+      "id": "S5", "name": "The articles", "dependsOn": ["S4"],
+      "notes": "docs/SPEC.md Part V names the four and what each is about. Medium length, 1200-2000 words, concise and insight-dense - no filler, no throat-clearing, no enthusiasm as content. Each must carry at least one number nobody else publishes, and every figure is an evidence key rather than a literal. The voice rules in Part I are binding: the banned-words list is not a style preference, it is what separates this from every other page on the topic."
+    },
+    {
+      "id": "S6", "name": "The reports", "dependsOn": ["S5"],
+      "notes": "docs/SPEC.md Part VI. Reports are generalised into SCENARIOS the reader can map onto their own situation - that is the point, not only the privacy rule. No client names, no private repo names in prose, no field-note prose quoted. If swapping the real name back in is the only difference, generalise harder. Report B ending at 45 of 46 is deliberately the one we publish, with the shortfall as the subject. The /runs page must name the three abandoned July runs as abandoned, not in-flight."
+    },
+    {
+      "id": "S7", "name": "Ship", "dependsOn": ["S6"], "ownerGated": true,
+      "notes": "docs/SPEC.md Part VII. Confirm astro.config site against the real deployed production URL - canonical, hreflang, og:url, og:image, sitemap, robots and the footer credit all derive from that one line. Accessibility and performance in BOTH themes, including no layout shift when the theme flips. Regenerate the three generated artifacts and commit them. S7.4 is owner-gated: the owner reads the three reports for anonymisation and looks at the front page in both themes before this stage confirms."
+    }
   ],
+
+  "workflows": {
+    "deliver": {
+      "name": "deliver",
+      "description": "Deliver the next checkpoint; repair only when the battery actually came back red.",
+      "steps": [
+        { "id": "deliver", "kind": "deliver", "deliver": true },
+        { "id": "fix-if-red", "kind": "fix", "runIf": "!gatesGreen", "deliver": true }
+      ],
+      "repeat": true
+    }
+  },
+  "defaultWorkflow": "deliver",
 
   "gates": [
     {
