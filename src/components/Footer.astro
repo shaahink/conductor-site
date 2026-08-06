@@ -7,10 +7,17 @@
 import { creditsFor } from "@shaahink/sitekit/credits";
 import { absolute } from "@shaahink/sitekit/seo";
 
-/* TODO: the client's name. The url is derived, not stated: astro.config's
-   `site` is the only place the origin lives, so a domain change never
-   touches this file. */
-const site = { name: "New Site", url: absolute(Astro.site!) };
+/* Whose site this is, for the copyright line and for the JSON-LD the credit
+   emits. It matches README's licence line rather than the wordmark: "field
+   guide" is what the site is called, and this line is about who owns the
+   words. The template shipped "New Site" here and `checkPlaceholders` never
+   saw it — the gate reads the `editable` map, and a name written into a
+   component is not content. It was on every page of the built site for three
+   sessions (S1.4).
+
+   The url is derived, not stated: astro.config's `site` is the only place the
+   origin lives, so a domain change never touches this file. */
+const site = { name: "Shahin Kiassat", url: absolute(Astro.site!) };
 
 /* The whole credit sentence is the kit's since 0.23.0 — a site no longer
    writes the words around the name — and since 0.24.0 it is English on every
