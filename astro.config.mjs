@@ -41,18 +41,22 @@ export default defineConfig({
      check that gets obeyed. */
   integrations: [
     editorRoute({ title: "Edit — conductor-site" }), checkAnnotations({ collections: editable }),
-    checkPlaceholders({
-      collections: editable,
-      /* Two escapes, and they are correct *here* and nowhere else. This
-         is the template: its meta description and its og description are
-         `TODO:` on purpose, because they are two of the sentences a new
-         site has to write for itself, and the TODO is the instruction.
+    /* No `allow:` list, and the absence is the point (S1.4). The template
+       shipped two escapes — `homePage:meta.description` and
+       `homePage:meta.ogDescription` were `TODO:` on purpose, because they are
+       two of the sentences a new site has to write for itself. This site has
+       written them, so the escapes are gone and every string in `editable` is
+       now held to the gate.
 
-         **Delete both lines when you start a real site** — and then the
-         build will not go green until you have written them, which is
-         exactly the service this gate is for. */
-      allow: ["homePage:meta.description", "homePage:meta.ogDescription"]
-    })
+       Nothing should be added back here. This site's whole argument is that a
+       published claim has to be checkable, and an `allow:` line is how a
+       placeholder gets published: the string stops failing the build and
+       nothing else in the build, the editor or the review widget ever
+       mentions it again. If a genuine sentence trips the gate — a concept
+       page that has to quote `example.com`, a report that has to print a row
+       of x's — that is a real argument to have on its own, in that stage,
+       with the string in front of you. Do not pre-authorise it here. */
+    checkPlaceholders({ collections: editable })
   ],
 
   /* Locales for this site. One entry keeps URLs unprefixed; add a second and
