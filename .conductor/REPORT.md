@@ -1,10 +1,10 @@
 ﻿# Conductor — conductor-site - a field guide to agentic engineering run report
 
-_Updated 2026-08-06 22:20 UTC · branch `main` · HEAD `8ada555`_
+_Updated 2026-08-06 22:40 UTC · branch `main` · HEAD `4cfdc00`_
 
-**Status:** Idle
-**Stage:** S2 —  · attempts used 0
-**Checkpoints:** 8/28 done · **Sessions run:** 4 · **Cost:** $32.4445 (agent $32.4399 + gates $0.0047) · **Tokens:** 581,096 in / 282,127 out
+**Status:** Backoff
+**Stage:** S3 —  · attempts used 0 · working ▸ S3.3
+**Checkpoints:** 10/28 done · **Sessions run:** 5 · **Cost:** $39.4042 (agent $39.3995 + gates $0.0047) · **Tokens:** 727,947 in / 350,626 out
 
 ## Stage progress
 
@@ -12,7 +12,7 @@ _Updated 2026-08-06 22:20 UTC · branch `main` · HEAD `8ada555`_
 |---|---|---|---|
 | S1 |  | ██████████ 4/4 | done |
 | S2 |  | ██████████ 4/4 | done |
-| S3 |  | ░░░░░░░░░░ 0/4 | todo |
+| S3 |  | █████░░░░░ 2/4 | **← active** |
 | S4 |  | ░░░░░░░░░░ 0/4 | todo |
 | S5 |  | ░░░░░░░░░░ 0/4 | todo |
 | S6 |  | ░░░░░░░░░░ 0/4 | todo |
@@ -35,18 +35,18 @@ _Updated 2026-08-06 22:20 UTC · branch `main` · HEAD `8ada555`_
 |---|---|---|---|
 | S2.1 | `concepts`, `articles` and `reports` exist as typed collections — Zod-only schemas in `schema.ts`, loaders in `content.config.ts`, an entry each in the `editable` map — with the concept schema carrying the five-move shape from SPEC Part III including `evidence` as keys rather than values | ✅ DONE | [`a68c0f3`](https://github.com/shaahink/conductor-site/commit/a68c0f3) |
 | S2.2 | The three index pages and the nav render from the collections, ordered by `order`, with `readNext` resolving to real entries and a build that fails on a dangling one | ✅ DONE | [`a68c0f3`](https://github.com/shaahink/conductor-site/commit/a68c0f3) |
-| S2.3 | Every page carries `data-sk-edit` annotations that resolve, real `meta.description` and `meta.ogDescription`, and `npm run check` reports zero errors | ✅ DONE | - |
-| S2.4 | One concept page is written end to end as the worked example that proves the shape holds, and it passes all three litmus tests in SPEC Part I | ✅ DONE | - |
+| S2.3 | Every page carries `data-sk-edit` annotations that resolve, real `meta.description` and `meta.ogDescription`, and `npm run check` reports zero errors | ✅ DONE | [`a6d5f98`](https://github.com/shaahink/conductor-site/commit/a6d5f98) |
+| S2.4 | One concept page is written end to end as the worked example that proves the shape holds, and it passes all three litmus tests in SPEC Part I | ✅ DONE | [`a6d5f98`](https://github.com/shaahink/conductor-site/commit/a6d5f98) |
 
 </details>
 
-<details><summary>S3 —  (0/4)</summary>
+<details><summary>S3 —  (2/4)</summary>
 
 | # | Title | Status | Commit |
 |---|---|---|---|
-| S3.1 | `scripts/harvest.mjs` reads `conductor history --json --limit 0` for run-level truth and read-only SQLite for what that does not expose (costs by category, gate pass rates, bugs, scores, event counts, rollovers), and writes `src/data/corpus.json` | ⬜ TODO | - |
-| S3.2 | `anonymise.json` maps run id → published scenario label, and the harvest **fails closed**: a run with no entry is excluded from the corpus rather than published under its real name, proven by a test that adds an unmapped run | ⬜ TODO | - |
-| S3.3 | The evidence strip component renders figures from `corpus.json` by key, and a page that names a key absent from the corpus fails the build rather than rendering blank | ⬜ TODO | - |
+| S3.1 | `scripts/harvest.mjs` reads `conductor history --json --limit 0` for run-level truth and read-only SQLite for what that does not expose (costs by category, gate pass rates, bugs, scores, event counts, rollovers), and writes `src/data/corpus.json` | ✅ DONE | - |
+| S3.2 | `anonymise.json` maps run id → published scenario label, and the harvest **fails closed**: a run with no entry is excluded from the corpus rather than published under its real name, proven by a test that adds an unmapped run | ✅ DONE | - |
+| S3.3 | The evidence strip component renders figures from `corpus.json` by key, and a page that names a key absent from the corpus fails the build rather than rendering blank | 🔄 IN PROGRESS | - |
 | S3.4 | The `evidence` gate re-runs the harvest and goes red when `corpus.json` is stale or a cited key is missing, proven by a deliberate staleness both ways | ⬜ TODO | - |
 
 </details>
@@ -103,6 +103,7 @@ _Updated 2026-08-06 22:20 UTC · branch `main` · HEAD `8ada555`_
 | 2 | S1 | Deliver | 1 | 08-06 21:18 | 0:16 | Advanced | S1.4 | 5 | site-fast:OK · generated:OK | $6.3946 | $0.0010 | 119,085/51,110 |
 | 3 | S2 | Deliver | 1 | 08-06 21:34 | 0:22 | Advanced | S2.1 S2.2 | 4 | site-fast:OK · generated:OK | $8.9986 | $0.0014 | 161,303/77,725 |
 | 4 | S2 | Deliver | 1 | 08-06 21:57 | 0:23 | Advanced | S2.3 S2.4 | 4 | site-fast:OK · generated:OK | $8.0416 | $0.0013 | 159,651/78,744 |
+| 5 | S3 | Deliver | 1 | 08-06 22:20 | 0:19 | LimitBackoff |  | 0 |  | $6.9597 |  | 146,851/68,499 |
 
 ## Money
 
@@ -110,12 +111,12 @@ _What this run has cost, from its own `costs` rows. Same numbers as `conductor m
 
 | scope | sessions | tokens | cache reads | cost | checkpoints | tok/ckpt | $/ckpt |
 |---|---|---|---|---|---|---|---|
-| **run total** | 3 | 30.8M | 98.0% | $24.40 | 6 | 5.14M | $4.07 |
+| **run total** | 4 | 40.1M | 97.8% | $32.44 | 8 | 5.01M | $4.06 |
 | stage S1 | 2 | 19.7M | 98.0% | $15.40 | 4 | 4.92M | $3.85 |
-| stage S2 | 1 | 11.1M | 97.8% | $9.00 | 2 | 5.56M | $4.50 |
-| 2026-08 | 3 | 30.8M | 98.0% | $24.40 | 6 | 5.14M | $4.07 |
+| stage S2 | 2 | 20.4M | 97.7% | $17.04 | 4 | 5.09M | $4.26 |
+| 2026-08 | 4 | 40.1M | 97.8% | $32.44 | 8 | 5.01M | $4.06 |
 
-_Where the money goes: agent $24.40 (100%) · gate $0.00 (0%) · blended $0.79/M tokens._
+_Where the money goes: agent $32.44 (100%) · gate $0.00 (0%) · blended $0.81/M tokens._
 
 ## Timeline
 
@@ -142,6 +143,9 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 08-06 22:57:12  • session #4 S2 Deliver started (attempt 1/4)
 08-06 23:20:33  ▪ gate site-fast pass [session]  (10.5s)
 08-06 23:20:33  ▪ gate generated pass [session]  (2.2s)
+08-06 23:20:36  • session #4 S2 → Advanced · done S2.3,S2.4 · 4 commit(s)  (23m24s)
+08-06 23:20:36  ▸ stage S3 entered
+08-06 23:20:36  • session #5 S3 Deliver started (attempt 1/4)
 ```
 
 ## Health
@@ -149,7 +153,7 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 _Execution-health signals, folded from the event log (`.conductor/events.jsonl`)._
 
 ```
-sessions 4 · retries 0 (0 %) · overall Ok
+sessions 5 · retries 0 (0 %) · overall Ok
 ✓ no health concerns detected
 ```
 
@@ -159,8 +163,8 @@ _Live git snapshot (branch, working tree, sync vs upstream)._
 
 ```
 branch: main
-working tree: clean
-vs upstream: up to date
+working tree: ?? src/components/EvidenceStrip.astro, ?? src/lib/evidence.ts
+vs upstream: 3 ahead
 ```
 
 ### Commits by session
@@ -192,16 +196,7 @@ site-fast:OK · generated:OK
 
 ## Last session result
 
-> **** S2 complete — S2.3 and S2.4 landed, three litmus tests turned into build gates**
-> - **QA of session 3: both claims hold.** Re-broke the `readNext` gate on a fresh tree and the build died naming the entry, the bad slug and the known entries. One real finding, fixed: the concept cited `PromptBuilder.cs:276` for the ledger go…
-> - **S2.3 (a6d5f98):** audited all eight heads and found two real defects — the articles index ran 186 chars and was being cut mid-clause in the snippet, and the home page sat exactly on 160. Both rewritten, then the bar moved somewhere it bit…
-> - **S2.4 (bd66fc9 + 689854a):** `context-engineering` written end to end, six citations verified line by line against the engine at `1a55437`. Litmus 1 and 3 are now gates rather than intentions — `src/lib/figures.ts` fails the build on a fig…
->
-> artefacts: `src/lib/figures.ts`, `test/meta.test.mjs`, `src/content/concepts/context-engineering.yaml`, `src/content/schema.ts`, `src/lib/collections.ts`
->
-> evidence: `docs/evidence/S2.3-annotations-meta.txt`, `docs/evidence/S2.4-context-engineering.md` — check 0 errors / 33 tests, build 10 pages with 63 annotations resolving, five gates each broken on purpose and reverted, all three generated files regenerating with no diff
->
-> gaps: no evidence strip renders yet (corpus arrives at S3); S3.1 now owes six keys — `sessions`, `cacheRead`, `ledgerEntries`, `tokensIn`, `tokensOut`, `costPerSession` — recorded in the ledger and the handoff, since S3.3 makes a page naming a missing key fail the build; bug #2 (`--overlay` contrast) still open for S7.2
+> You've hit your weekly limit · resets 1am (Europe/London)
 
 ## Tracker handoff
 
