@@ -4,31 +4,41 @@
 
 ## Handoff (overwrite this block, ≤12 lines, no history)
 
-last: **session 3** delivered S2.1 and S2.2, and fixed the planning session's `site` URL — the
-  short alias belongs to a stranger's rail site, so canonicals now read
-  `conductor-site-virid.vercel.app` (a68c0f3). **S7.1 must re-confirm that against the deployed
-  URL, not against the config.** QA of session 2: every S1 claim holds on fresh runs — 0 errors,
-  build green, generated files regenerate with no diff, all five evidence files present. No
-  findings.
-now on disk: four collections. `sectionPages` was added beyond the plan's three, because index
-  copy written into a component is invisible to `checkPlaceholders` — the same hole the footer
-  fell through. `src/lib/collections.ts` is the gate: `ordered()` throws on a slug that does not
-  match its file name, on a duplicate `order`, and on a dangling `readNext`, and it runs because
-  a page renders it. Two concepts exist so `readNext` resolves to something real. Build is 10
-  pages, 56 annotations, 8 content entries placeholder-clean.
-next: **S2.3** — every page's annotations already resolve and `check` is 0 errors, so most of it
-  is auditing `meta.description` / `meta.ogDescription` on all eight entries and recording it.
-  Then **S2.4**: write `context-engineering` end to end against SPEC Part I's three litmus tests
-  — it is currently a real but short worked example. Do not render an evidence section; the
-  corpus does not exist until S3.
+last: **session 4** delivered S2.3 (a6d5f98) and S2.4 (bd66fc9, evidence 689854a). **S2 is
+  complete.** QA of session 3: both its claims hold on fresh artifacts — I re-broke the
+  `readNext` gate and the build died naming the entry, the bad slug and the known entries. One
+  real finding, fixed: the concept cited `PromptBuilder.cs:276` for the ledger going in first,
+  and that line is the *comment* describing it, not the code. Now `:283`, plus
+  `PromptBattery.cs:55` beside it, because "goes in first" means nothing until you can see the
+  cap cuts from the end.
+now on disk: three litmus tests that used to be intentions are gates, all inside `ordered()` so
+  they run because a page renders. `src/lib/figures.ts` refuses a figure typed into prose
+  (currency, percent, multiplier, ratio, decimal, thousands separator, any count of two digits
+  or more — a *single* digit still gets through, and the header says so). `theIdea` naming
+  Conductor fails the build. `meta` carries its own bar in `schema.ts` (description 60–160, og
+  45–120, neither may be the title, canonical shape-checked) and `collections.ts` holds each
+  entry's canonical against the route it is served at, using the section page's own canonical as
+  the base. `test/meta.test.mjs` adds annotation **coverage** — and a correction worth having:
+  `checkAnnotations` does not ignore an unannotated page, it warns twice and passes. Battery is
+  0 errors, 33 tests, 63 annotations on 8 pages, 10 pages built.
+next: **S3.1**, the harvest. It now owes five keys, because S3.3 makes a page naming a missing
+  one fail the build: `sessions`, `cacheRead`, `ledgerEntries` (context-engineering) and
+  `tokensIn`, `tokensOut`, `costPerSession` (token-economics). `ledgerEntries` is countable —
+  the store has its own `ledger` table (`SqliteRunStore.Sessions.cs:188`). Checkpoint counts
+  come from `conductor history --json --limit 0`, never SQL; anything budget-shaped from
+  `conductor budget` / `conductor money`; open every run.db `mode=ro`.
 open: bug #2 — `--overlay` prose is ~3.3:1: over the Face's own bar for the role, under WCAG AA
-  for normal text; S7.2's call, not a CSS tweak. Evidence keys use **published** scenario labels
-  (`the-long-build`, `the-engine-run`, `the-fleet-round`) — S3.2's `anonymise.json` must map run
-  ids to exactly those. The wordmark `field guide` and the footer's owner name are owner calls.
-tooling: `conductor bg` cannot exec bare `npm` here — use `npm.cmd`; the flag is `--purpose`, and
-  it cannot take a quoted compound command, so run the battery in the foreground (it is ~10s).
-  A failed Astro build exits 9, not 1. **Never spell a recursive glob inside a `/* */` comment in
-  a .ts file** — it closes the comment and `astro sync` dies with PARSE_ERROR.
+  for normal text; S7.2's call, not a CSS tweak. Published scenario labels are `the-long-build`,
+  `the-engine-run`, `the-fleet-round` — S3.2's `anonymise.json` must map run ids to exactly
+  those. **S7.1 must re-confirm `site` against the deployed URL, not the config.** The wordmark
+  `field guide` and the footer's owner name are owner calls.
+tooling: **never `git checkout --` a file whose new version is uncommitted** — it restores HEAD,
+  not what you were holding, and it silently reverted a finished page here (the tell was the
+  annotation count dropping back). Commit first, break-test second. A `git commit -m` here-string
+  breaks on embedded double quotes; write the message to a file and use `-F`. `conductor bg`
+  cannot exec bare `npm` — use `npm.cmd`; the battery is ~10s, so run it in the foreground. A
+  failed Astro build does not exit 1. **Never spell a recursive glob inside a block comment in a
+  .ts file** — it closes the comment and `astro sync` dies with PARSE_ERROR.
 
 
 ## Baseline numbers (from run.db)
@@ -37,7 +47,7 @@ tooling: `conductor bg` cannot exec bare `npm` here — use `npm.cmd`; the flag 
 |---|---|
 | Total checkpoints | 28 |
 | Done | 0 |
-| Claimed (unconfirmed) | 4 |
+| Claimed (unconfirmed) | 6 |
 
 ## Checkpoints
 
@@ -57,8 +67,8 @@ phase (a code path is not evidence). Agent claims are marked DONE; engine confir
 
 | # | Checkpoint | Status | Commit | Evidence |
 |---|-----------|--------|--------|----------|
-| S2.1 | `concepts`, `articles` and `reports` exist as typed collections — Zod-only schemas in `schema.ts`, loaders in `content.config.ts`, an entry each in the `editable` map — with the concept schema carrying the five-move shape from SPEC Part III including `evidence` as keys rather than values | TODO | - | - |
-| S2.2 | The three index pages and the nav render from the collections, ordered by `order`, with `readNext` resolving to real entries and a build that fails on a dangling one | TODO | - | - |
+| S2.1 | `concepts`, `articles` and `reports` exist as typed collections — Zod-only schemas in `schema.ts`, loaders in `content.config.ts`, an entry each in the `editable` map — with the concept schema carrying the five-move shape from SPEC Part III including `evidence` as keys rather than values | DONE | a68c0f3 | docs/evidence/S2.1-collections.txt |
+| S2.2 | The three index pages and the nav render from the collections, ordered by `order`, with `readNext` resolving to real entries and a build that fails on a dangling one | DONE | a68c0f3 | docs/evidence/S2.2-indexes.txt |
 | S2.3 | Every page carries `data-sk-edit` annotations that resolve, real `meta.description` and `meta.ogDescription`, and `npm run check` reports zero errors | TODO | - | - |
 | S2.4 | One concept page is written end to end as the worked example that proves the shape holds, and it passes all three litmus tests in SPEC Part I | TODO | - | - |
 
