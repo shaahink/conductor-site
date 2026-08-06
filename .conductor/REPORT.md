@@ -1,6 +1,6 @@
 ﻿# Conductor — conductor-site - a field guide to agentic engineering run report
 
-_Updated 2026-08-06 21:57 UTC · branch `main` · HEAD `6a3d334`_
+_Updated 2026-08-06 21:57 UTC · branch `main` · HEAD `e47bf88`_
 
 **Status:** Idle
 **Stage:** S2 —  · attempts used 0 · working ▸ S2.3
@@ -33,8 +33,8 @@ _Updated 2026-08-06 21:57 UTC · branch `main` · HEAD `6a3d334`_
 
 | # | Title | Status | Commit |
 |---|---|---|---|
-| S2.1 | `concepts`, `articles` and `reports` exist as typed collections — Zod-only schemas in `schema.ts`, loaders in `content.config.ts`, an entry each in the `editable` map — with the concept schema carrying the five-move shape from SPEC Part III including `evidence` as keys rather than values | ✅ DONE | - |
-| S2.2 | The three index pages and the nav render from the collections, ordered by `order`, with `readNext` resolving to real entries and a build that fails on a dangling one | ✅ DONE | - |
+| S2.1 | `concepts`, `articles` and `reports` exist as typed collections — Zod-only schemas in `schema.ts`, loaders in `content.config.ts`, an entry each in the `editable` map — with the concept schema carrying the five-move shape from SPEC Part III including `evidence` as keys rather than values | ✅ DONE | [`a68c0f3`](https://github.com/shaahink/conductor-site/commit/a68c0f3) |
+| S2.2 | The three index pages and the nav render from the collections, ordered by `order`, with `readNext` resolving to real entries and a build that fails on a dangling one | ✅ DONE | [`a68c0f3`](https://github.com/shaahink/conductor-site/commit/a68c0f3) |
 | S2.3 | Every page carries `data-sk-edit` annotations that resolve, real `meta.description` and `meta.ogDescription`, and `npm run check` reports zero errors | ⬜ TODO | - |
 | S2.4 | One concept page is written end to end as the worked example that proves the shape holds, and it passes all three litmus tests in SPEC Part I | ⬜ TODO | - |
 
@@ -109,11 +109,12 @@ _What this run has cost, from its own `costs` rows. Same numbers as `conductor m
 
 | scope | sessions | tokens | cache reads | cost | checkpoints | tok/ckpt | $/ckpt |
 |---|---|---|---|---|---|---|---|
-| **run total** | 2 | 19.7M | 98.0% | $15.40 | 4 | 4.92M | $3.85 |
+| **run total** | 3 | 30.8M | 98.0% | $24.40 | 6 | 5.14M | $4.07 |
 | stage S1 | 2 | 19.7M | 98.0% | $15.40 | 4 | 4.92M | $3.85 |
-| 2026-08 | 2 | 19.7M | 98.0% | $15.40 | 4 | 4.92M | $3.85 |
+| stage S2 | 1 | 11.1M | 97.8% | $9.00 | 2 | 5.56M | $4.50 |
+| 2026-08 | 3 | 30.8M | 98.0% | $24.40 | 6 | 5.14M | $4.07 |
 
-_Where the money goes: agent $15.40 (100%) · gate $0.00 (0%) · blended $0.78/M tokens._
+_Where the money goes: agent $24.40 (100%) · gate $0.00 (0%) · blended $0.79/M tokens._
 
 ## Timeline
 
@@ -135,6 +136,7 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 08-06 22:34:48  • session #3 S2 Deliver started (attempt 1/4)
 08-06 22:57:06  ▪ gate site-fast pass [session]  (11.7s)
 08-06 22:57:06  ▪ gate generated pass [session]  (2.1s)
+08-06 22:57:09  • session #3 S2 → Advanced · done S2.1,S2.2 · 4 commit(s)  (22m20s)
 ```
 
 ## Health
@@ -152,7 +154,7 @@ _Live git snapshot (branch, working tree, sync vs upstream)._
 
 ```
 branch: main
-working tree: clean
+working tree: M TRACKER.md
 vs upstream: up to date
 ```
 
