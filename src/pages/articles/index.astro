@@ -1,0 +1,16 @@
+---
+/* /articles/ — the long-form pieces. The one line under each title is its
+   standfirst, so the list and the piece open with the same sentence. */
+import SectionIndex from "../../layouts/SectionIndex.astro";
+import { ordered, sectionPage } from "../../lib/collections.js";
+
+const page = await sectionPage("articles");
+const items = (await ordered("articles")).map((entry) => ({
+  href: `/articles/${entry.id}/`,
+  order: entry.data.order,
+  title: entry.data.title,
+  summary: entry.data.standfirst
+}));
+---
+
+<SectionIndex page={page} items={items} ordinalLabel="Article" />

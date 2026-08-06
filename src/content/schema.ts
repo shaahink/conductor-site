@@ -249,6 +249,32 @@ export const reportSchema = articleSchema.extend({
   scenario: z.string().meta({ title: "The published scenario label" })
 });
 
+/** A section of the site: the page that lists one collection.
+    ---------------------------------------------------------------------------
+    Three entries, one per section, and they are what the top bar is built
+    from — so a section that exists and a section that is linked cannot
+    disagree, which is what TopBar.astro's own comment asked for.
+
+    It exists at all because of a failure this repo has already had: the footer
+    printed a placeholder on every page for three sessions, and nothing caught
+    it, because `checkPlaceholders` reads the `editable` map and a sentence
+    written into a component is invisible to it. Index-page copy is copy. It
+    goes in content, where the gate can see it.
+
+    `meta.canonical` is the section's URL and the nav's href — one fact in one
+    place rather than a `href` field that can drift away from the canonical the
+    same page publishes. */
+export const sectionPageSchema = z.object({
+  meta,
+  /** Which collection this page lists. */
+  collection: z.enum(["concepts", "articles", "reports"]),
+  /** Left-to-right order in the top bar. */
+  order: z.number().int().positive(),
+  navLabel: z.string().meta({ title: "Label in the top bar" }),
+  title: z.string(),
+  standfirst: z.string().meta({ title: "The standfirst under the title" })
+});
+
 /* Which YAML file backs which collection, for the editor.
    ---------------------------------------------------------------------------
    Astro's loaders know this too, but only inside the build — the handler needs
@@ -298,6 +324,17 @@ export const editable = {
      `path` and `line` are a claim about someone else's source file, verified
      against a named commit at S4.4, and a form is the wrong place to change
      one. The prose beside them stays editable. */
+  /* The three section pages. `entryUrl` is a map rather than a pattern here,
+     because a section's URL is not its id — `reports` lives at `/runs/`, since
+     a reader looking for what a run cost is not looking for a report. */
+  sectionPages: {
+    label: "Section pages",
+    schema: sectionPageSchema,
+    dir: "src/content/sections",
+    entryUrl: { concepts: "/concepts/", articles: "/articles/", runs: "/runs/" },
+    omit: ["collection", "order"]
+  },
+
   concepts: {
     label: "Concepts",
     schema: conceptSchema,

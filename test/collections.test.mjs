@@ -73,15 +73,34 @@ test("every editable collection points at content that exists", () => {
     assert.ok(path, `${name} declares neither a file nor a dir`);
     assert.ok(existsSync(new URL(`../${path}`, import.meta.url)), `${name}: ${path} is missing`);
 
-    /* A `dir` collection's entryUrl is a pattern with the entry id in it; a
-       `file` collection's is one path. Either way it is site-relative, because
-       the kit drops anything else and the owner's "edit it on the page" button
-       silently stops existing. */
+    /* Every entry needs somewhere to be seen, or the owner's only route to
+       inline editing is typing `?edit=1` onto a URL — which is to say, no
+       route at all on a phone. Three shapes are legal: one path for a `file`
+       collection, a pattern carrying the entry id for a `dir` one, and a map
+       from entry id to path for a `dir` collection whose URLs are not its ids.
+       All of them site-relative, because the kit drops anything else and the
+       button silently stops existing rather than pointing somewhere wrong. */
     const url = config.entryUrl;
-    assert.equal(typeof url, "string", `${name} should declare an entryUrl`);
-    assert.ok(url.startsWith("/"), `${name}: entryUrl ${url} is not site-relative`);
-    if (config.dir) {
-      assert.ok(url.includes("{entry}"), `${name}: a dir collection's entryUrl needs the entry id`);
+    assert.ok(url, `${name} should declare an entryUrl`);
+
+    if (typeof url === "string") {
+      assert.ok(url.startsWith("/"), `${name}: entryUrl ${url} is not site-relative`);
+      if (config.dir) {
+        assert.ok(
+          url.includes("{entry}"),
+          `${name}: a dir collection's entryUrl pattern needs the entry id in it`
+        );
+      }
+      continue;
+    }
+
+    assert.ok(config.dir, `${name}: only a dir collection can map entryUrl per entry`);
+    for (const [id, path] of Object.entries(url)) {
+      assert.ok(path.startsWith("/"), `${name}/${id}: entryUrl ${path} is not site-relative`);
+      assert.ok(
+        existsSync(new URL(`../${config.dir}/${id}.yaml`, import.meta.url)),
+        `${name}: entryUrl names "${id}", which has no file in ${config.dir}`
+      );
     }
   }
 });

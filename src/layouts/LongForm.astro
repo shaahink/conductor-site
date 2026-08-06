@@ -1,0 +1,88 @@
+---
+/* An article or a report. The two are the same page: a standfirst, then
+   headed sections, then where to go next. A report adds one line — the
+   generalised scenario it is published as — above the title, because that is
+   the first thing a reader needs in order to know whether this run's shape is
+   anything like their own.
+
+   The table of contents is built from the same `sections` array the page
+   renders, so the two cannot disagree about what is on the page. */
+import type { CollectionEntry } from "astro:content";
+import ReadNext, { type Destination } from "../components/ReadNext.astro";
+import { slugify } from "../lib/text.js";
+import Reading from "./Reading.astro";
+
+interface Props {
+  entry: CollectionEntry<"articles"> | CollectionEntry<"reports">;
+  collection: "articles" | "reports";
+  next: Destination[];
+}
+
+const { entry, collection, next } = Astro.props;
+const { meta, title, standfirst, sections } = entry.data;
+const scenario = "scenario" in entry.data ? entry.data.scenario : undefined;
+
+const headed = sections.map((section) => ({ ...section, id: slugify(section.heading) }));
+const headings = headed.map((section) => ({ depth: 2, slug: section.id, text: section.heading }));
+---
+
+<Reading
+  title={meta.title}
+  description={meta.description}
+  ogType={meta.ogType}
+  ogDescription={meta.ogDescription}
+  ogImage={meta.ogImage}
+  canonical={meta.canonical}
+  headings={headings}
+  editCollection={collection}
+  editEntry={entry.id}
+>
+  <article class="longform">
+    {scenario && <p class="scenario" data-sk-edit="scenario">{scenario}</p>}
+
+    <h1 data-sk-edit="title">{title}</h1>
+    <p class="standfirst" data-sk-edit="standfirst">{standfirst}</p>
+
+    {
+      headed.map((section, index) => (
+        <Fragment>
+          <h2 id={section.id} data-sk-edit={`sections[${index}].heading`}>
+            {section.heading}
+          </h2>
+          {section.body.map((para, line) => (
+            <p data-sk-edit={`sections[${index}].body[${line}]`}>{para}</p>
+          ))}
+        </Fragment>
+      ))
+    }
+
+    <ReadNext items={next} />
+  </article>
+</Reading>
+
+<style>
+  /* The scenario reads as a label rather than as the first sentence: it is
+     what this run is published *as*, and confusing it with the piece's own
+     opening line is the one misreading that matters here. */
+  .scenario {
+    font-size: var(--text-small);
+    color: var(--pending);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-block-end: var(--space-2xs);
+  }
+
+  .standfirst {
+    font-size: var(--text-lead);
+    color: var(--overlay);
+    margin-block-start: var(--space-s);
+  }
+
+  .longform h2 {
+    margin-block-start: var(--space-xl);
+  }
+
+  .longform p {
+    margin-block-start: var(--space-s);
+  }
+</style>

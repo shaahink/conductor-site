@@ -20,7 +20,8 @@ import {
   articleSchema,
   conceptSchema,
   homePageSchema,
-  reportSchema
+  reportSchema,
+  sectionPageSchema
 } from "./content/schema.js";
 
 const homePage = defineCollection({
@@ -57,4 +58,13 @@ const reports = defineCollection({
   schema: reportSchema
 });
 
-export const collections = { homePage, concepts, articles, reports };
+/* The three section pages — the copy on `/concepts/`, `/articles/` and
+   `/runs/`, and the labels in the top bar. Content rather than markup, so the
+   placeholder gate can see it: this repo has already shipped a placeholder
+   that lived in a component, where nothing looks. */
+const sectionPages = defineCollection({
+  loader: glob({ pattern: "*.yaml", base: "./src/content/sections" }),
+  schema: sectionPageSchema
+});
+
+export const collections = { homePage, sectionPages, concepts, articles, reports };

@@ -1,0 +1,20 @@
+---
+/* /articles/<slug>/ — one long-form piece. */
+import type { GetStaticPaths } from "astro";
+import LongForm from "../../layouts/LongForm.astro";
+import { ordered, readNextOf } from "../../lib/collections.js";
+
+export const getStaticPaths = (async () => {
+  const articles = await ordered("articles");
+  return articles.map((entry) => ({ params: { entry: entry.id }, props: { entry } }));
+}) satisfies GetStaticPaths;
+
+const { entry } = Astro.props;
+const next = (await readNextOf("articles", entry)).map((other) => ({
+  href: `/articles/${other.id}/`,
+  title: other.data.title,
+  summary: other.data.standfirst
+}));
+---
+
+<LongForm entry={entry} collection="articles" next={next} />

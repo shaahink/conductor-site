@@ -1,16 +1,14 @@
 ---
-/* The quiet top bar: wordmark, the three sections, the theme toggle.
+/* The quiet top bar: wordmark, the sections, the theme toggle.
 
-   The section list is a literal here and it should not stay one — S2.2
-   renders the nav from the collections themselves, so a section that exists
-   and a section that is linked cannot disagree. Until the collections exist
-   there is nothing to render it from, and a link to a page nobody has built
-   is more honest than an empty bar. */
-const sections = [
-  { href: "/concepts/", label: "Concepts" },
-  { href: "/articles/", label: "Articles" },
-  { href: "/runs/", label: "Runs" }
-];
+   The section list was a literal here and is not one any more (S2.2). It is
+   built from `src/content/sections/` — the same three entries that carry each
+   index page's own copy — and a section whose collection is still empty is
+   left out. A section that exists and a section that is linked can no longer
+   disagree, because there is only one list. */
+import { navSections } from "../lib/collections.js";
+
+const sections = await navSections();
 
 /* `aria-current="page"` on the section a reader is inside, including its
    children: /concepts/context-engineering/ is still Concepts. */

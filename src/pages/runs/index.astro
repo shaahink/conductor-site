@@ -1,0 +1,17 @@
+---
+/* /runs/ — the reports. The one line under each title is the published
+   scenario rather than the standfirst, because the first thing a reader wants
+   from this list is whether a run's shape matches their own situation. */
+import SectionIndex from "../../layouts/SectionIndex.astro";
+import { ordered, sectionPage } from "../../lib/collections.js";
+
+const page = await sectionPage("reports");
+const items = (await ordered("reports")).map((entry) => ({
+  href: `/runs/${entry.id}/`,
+  order: entry.data.order,
+  title: entry.data.title,
+  summary: entry.data.scenario
+}));
+---
+
+<SectionIndex page={page} items={items} ordinalLabel="Report" />

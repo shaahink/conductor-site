@@ -1,0 +1,22 @@
+---
+/* /runs/<slug>/ — one run report. The route is `/runs/` rather than
+   `/reports/`: a reader looking for what an autonomous run costs is looking
+   for the run, not for the document about it. */
+import type { GetStaticPaths } from "astro";
+import LongForm from "../../layouts/LongForm.astro";
+import { ordered, readNextOf } from "../../lib/collections.js";
+
+export const getStaticPaths = (async () => {
+  const reports = await ordered("reports");
+  return reports.map((entry) => ({ params: { entry: entry.id }, props: { entry } }));
+}) satisfies GetStaticPaths;
+
+const { entry } = Astro.props;
+const next = (await readNextOf("reports", entry)).map((other) => ({
+  href: `/runs/${other.id}/`,
+  title: other.data.title,
+  summary: other.data.scenario
+}));
+---
+
+<LongForm entry={entry} collection="reports" next={next} />

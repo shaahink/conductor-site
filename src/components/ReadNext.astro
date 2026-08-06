@@ -1,0 +1,79 @@
+---
+/* Where to go from here.
+   ---------------------------------------------------------------------------
+   The site is a spine rather than a pile, so every page ends by naming the
+   next one or two. The list is content — an entry's `readNext` — and it is
+   resolved by `ordered()`, which fails the build on a slug that names nothing.
+   A dead end at the exact moment a reader decided to keep going is the worst
+   place on a site to have one.
+
+   Rendered only when there is something to name: a heading over an empty list
+   is a promise the page did not keep. */
+export interface Destination {
+  href: string;
+  title: string;
+  summary: string;
+}
+
+interface Props {
+  items: Destination[];
+}
+
+const { items } = Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <nav class="read-next" aria-labelledby="read-next-title">
+      <h2 id="read-next-title">Read next</h2>
+      <ul>
+        {items.map((item) => (
+          <li>
+            <a href={item.href}>{item.title}</a>
+            <p>{item.summary}</p>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<style>
+  .read-next {
+    margin-block-start: var(--space-2xl);
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-l);
+  }
+
+  .read-next h2 {
+    font-size: var(--text-micro);
+    font-weight: var(--weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--overlay);
+  }
+
+  .read-next ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-s);
+    margin-block-start: var(--space-xs);
+  }
+
+  .read-next a {
+    font-size: var(--text-h3);
+    font-weight: var(--weight-bold);
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  .read-next a:hover {
+    color: var(--accent);
+  }
+
+  .read-next p {
+    color: var(--overlay);
+    margin-block-start: var(--space-3xs);
+  }
+</style>

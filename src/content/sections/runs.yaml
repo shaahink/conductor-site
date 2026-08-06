@@ -1,0 +1,16 @@
+meta:
+  title: "The runs"
+  description: "Reports from real autonomous runs, published as scenarios rather
+    than as clients. What each one delivered, what it cost, and where it fell
+    short."
+  ogDescription: "Reports from real autonomous runs, published as scenarios rather
+    than as clients."
+  canonical: "/runs/"
+
+collection: "reports"
+order: 3
+navLabel: "Runs"
+title: "The runs"
+standfirst: "Every report here is a real run, published as the shape of the work
+  rather than as whose work it was. The numbers are recomputed from the run
+  store, and the run that ended one checkpoint short is in the list on purpose."

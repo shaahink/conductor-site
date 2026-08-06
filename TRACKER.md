@@ -4,25 +4,31 @@
 
 ## Handoff (overwrite this block, ≤12 lines, no history)
 
-last: **session 2** delivered S1.4 and closed bug #1, so stage S1 is complete. QA of session 1:
-  every claim holds on fresh runs — check 0 errors and 17/17 tests, build green at 3 pages with
-  4 annotations resolving, `headers`/`content`/`editor` regenerate with no diff, all five
-  evidence files present. S1.4's escapes are gone and the gate was proven to bite by putting a
-  TODO and a reserved domain back (docs/evidence/S1.4-placeholders.txt).
-watch out: `checkPlaceholders` reads the `editable` map, so a placeholder written into a
-  **component** is invisible to it — the footer printed `New Site` on every page for three
-  sessions (cb40575). Grep built HTML, not only content.
-tooling: `conductor bg` cannot exec bare `npm` here (MODULE_NOT_FOUND) — use `npm.cmd`, or
-  `node node_modules/astro/bin/astro.mjs preview` for a server; the flag is `--purpose`, and
-  `bg stop` takes the numeric PID. A failed Astro build exits 9 on this box, not 1.
-next: **S2.1** — the three collections from SPEC Part III: Zod-only schemas in `schema.ts`,
-  loaders in `content.config.ts`, an `editable` entry each, `evidence` as keys not values.
-  Keep the `notes` section's shape when reworking `homePage`; its key still reads `notes` while
-  the front page shows it as "How to read this".
+last: **session 3** delivered S2.1 and S2.2, and fixed the planning session's `site` URL — the
+  short alias belongs to a stranger's rail site, so canonicals now read
+  `conductor-site-virid.vercel.app` (a68c0f3). **S7.1 must re-confirm that against the deployed
+  URL, not against the config.** QA of session 2: every S1 claim holds on fresh runs — 0 errors,
+  build green, generated files regenerate with no diff, all five evidence files present. No
+  findings.
+now on disk: four collections. `sectionPages` was added beyond the plan's three, because index
+  copy written into a component is invisible to `checkPlaceholders` — the same hole the footer
+  fell through. `src/lib/collections.ts` is the gate: `ordered()` throws on a slug that does not
+  match its file name, on a duplicate `order`, and on a dangling `readNext`, and it runs because
+  a page renders it. Two concepts exist so `readNext` resolves to something real. Build is 10
+  pages, 56 annotations, 8 content entries placeholder-clean.
+next: **S2.3** — every page's annotations already resolve and `check` is 0 errors, so most of it
+  is auditing `meta.description` / `meta.ogDescription` on all eight entries and recording it.
+  Then **S2.4**: write `context-engineering` end to end against SPEC Part I's three litmus tests
+  — it is currently a real but short worked example. Do not render an evidence section; the
+  corpus does not exist until S3.
 open: bug #2 — `--overlay` prose is ~3.3:1: over the Face's own bar for the role, under WCAG AA
-  for normal text (home lead, widget context strip); it is S7.2's call, not a CSS tweak.
-  `Toc.astro` + `Reading.astro` are still unrendered until S2.4. The wordmark `field guide` and
-  the footer's `Shahin Kiassat` are owner calls.
+  for normal text; S7.2's call, not a CSS tweak. Evidence keys use **published** scenario labels
+  (`the-long-build`, `the-engine-run`, `the-fleet-round`) — S3.2's `anonymise.json` must map run
+  ids to exactly those. The wordmark `field guide` and the footer's owner name are owner calls.
+tooling: `conductor bg` cannot exec bare `npm` here — use `npm.cmd`; the flag is `--purpose`, and
+  it cannot take a quoted compound command, so run the battery in the foreground (it is ~10s).
+  A failed Astro build exits 9, not 1. **Never spell a recursive glob inside a `/* */` comment in
+  a .ts file** — it closes the comment and `astro sync` dies with PARSE_ERROR.
 
 
 ## Baseline numbers (from run.db)

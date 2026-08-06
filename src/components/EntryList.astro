@@ -1,0 +1,92 @@
+---
+/* The list an index page is. Three sections use it and it is the same list in
+   all three, because a reader crossing from /concepts/ to /runs/ should not
+   have to learn a second way of reading a list.
+
+   No `data-sk-edit` in here, deliberately. The strings shown are other
+   entries' titles, and an index page declares one collection and one entry to
+   the editor — the section page whose own copy it is showing. Annotating a
+   neighbour's title would point the editor at the wrong file, which is the one
+   mistake the inline editor must not make easy. Titles are edited on the page
+   they belong to. */
+export interface Item {
+  href: string;
+  /** Its place in the reading order, shown so the spine is visible. */
+  order: number;
+  title: string;
+  /** One line: a concept's `oneLine`, a piece's `standfirst`, a report's
+      `scenario`. Different fields, the same job. */
+  summary: string;
+}
+
+interface Props {
+  items: Item[];
+  /** How the numbers read aloud, for a screen reader that would otherwise get
+      a bare digit before every title. */
+  ordinalLabel: string;
+}
+
+const { items, ordinalLabel } = Astro.props;
+---
+
+<ol class="entries">
+  {
+    items.map((item) => (
+      <li>
+        <a href={item.href}>
+          <span class="ordinal">
+            <span class="visually-hidden">{ordinalLabel} </span>
+            {item.order}
+          </span>
+          <span class="entry-title">{item.title}</span>
+        </a>
+        <p>{item.summary}</p>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .entries {
+    list-style: none;
+    padding: 0;
+    margin-block-start: var(--space-xl);
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  .entries li {
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-s);
+  }
+
+  .entries a {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2xs);
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  /* Mono, because the number is a position in a sequence rather than a word —
+     the same reason every other machine fact on this site is mono. */
+  .ordinal {
+    font-family: var(--mono);
+    font-size: var(--text-small);
+    color: var(--pending);
+  }
+
+  .entry-title {
+    font-size: var(--text-h3);
+    font-weight: var(--weight-bold);
+  }
+
+  .entries a:hover .entry-title {
+    color: var(--accent);
+  }
+
+  .entries p {
+    color: var(--overlay);
+    margin-block-start: var(--space-3xs);
+  }
+</style>

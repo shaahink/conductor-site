@@ -92,4 +92,5 @@ tryIt:
       prompt carries. This is the carry-forward move with nothing else in the
       way."
 
-readNext: []
+readNext:
+  - "token-economics"

@@ -1,0 +1,149 @@
+﻿=== S2.2 evidence: index pages, the nav, and readNext that has to resolve ===
+
+--- RED 1: a readNext that names an entry nobody has written ---
+src/content/concepts/token-economics.yaml gains readNext: durable-execution (concept 7, not written yet)
+
+
+concepts/token-economics: readNext names "durable-execution", which is not an entry in concepts. Known entries: 
+context-engineering, token-economics.
+
+
+
+(reverted)
+
+--- GREEN: npm run check ---
+
+> check
+> astro check && node --test "test/**/*.test.mjs"
+
+22:55:40 [content] Syncing content
+22:55:40 [content] Synced content
+22:55:40 [types] Generated 477ms
+22:55:40 [check] Getting diagnostics for Astro files in C:\Code\conductor-site...
+Result (26 files): 
+- 0 errors
+- 0 warnings
+- 0 hints
+
+✔ schema.ts imports nothing but Zod (1.5354ms)
+✔ every collection the build defines is also editable (0.1925ms)
+✔ every editable collection points at content that exists (0.617ms)
+✔ evidence names a key, never a value (0.9749ms)
+✔ a concept is the five moves, and every one of them is required (3.4496ms)
+✔ a concept's idea is three to six paragraphs, and cites at least one line (0.5173ms)
+✔ a concept cannot type a figure into its evidence (0.3729ms)
+✔ articles and reports are the same shape, and a report also names its scenario (1.2358ms)
+✔ tokens.css declares both of the Face's default schemes (2.2016ms)
+✔ every block declares all sixteen roles, and no role the Face does not have (0.3079ms)
+✔ the repeated latte blocks are identical (0.3415ms)
+✔ every role clears the Face's legibility bar on its own base (0.6542ms)
+✔ the quiet ladder is ordered: pending recedes furthest (0.3314ms)
+✔ the bar bites: stock Catppuccin Latte yellow fails it, the shipped yellow passes (0.2278ms)
+✔ latte's five darkened roles are the Face's values, not upstream Catppuccin's (0.2698ms)
+✔ the layout has an inline script to pin (0.8915ms)
+✔ every inline script's sha256 is declared in the CSP (0.8178ms)
+✔ the CSP pins no hash that no longer belongs to a script (0.1791ms)
+✔ the inline snippet still does the two things that must beat first paint (0.3306ms)
+✔ the site has stylesheets to check (1.2029ms)
+✔ no colour literal outside tokens.css (1.5613ms)
+✔ no font-size literal outside type.css (0.4557ms)
+✔ no font-family names a face; every family comes through a cssVariable (1.0975ms)
+✔ every font cssVariable astro.config declares is consumed by type.css (0.6222ms)
+✔ no physical left/right properties (0.7076ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 231.1448
+
+--- GREEN: npm run build ---
+
+> build
+> astro build
+
+22:55:45 [@shaahink/sitekit:check-placeholders] no placeholder copy in 8 content entrys
+22:55:45 [content] Syncing content
+22:55:45 [content] Synced content
+22:55:45 [types] Generated 605ms
+22:55:45 [build] output: "static"
+22:55:45 [build] mode: "static"
+22:55:45 [build] directory: C:\Code\conductor-site\dist\
+22:55:45 [build] Collecting build info...
+22:55:45 [build] ✓ Completed in 664ms.
+22:55:45 [build] Building static entrypoints...
+22:55:46 [assets] Copying fonts (3 files)...
+22:55:46 [vite] ✓ built in 380ms
+22:55:46 [vite] ✓ built in 73ms
+22:55:46 [build] Rearranging server assets...
+
+ generating static routes 
+22:55:46   ├─ /404.html (+10ms) 
+22:55:46   ├─ /articles/what-a-run-costs/index.html (+17ms) 
+22:55:46   ├─ /articles/index.html (+5ms) 
+22:55:46   ├─ /concepts/context-engineering/index.html (+5ms) 
+22:55:46   ├─ /concepts/token-economics/index.html (+3ms) 
+22:55:46   ├─ /concepts/index.html (+5ms) 
+22:55:46   ├─ /edit/index.html22:55:46 [WARN] [csp] A resource was added to `style-src-elem`, but `style-src` also defines custom resources ('self'). Because `style-src-elem` overrides `style-src` for its scope (browsers do not fall back), those resources will not apply there. Add them to `style-src-elem` as well if needed.
+22:55:46 [WARN] [csp] A resource was added to `style-src-attr`, but `style-src` also defines custom resources ('self'). Because `style-src-attr` overrides `style-src` for its scope (browsers do not fall back), those resources will not apply there. Add them to `style-src-attr` as well if needed.
+ (+5ms) 
+22:55:46   ├─ /robots.txt (+5ms) 
+22:55:46   ├─ /runs/the-fleet-round/index.html (+8ms) 
+22:55:46   ├─ /runs/index.html (+7ms) 
+22:55:46   ├─ /sitemap.xml (+5ms) 
+22:55:46   ├─ /index.html (+8ms) 
+22:55:46 ✓ Completed in 175ms.
+
+22:55:46 [build] ✓ Completed in 686ms.
+22:55:46 [@shaahink/sitekit:editor-route] edit/index.html: dropped 7 build-wide style hashes from style-src-elem, which were switching off the 'unsafe-inline' Google's sign-in stylesheet needs
+22:55:46 [WARN] [@shaahink/sitekit:editor-route] sitekit: /sk-editor.webmanifest has no icons, because this site ships none of favicon.svg, icon.svg, favicon.png or favicon.ico in its publicDir. The editor will work and will never be offered as an installable app. Add one of those files, or pass editorRoute({ app: { icons: [...] } }).
+22:55:46 [@shaahink/sitekit:check-annotations] 56 annotations on 8 pages all resolve
+22:55:46 [build] 10 page(s) built in 1.42s
+22:55:46 [build] Complete!
+
+--- the nav, read out of the BUILT html (not the content) ---
+aria-label="Sections" data-astro-cid-nazmfhjt><ul data-astro-cid-nazmfhjt><li data-astro-cid-nazmfhjt><a href="/concepts/" data-astro-cid-nazmfhjt>Concepts</a></li><li data-astro-cid-nazmfhjt><a href="/articles/" data-astro-cid-nazmfhjt>Articles</a></li><li data-astro-cid-nazmfhjt><a href="/runs/" data-astro-cid-nazmfhjt>Runs</a></li></ul></nav>
+
+--- /concepts/ lists both entries in order, from the built html ---
+ordinal" data-astro-cid-ospazmtw><span class="visually-hidden" data-astro-cid-ospazmtw>Concept </span>3</span><span class="entry-title" data-astro-cid-ospazmtw>Context engineering
+ordinal" data-astro-cid-ospazmtw><span class="visually-hidden" data-astro-cid-ospazmtw>Concept </span>4</span><span class="entry-title" data-astro-cid-ospazmtw>Token economics and context budgets
+
+--- readNext resolved to a real entry, from the built html ---
+read-next" aria-labelledby="read-next-title" data-astro-cid-qyi3uhi5><h2 id="read-next-title" data-astro-cid-qyi3uhi5>Read next</h2><ul data-astro-cid-qyi3uhi5><li data-astro-cid-qyi3uhi5><a href="/concepts/token-economics/" data-astro-cid-qyi3uhi5>Token economics and context budgets</a><p data-astro-cid-qyi3uhi5>A session&#39;s cost is not its length. It is roughly its length squared, and that changes every decision about it.</p></li></ul></nav>
+
+--- generated files regenerate with no diff ---
+
+> headers
+> sitekit-headers
+
+vercel.json ← headers.config.mjs (951 bytes)
+
+> content
+> sitekit-normalize
+
+content normalized: 2 file(s) rewritten
+
+> editor
+> sitekit-editor-css
+
+editor stylesheet → public/editor-panel.css (36170 bytes)
+editor stylesheet → public/editor-inline.css (15999 bytes)
+ M docs/SPEC.md
+ M src/components/TopBar.astro
+ M src/content.config.ts
+ M src/content/concepts/context-engineering.yaml
+ M src/content/schema.ts
+ M test/collections.test.mjs
+?? docs/evidence/S2.2-indexes.txt
+?? src/components/EntryList.astro
+?? src/components/ReadNext.astro
+?? src/content/concepts/token-economics.yaml
+?? src/content/sections/
+?? src/layouts/LongForm.astro
+?? src/layouts/SectionIndex.astro
+?? src/lib/
+?? src/pages/articles/
+?? src/pages/concepts/
+?? src/pages/runs/

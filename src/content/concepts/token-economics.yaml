@@ -1,0 +1,106 @@
+meta:
+  title: "Token economics and context budgets"
+  description: "What an agent session costs, why the cost is not linear in its
+    length, and how a ceiling gets measured from a system's own history rather
+    than guessed."
+  ogDescription: "What an agent session costs, and how a ceiling gets measured
+    rather than guessed."
+  canonical: "/concepts/token-economics/"
+
+slug: "token-economics"
+order: 4
+title: "Token economics and context budgets"
+alsoKnownAs:
+  - "context budgets"
+  - "LLM cost engineering"
+oneLine: "A session's cost is not its length. It is roughly its length squared,
+  and that changes every decision about it."
+
+theIdea:
+  - "Charge for an agent session by the turn and the arithmetic is
+    uncomfortable. Each turn re-sends the whole conversation, so a session of n
+    turns pays for its early context n times. The practical shape of the bill is
+    closer to quadratic than linear, which is why a session that runs twice as
+    long costs rather more than twice as much and delivers rather less than
+    twice as much."
+  - "A ceiling is the usual answer, and the usual ceiling is guessed. Somebody
+    picks a round number that feels responsible. The number that matters,
+    though, is already in the system's own history: the size of the sessions
+    that actually finished something. A ceiling below that is not thrift. It
+    interrupts the typical piece of work rather than the outsized one, and the
+    work gets done anyway across more sessions, each of which pays its start-up
+    cost again."
+  - "So a budget wants two numbers, both measured. The ceiling, from the
+    distribution of sessions that closed work. And the point before it where the
+    agent is told to wrap up, placed far enough back that finishing and
+    committing still fits. That second gap is an absolute quantity — writing a
+    handoff and committing costs what it costs — so expressing it as a
+    percentage of the ceiling shrinks it exactly when the ceiling is tightened,
+    which is the moment it most needs to hold."
+  - "The last piece is that a ceiling is a rail, not a wall, and only if the
+    agent cooperates with it. A wrap-up notice the agent rides straight past
+    converts nothing: the session still ends by force, mid-turn, with whatever
+    it had not committed lost. Whether the nudge is obeyed is itself a
+    measurable rate, and it is the one that tells you whether the budget is a
+    budget or a decoration."
+
+theProblem:
+  - "Without measurement the failure is invisible from the inside, because every
+    session looks fine. Work lands, checkpoints close, nothing errors. What a
+    ceiling set too low actually produces is more sessions, each re-reading the
+    same context to get oriented, and a cost per unit of delivered work that
+    goes up while the cost per session goes down. Watch the wrong one of those
+    two numbers and a tighter cap looks like a saving."
+  - "The second failure is trusting the wrap-up to work because it was sent.
+    Delivery is not conversion. A notice that arrives so routinely, and so far
+    before the work could plausibly be finished, teaches the agent to ignore it
+    — and then the cooperative ending never happens and every session ends the
+    expensive way."
+
+inConductor:
+  mechanism:
+    - "The ceiling and the wrap-up point are plan configuration, and the agent
+      is told both of them in its own prompt — as a budget, in tokens, with the
+      arithmetic spelled out. That is deliberate: an agent that knows its cost
+      grows with the square of the session can trade against it, where an agent
+      told only to be efficient can only feel guilty."
+    - "The tuning side is a verb rather than a spreadsheet. It reads the run
+      store, finds the sessions that actually closed work, and prescribes a
+      ceiling and a ratio that clear the largest of them — then reports whether
+      the nudges it already sent were obeyed or ridden past. A rail that is
+      delivered and ignored is named as its own finding, because it is a
+      different problem from a rail that is set in the wrong place."
+  citations:
+    - path: "src/Conductor.Core/PromptBuilder.Budget.cs"
+      line: 29
+      note: "The session's own ceiling and wrap-up point are written into its prompt,
+        stated as budget rather than as virtue."
+    - path: "src/Conductor.Core/Budget/BudgetProfile.cs"
+      line: 51
+      note: "Nudge conversion: how often the cooperative rail actually ended a
+        session, rather than the hard kill doing it."
+    - path: "src/Conductor.Core/Budget/BudgetProfile.cs"
+      line: 58
+      note: "The prescribed ratio is chosen so the nudge clears the largest session
+        that closed work, rather than being picked."
+
+evidence:
+  runs:
+    - "the-long-build"
+    - "the-engine-run"
+  figures:
+    - "tokensIn"
+    - "tokensOut"
+    - "cacheRead"
+    - "costPerSession"
+
+tryIt:
+  - command: "conductor budget"
+    note: "Prescribes a ceiling and a wrap-up ratio from your own store, and names
+      the failures it found rather than only printing numbers."
+  - command: "conductor money"
+    note: "The same store from the accounting side: what was spent, by category, and
+      what each unit of delivered work cost."
+
+readNext:
+  - "context-engineering"

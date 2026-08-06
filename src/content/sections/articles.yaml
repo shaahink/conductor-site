@@ -1,0 +1,16 @@
+meta:
+  title: "The articles"
+  description: "Longer pieces on what autonomous runs cost, why verification has
+    to be a separate program, how a token budget gets measured, and what to do
+    when a system's own record of itself is wrong."
+  ogDescription: "Longer pieces on cost, verification, budgets, and telemetry you
+    cannot trust."
+  canonical: "/articles/"
+
+collection: "articles"
+order: 2
+navLabel: "Articles"
+title: "The articles"
+standfirst: "Four longer pieces, each built around at least one number nobody
+  else publishes. They are the arguments the concept pages are too short to
+  make."

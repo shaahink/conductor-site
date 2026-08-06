@@ -1,0 +1,58 @@
+---
+/* An index page: the section's own copy, then its entries in reading order.
+   All three sections are this, parameterised — /concepts/, /articles/ and
+   /runs/ differ only in which field of an entry supplies the one line under
+   its title.
+
+   Base rather than Reading: an index is a list, not a reading page, so it has
+   no in-page table of contents to be sticky beside.
+
+   The editor scope is the *section page* — the one file whose words are on
+   this page. The listed titles belong to other entries and are edited there. */
+import type { CollectionEntry } from "astro:content";
+import EntryList, { type Item } from "../components/EntryList.astro";
+import Base from "./Base.astro";
+
+interface Props {
+  page: CollectionEntry<"sectionPages">;
+  items: Item[];
+  /** Read before each entry's number by a screen reader: "Concept 3". */
+  ordinalLabel: string;
+}
+
+const { page, items, ordinalLabel } = Astro.props;
+const { meta, title, standfirst } = page.data;
+---
+
+<Base
+  title={meta.title}
+  description={meta.description}
+  ogType={meta.ogType}
+  ogDescription={meta.ogDescription}
+  ogImage={meta.ogImage}
+  canonical={meta.canonical}
+  editCollection="sectionPages"
+  editEntry={page.id}
+>
+  <main class="section-index">
+    <h1 data-sk-edit="title">{title}</h1>
+    <p class="standfirst" data-sk-edit="standfirst">{standfirst}</p>
+
+    <EntryList items={items} ordinalLabel={ordinalLabel} />
+  </main>
+</Base>
+
+<style>
+  .section-index {
+    inline-size: min(100%, var(--measure));
+    margin-inline: auto;
+    padding-block: var(--space-2xl) var(--space-3xl);
+    padding-inline: var(--space-m);
+  }
+
+  .standfirst {
+    font-size: var(--text-lead);
+    color: var(--overlay);
+    margin-block-start: var(--space-s);
+  }
+</style>

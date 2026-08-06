@@ -1,0 +1,189 @@
+---
+/* A concept page: the five moves, in the order SPEC Part III sets.
+   ---------------------------------------------------------------------------
+   The move headings are structure, not copy — every concept page has the same
+   five, which is what makes the spine readable as one document — so they live
+   here beside the markup that renders them, and their ids are written once and
+   handed to both the anchor and the table of contents.
+
+   There is no evidence section yet. The keys are in the entry and nothing
+   renders them, because the corpus they name does not exist until S3: the
+   strip that turns `softBreaks` into a number arrives with the harvest. A
+   section that printed the keys themselves would be a placeholder wearing
+   content's clothes, and this site's whole argument is against those. */
+import type { GetStaticPaths } from "astro";
+import ReadNext from "../../components/ReadNext.astro";
+import Reading from "../../layouts/Reading.astro";
+import { ordered, readNextOf } from "../../lib/collections.js";
+
+export const getStaticPaths = (async () => {
+  const concepts = await ordered("concepts");
+  return concepts.map((entry) => ({ params: { entry: entry.id }, props: { entry } }));
+}) satisfies GetStaticPaths;
+
+const { entry } = Astro.props;
+const { meta, title, alsoKnownAs, oneLine, theIdea, theProblem, inConductor, tryIt } = entry.data;
+
+const next = (await readNextOf("concepts", entry)).map((other) => ({
+  href: `/concepts/${other.id}/`,
+  title: other.data.title,
+  summary: other.data.oneLine
+}));
+
+/* One list, read by the anchors and by the table of contents, so the two
+   cannot drift apart. */
+const moves = [
+  { id: "the-idea", text: "The idea" },
+  { id: "the-problem", text: "What goes wrong without it" },
+  { id: "in-conductor", text: "How Conductor does it" },
+  { id: "try-it", text: "Try it" }
+];
+const headings = moves.map((move) => ({ depth: 2, slug: move.id, text: move.text }));
+---
+
+<Reading
+  title={meta.title}
+  description={meta.description}
+  ogType={meta.ogType}
+  ogDescription={meta.ogDescription}
+  ogImage={meta.ogImage}
+  canonical={meta.canonical}
+  headings={headings}
+  editCollection="concepts"
+  editEntry={entry.id}
+>
+  <article class="concept">
+    <h1 data-sk-edit="title">{title}</h1>
+    <p class="lead" data-sk-edit="oneLine">{oneLine}</p>
+
+    {
+      alsoKnownAs.length > 0 && (
+        <p class="aka">
+          <span class="aka-label">Also known as</span>
+          {alsoKnownAs.map((name, index) => (
+            <span class="aka-name" data-sk-edit={`alsoKnownAs[${index}]`}>
+              {name}
+            </span>
+          ))}
+        </p>
+      )
+    }
+
+    <h2 id={moves[0]!.id}>{moves[0]!.text}</h2>
+    {theIdea.map((para, index) => <p data-sk-edit={`theIdea[${index}]`}>{para}</p>)}
+
+    <h2 id={moves[1]!.id}>{moves[1]!.text}</h2>
+    {theProblem.map((para, index) => <p data-sk-edit={`theProblem[${index}]`}>{para}</p>)}
+
+    <h2 id={moves[2]!.id}>{moves[2]!.text}</h2>
+    {
+      inConductor.mechanism.map((para, index) => (
+        <p data-sk-edit={`inConductor.mechanism[${index}]`}>{para}</p>
+      ))
+    }
+
+    {/* The citations carry no annotation: `inConductor.citations` is on the
+        collection's omit list, so there is no field in the editor's form model
+        for one, and an annotation naming a path with no field fails the build.
+        That is the right answer — a line number in someone else's repository
+        is verified against a named commit at S4.4, not typed into a form. */}
+    <ul class="citations">
+      {
+        inConductor.citations.map((cite) => (
+          <li>
+            <code class="mono">
+              {cite.path}:{cite.line}
+            </code>
+            <span class="cite-note">{cite.note}</span>
+          </li>
+        ))
+      }
+    </ul>
+
+    <h2 id={moves[3]!.id}>{moves[3]!.text}</h2>
+    <dl class="try-it">
+      {
+        tryIt.map((step, index) => (
+          <Fragment>
+            <dt>
+              <code class="mono" data-sk-edit={`tryIt[${index}].command`}>
+                {step.command}
+              </code>
+            </dt>
+            <dd data-sk-edit={`tryIt[${index}].note`}>{step.note}</dd>
+          </Fragment>
+        ))
+      }
+    </dl>
+
+    <ReadNext items={next} />
+  </article>
+</Reading>
+
+<style>
+  .lead {
+    font-size: var(--text-lead);
+    color: var(--overlay);
+    margin-block-start: var(--space-s);
+  }
+
+  .aka {
+    font-size: var(--text-small);
+    color: var(--pending);
+    margin-block-start: var(--space-xs);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+
+  .aka-label::after {
+    content: ":";
+  }
+
+  .aka-name + .aka-name::before {
+    content: "· ";
+  }
+
+  .concept h2 {
+    margin-block-start: var(--space-xl);
+  }
+
+  .concept p {
+    margin-block-start: var(--space-s);
+  }
+
+  /* Mono and quiet: a file and a line in someone else's repository is machine
+     truth, and the sentence beside it is the only part written for a reader. */
+  .citations {
+    list-style: none;
+    padding: 0;
+    margin-block-start: var(--space-m);
+    border-inline-start: var(--rule);
+    padding-inline-start: var(--space-s);
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .citations code {
+    font-size: var(--text-small);
+    color: var(--teal);
+  }
+
+  .cite-note {
+    display: block;
+    font-size: var(--text-small);
+    color: var(--overlay);
+  }
+
+  .try-it {
+    margin-block-start: var(--space-m);
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  .try-it dd {
+    margin-inline-start: 0;
+    color: var(--overlay);
+    margin-block-start: var(--space-3xs);
+  }
+</style>

@@ -1,0 +1,17 @@
+---
+/* /concepts/ — the spine, in reading order. Arrangement only: every word on
+   this page comes from src/content/sections/concepts.yaml or from the entries
+   themselves. */
+import SectionIndex from "../../layouts/SectionIndex.astro";
+import { ordered, sectionPage } from "../../lib/collections.js";
+
+const page = await sectionPage("concepts");
+const items = (await ordered("concepts")).map((entry) => ({
+  href: `/concepts/${entry.id}/`,
+  order: entry.data.order,
+  title: entry.data.title,
+  summary: entry.data.oneLine
+}));
+---
+
+<SectionIndex page={page} items={items} ordinalLabel="Concept" />

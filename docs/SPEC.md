@@ -340,6 +340,20 @@ Seven stages, 28 checkpoints. Detail in [`TRACKER.md`](../TRACKER.md).
 | **S6 — The reports** | three reports + `/runs`, anonymisation rule enforced |
 | **S7 — Ship** | SEO/OG, a11y pass, headers regenerated, Vercel project live, README, owner gate |
 
+**Two S7 requirements added 2026-08-06, owner's call:**
+
+1. **A short domain, not the generated Vercel hostname.** `astro.config` `site` is the one line
+   every canonical, `hreflang`, `og:url`, `og:image`, sitemap, robots entry and footer credit
+   derives from, so the domain has to be settled **before** S7.1 runs, not after. If it is not
+   settled when S7.1 arrives, park rather than shipping a URL that has to be re-generated.
+2. **The front page has to earn the second click.** It is currently unspecified beyond the layout
+   shell in Part II, and the shell is not a home page. The one idea in Part I is the brief: *ten
+   concepts the market is hiring for, each worked end to end in a real orchestrator, with what it
+   cost.* A cold reader should be able to see, above the fold, what the site is and what makes it
+   different from every other page on this topic — which is the evidence strip, not the prose.
+   Lead with the corpus numbers rendered from `corpus.json`, then the ten concepts as a list a
+   reader can enter at any point.
+
 ---
 
 ## Appendix A — The run corpus (measured 2026-08-06)

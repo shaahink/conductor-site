@@ -1,0 +1,15 @@
+meta:
+  title: "The concepts"
+  description: "Ten concepts in agentic engineering, each stated plainly, then
+    shown working inside a real orchestrator, then costed against a real run."
+  ogDescription: "Ten concepts in agentic engineering, each one worked end to end
+    in a real orchestrator."
+  canonical: "/concepts/"
+
+collection: "concepts"
+order: 1
+navLabel: "Concepts"
+title: "The concepts"
+standfirst: "Ten ideas the market is hiring for, in reading order. Each one is
+  stated so it is useful anywhere, then shown working in one orchestrator, then
+  costed. Read them in order or start where your problem is."
