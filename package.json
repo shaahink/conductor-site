@@ -7,7 +7,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check",
+    "check": "astro check && node --test \"test/**/*.test.mjs\"",
+    "test": "node --test \"test/**/*.test.mjs\"",
     "headers": "sitekit-headers",
     "content": "sitekit-normalize",
     "editor": "sitekit-editor-css"

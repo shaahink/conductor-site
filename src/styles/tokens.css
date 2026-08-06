@@ -1,0 +1,111 @@
+/* The sixteen colour roles, in both of Conductor's default schemes.
+
+   These are not "a palette inspired by Catppuccin". They are the exact values
+   Conductor's terminal Face ships, lifted from its theme registry —
+   `face-go/internal/widgets/style.go`, mocha at :58 and latte at :84 — so the
+   site and the tool are visibly one thing. (The plan's brief says `color.go`;
+   that file holds only the Hex/Luminance helpers. The palettes are in
+   style.go.)
+
+   **Latte is not stock Catppuccin Latte.** Green, yellow, peach, teal and sky
+   are darkened in-hue, because Catppuccin tunes those for syntax highlighting
+   where ~2.5:1 on a near-white base is accepted, and this Face paints them as
+   status text and as a fill with Base on top. Stock Latte's yellow gives
+   2.3:1 there — an invisible search match. Take latte from the Face, never
+   from the Catppuccin website. `test/contrast.test.mjs` proves the difference
+   rather than trusting this comment.
+
+   **Name the role, never the hex.** `#CBA6F7` is correct in mocha and wrong in
+   latte. Every rule in this site's CSS reads `var(--accent)`; the only hex
+   literals in the repo are the two tables below.
+
+   The roles, and what each one is for:
+
+     base       the page                 surface    hairline rules, panels
+     mantle     bars that recede         selection  a selected row
+     text       body copy                overlay    muted text
+     accent     the current thing        blue       links, references
+     green      success                  red        failure
+     yellow     attention                peach      a warning that is not red
+     teal       a second success hue     sky        information
+     pending    not reached yet          skipped    deliberately not done
+
+   Semantic colours are for status only, never decoration (SPEC Part II).
+
+   Each palette block opens with a bang-comment naming its scheme; that marker
+   is what test/contrast.test.mjs parses. Do not remove it, and keep each
+   block's declarations in role order. */
+
+/* ── mocha — the default, and what `conductor-face` shows out of the box ─── */
+:root {
+  /*! scheme:mocha */
+  --base: #1e1e2e;
+  --mantle: #181825;
+  --surface: #313244;
+  --selection: #45475a;
+  --overlay: #6c7086;
+  --text: #cdd6f4;
+  --accent: #cba6f7;
+  --blue: #89b4fa;
+  --green: #a6e3a1;
+  --red: #f38ba8;
+  --yellow: #f9e2af;
+  --peach: #fab387;
+  --teal: #94e2d5;
+  --sky: #89dceb;
+  --pending: #585b70;
+  --skipped: #7f849c;
+
+  color-scheme: dark;
+}
+
+/* ── latte — the light companion ───────────────────────────────────────────
+   Two selectors, identical declarations: the visitor's system preference
+   unless the toggle has said otherwise, and the toggle saying light. CSS
+   cannot express "either of these" in one rule across a media query, so the
+   block appears twice and the test fails if the two ever drift apart. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    /*! scheme:latte */
+    --base: #eff1f5;
+    --mantle: #e6e9ef;
+    --surface: #ccd0da;
+    --selection: #bcc0cc;
+    --overlay: #7c7f93;
+    --text: #4c4f69;
+    --accent: #8839ef;
+    --blue: #1e66f5;
+    --green: #2f7d1f;
+    --red: #d20f39;
+    --yellow: #9c6606;
+    --peach: #b54f08;
+    --teal: #12787e;
+    --sky: #0272a8;
+    --pending: #9ca0b0;
+    --skipped: #6c6f85;
+
+    color-scheme: light;
+  }
+}
+
+:root[data-theme="light"] {
+  /*! scheme:latte */
+  --base: #eff1f5;
+  --mantle: #e6e9ef;
+  --surface: #ccd0da;
+  --selection: #bcc0cc;
+  --overlay: #7c7f93;
+  --text: #4c4f69;
+  --accent: #8839ef;
+  --blue: #1e66f5;
+  --green: #2f7d1f;
+  --red: #d20f39;
+  --yellow: #9c6606;
+  --peach: #b54f08;
+  --teal: #12787e;
+  --sky: #0272a8;
+  --pending: #9ca0b0;
+  --skipped: #6c6f85;
+
+  color-scheme: light;
+}

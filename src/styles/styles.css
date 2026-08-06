@@ -1,3 +1,8 @@
+/* The sixteen colour roles, both schemes. Everything below and every
+   component reads them by name — see tokens.css for why a hex literal
+   outside that file is a bug. */
+@import "./tokens.css";
+
 /* The design system goes here — and it is deliberately empty in the template.
    Each site in the fleet looks different on purpose (PLAN §1 goal 2): no
    shared palette, no shared type, no house style. The moment the template

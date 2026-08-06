@@ -1,0 +1,51 @@
+﻿# S1.1 — the contrast test, run three ways
+
+## 1. green, as shipped
+
+> test
+> node --test "test/**/*.test.mjs"
+
+✔ tokens.css declares both of the Face's default schemes (1.0846ms)
+✔ every block declares all sixteen roles, and no role the Face does not have (0.1668ms)
+✔ the repeated latte blocks are identical (0.1893ms)
+✔ every role clears the Face's legibility bar on its own base (0.5826ms)
+✔ the quiet ladder is ordered: pending recedes furthest (0.2923ms)
+✔ the bar bites: stock Catppuccin Latte yellow fails it, the shipped yellow passes (0.1588ms)
+✔ latte's five darkened roles are the Face's values, not upstream Catppuccin's (0.1799ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 81.8181
+
+## 2. red when latte yellow is re-copied from the Catppuccin website (#df8e1d)
+
+✖ every role clears the Face's legibility bar on its own base (0.7344ms)
+✖ the bar bites: stock Catppuccin Latte yellow fails it, the shipped yellow passes (0.176ms)
+✖ latte's five darkened roles are the Face's values, not upstream Catppuccin's (0.1952ms)
+ℹ pass 4
+ℹ fail 3
+✖ failing tests:
+✖ every role clears the Face's legibility bar on its own base (0.7344ms)
+  AssertionError [ERR_ASSERTION]: scheme latte: yellow is 2.31:1 against base, want >= 3.00:1
+✖ the bar bites: stock Catppuccin Latte yellow fails it, the shipped yellow passes (0.176ms)
+  AssertionError [ERR_ASSERTION]: shipped latte yellow is 2.31:1, want >= 3:1
+✖ latte's five darkened roles are the Face's values, not upstream Catppuccin's (0.1952ms)
+  AssertionError [ERR_ASSERTION]: latte yellow is stock Catppuccin #df8e1d — take it from 
+face-go/internal/widgets/style.go instead
+
+
+
+## 3. red when the two latte blocks drift apart (toggle block keeps the old accent)
+
+✖ the repeated latte blocks are identical (1.0376ms)
+ℹ pass 6
+ℹ fail 1
+✖ failing tests:
+✖ the repeated latte blocks are identical (1.0376ms)
+  AssertionError [ERR_ASSERTION]: the latte blocks have drifted apart
+
+
