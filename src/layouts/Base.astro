@@ -9,6 +9,7 @@
 import { Font } from "astro:assets";
 import { absolute } from "@shaahink/sitekit/seo";
 import Footer from "../components/Footer.astro";
+import TopBar from "../components/TopBar.astro";
 import "../styles/styles.css";
 
 interface Props {
@@ -70,10 +71,22 @@ const ogImageUrl = ogImage && absolute(Astro.site!, ogImage);
     <meta name="twitter:title" content={title} />
     {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
 
-    <!-- Enable progressive-enhancement styles before first paint. Inline and
-         hashed by hand: its sha256 sits in astro.config's CSP block — change
-         one, change both. -->
-    <script is:inline>document.documentElement.classList.add("js");</script>
+    <!-- Two things that have to happen before first paint. The `js` class
+         enables progressive-enhancement styles. The second half reads a theme
+         the visitor chose *explicitly* and writes it on <html>, so a reader
+         who picked light does not get a frame of mocha first.
+
+         It writes nothing when there is no stored choice, on purpose: that
+         visitor is following `prefers-color-scheme` through the media query
+         in tokens.css, and an unconditional write would freeze their system
+         preference at whatever it was on their first visit. localStorage
+         throws rather than returning null in a blocked context, hence the
+         try.
+
+         Inline and hashed by hand: its sha256 sits in astro.config's CSP
+         block — change one, change both, and test/csp.test.mjs fails if you
+         change only one. -->
+    <script is:inline>document.documentElement.classList.add("js");try{const t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch{}</script>
 
     <!-- Owner-facing stats (PLAN §3.7): once this site has its row in the
          sk-stats instance, import umamiTag from "@shaahink/sitekit/analytics"
@@ -101,11 +114,20 @@ const ogImageUrl = ogImage && absolute(Astro.site!, ogImage);
     data-sk-entry={editEntry}
     data-sk-editor-path="/edit"
   >
+    <TopBar />
+
     <slot />
 
     <Footer />
 
     <script>
+      import { installThemeToggle } from "../scripts/theme.js";
+
+      /* Bundled, so the CSP needs no new hash and no new origin: the toggle's
+         behaviour is a module served from this site like any other. Only the
+         one-liner that has to beat first paint is inline. */
+      installThemeToggle();
+
       import "../scripts/review-gate.js";
       /* Inline editing's gate — the same shape as review-gate.js, and the only
          inline-editing code a public visitor ever runs. It reads ?edit=1 and

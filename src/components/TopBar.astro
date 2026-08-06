@@ -1,0 +1,110 @@
+---
+/* The quiet top bar: wordmark, the three sections, the theme toggle.
+
+   The section list is a literal here and it should not stay one — S2.2
+   renders the nav from the collections themselves, so a section that exists
+   and a section that is linked cannot disagree. Until the collections exist
+   there is nothing to render it from, and a link to a page nobody has built
+   is more honest than an empty bar. */
+const sections = [
+  { href: "/concepts/", label: "Concepts" },
+  { href: "/articles/", label: "Articles" },
+  { href: "/runs/", label: "Runs" }
+];
+
+/* `aria-current="page"` on the section a reader is inside, including its
+   children: /concepts/context-engineering/ is still Concepts. */
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => path === href || path.startsWith(href);
+---
+
+<header class="topbar">
+  <a class="wordmark" href="/">field guide</a>
+
+  <nav aria-label="Sections">
+    <ul>
+      {
+        sections.map((section) => (
+          <li>
+            <a href={section.href} aria-current={isCurrent(section.href) ? "page" : undefined}>
+              {section.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  {/* Hidden until html.js — a toggle that cannot toggle is worse than no
+      toggle, and a no-JS visitor still gets their system's scheme from the
+      media query in tokens.css. The gating rule is global (styles.css)
+      because Astro's scoped styles rewrite a selector that starts at <html>
+      into one that can never match. */}
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch the theme">
+    <span data-theme-label>Theme</span>
+  </button>
+</header>
+
+<style>
+  .topbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-s) var(--space-m);
+    padding-block: var(--space-s);
+    padding-inline: var(--space-m);
+    border-block-end: var(--rule);
+    background: var(--mantle);
+  }
+
+  .wordmark {
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.01em;
+    color: var(--text);
+    text-decoration: none;
+    margin-inline-end: auto;
+  }
+
+  .wordmark:hover {
+    color: var(--accent);
+  }
+
+  nav ul {
+    display: flex;
+    gap: var(--space-m);
+    list-style: none;
+    padding: 0;
+  }
+
+  nav a {
+    color: var(--overlay);
+    text-decoration: none;
+  }
+
+  nav a:hover {
+    color: var(--text);
+  }
+
+  /* One accent, used where it means something: it marks the current thing,
+     which is the same job it does in the Face's own sidebar. */
+  nav a[aria-current="page"] {
+    color: var(--accent);
+    font-weight: var(--weight-medium);
+  }
+
+  .theme-toggle {
+    font: inherit;
+    font-size: var(--text-small);
+    color: var(--overlay);
+    background: none;
+    border: var(--rule);
+    padding-block: var(--space-3xs);
+    padding-inline: var(--space-2xs);
+    cursor: pointer;
+  }
+
+  .theme-toggle:hover {
+    color: var(--text);
+    border-color: var(--overlay);
+  }
+</style>

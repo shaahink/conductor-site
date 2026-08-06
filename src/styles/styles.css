@@ -163,6 +163,26 @@ pre code {
   }
 }
 
+/* ── progressive enhancement ───────────────────────────────────────────────
+   A toggle that cannot toggle is worse than no toggle: without JS the visitor
+   still gets their system's scheme from the media query in tokens.css, which
+   is the right answer, so the control that would lie about being available
+   is simply not there. `html.js` is added by the inline snippet in Base.astro
+   before first paint, so this never flashes.
+
+   Global rather than scoped to TopBar because Astro rewrites a scoped
+   selector that starts at <html> into one that can never match. */
+
+html:not(.js) [data-theme-toggle] {
+  display: none;
+}
+
+/* The shell is a column: bar, page, footer — and the page takes the slack so
+   a short page still puts its footer at the bottom of the window. */
+body > *:not(header):not(footer) {
+  flex-grow: 1;
+}
+
 /* ── the reading column ────────────────────────────────────────────────────
    One column, 62–72ch, centred. Concept and article pages are this and
    nothing else; the sticky table of contents sits beside it on wide

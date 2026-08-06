@@ -1,0 +1,92 @@
+---
+/* The in-page table of contents, sticky beside the reading column on wide
+   viewports.
+
+   It takes the headings rather than scraping them: Astro's `getHeadings()`
+   (and a content collection's `render()`) already hands back exactly this
+   shape, so the TOC and the page cannot disagree about what is on the page.
+   A TOC that re-parses rendered HTML is a second source of truth that goes
+   stale the first time a heading moves. */
+export interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+  /* Concept and article pages run h2 for a move and h3 inside it. Anything
+     deeper is detail the reader does not navigate by. */
+  maxDepth?: number;
+}
+
+const { headings, maxDepth = 3 } = Astro.props;
+const items = headings.filter((heading) => heading.depth >= 2 && heading.depth <= maxDepth);
+---
+
+{
+  items.length > 0 && (
+    <nav class="toc" aria-labelledby="toc-title">
+      <h2 id="toc-title">On this page</h2>
+      <ol>
+        {items.map((item) => (
+          <li class:list={["toc-item", `depth-${item.depth}`]}>
+            <a href={`#${item.slug}`}>{item.text}</a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
+
+<style>
+  /* Below the wide breakpoint the reading column is the whole page and a
+     sidebar would sit on top of the thing it indexes. The headings are still
+     in the document, still linkable, still reachable by every other means —
+     what is hidden is the shortcut, not the content. */
+  .toc {
+    display: none;
+  }
+
+  @media (min-width: 64rem) {
+    .toc {
+      display: block;
+      position: sticky;
+      /* Clears the top bar, which does not stick, plus a breath. */
+      inset-block-start: var(--space-l);
+      font-size: var(--text-small);
+      border-inline-start: var(--rule);
+      padding-inline-start: var(--space-s);
+    }
+  }
+
+  .toc h2 {
+    font-size: var(--text-micro);
+    font-weight: var(--weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--overlay);
+    margin-block-end: var(--space-2xs);
+  }
+
+  .toc ol {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .toc a {
+    color: var(--overlay);
+    text-decoration: none;
+    line-height: var(--leading-snug);
+  }
+
+  .toc a:hover {
+    color: var(--text);
+  }
+
+  .depth-3 {
+    padding-inline-start: var(--space-s);
+  }
+</style>

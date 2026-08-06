@@ -146,10 +146,17 @@ export default defineConfig({
       ],
       scriptDirective: {
         resources: ["'self'"],
-        /* sha256 of the is:inline <head> snippet that adds html.js before
-           first paint. Recompute if that one-liner ever changes:
-           printf '%s' 'document.documentElement.classList.add("js");' | openssl dgst -sha256 -binary | base64 */
-        hashes: ["sha256-WZRJfWvsnNCPcxzZwvyhovnZGqhZaC+8gPGPRbx6wTk="]
+        /* sha256 of the is:inline <head> snippet that adds html.js and
+           applies an explicitly chosen theme before first paint. Astro does
+           not process inline scripts, so this is maintained by hand — and a
+           stale hash fails nothing anywhere except a browser console, where
+           the snippet simply never runs.
+
+           test/csp.test.mjs recomputes it from Base.astro on every `npm run
+           check`, fails if it disagrees, and prints the correct value. Do not
+           hand-compute it; change the snippet, run the test, paste what it
+           says. */
+        hashes: ["sha256-LH/KOH5MvjXYDz6CFr0SP5Y/iXBGHDNO31Yy0265z7c="]
       },
       styleDirective: {
         resources: ["'self'"]

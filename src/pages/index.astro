@@ -39,7 +39,7 @@ const { meta, hero, notes } = page.data;
   editCollection="homePage"
   editEntry="home"
 >
-  <main>
+  <main class="home">
     {/* `data-sk-edit` names the content path the element is showing, and sits
         beside the binding it names so it is easy to write and obvious when it
         rots. The editor checks both that the path resolves and that the
@@ -69,3 +69,33 @@ const { meta, hero, notes } = page.data;
     )}
   </main>
 </Base>
+
+<style>
+  /* The front page is not a reading page — it has no table of contents and
+     it will grow a section per collection at S2.2 — but it reads at the same
+     measure as everything else, because a wall of full-width text is the
+     thing the measure exists to prevent. */
+  .home {
+    inline-size: min(100%, var(--measure));
+    margin-inline: auto;
+    padding-block: var(--space-2xl) var(--space-3xl);
+    padding-inline: var(--space-m);
+  }
+
+  .home p {
+    font-size: var(--text-lead);
+    color: var(--overlay);
+    margin-block-start: var(--space-s);
+  }
+
+  .home section {
+    margin-block-start: var(--space-2xl);
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-l);
+  }
+
+  .home section p {
+    font-size: var(--text-body);
+    color: var(--text);
+  }
+</style>

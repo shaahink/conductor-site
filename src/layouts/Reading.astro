@@ -1,0 +1,65 @@
+---
+/* A reading page: one column at the measure, with the in-page table of
+   contents sticky beside it on wide viewports. Concept pages and articles are
+   this and nothing else (SPEC Part II).
+
+   It wraps Base rather than replacing it, so the head facts, the editor
+   annotations, the top bar and the footer stay in exactly one place. A page
+   that is not a reading page — the front page, the run index — uses Base
+   directly and lays itself out. */
+import Base from "./Base.astro";
+import Toc, { type Heading } from "../components/Toc.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  ogType?: string;
+  ogDescription: string;
+  ogImage?: string | undefined;
+  canonical: string;
+  editCollection?: string;
+  editEntry?: string;
+  /* Straight from Astro's `getHeadings()` or a collection entry's
+     `render()` — the same list the page rendered, never a second one. */
+  headings?: Heading[];
+}
+
+const { headings = [], ...base } = Astro.props;
+---
+
+<Base {...base}>
+  <slot name="head" slot="head" />
+
+  <div class="reading">
+    <main class="column">
+      <slot />
+    </main>
+
+    <Toc headings={headings} />
+  </div>
+</Base>
+
+<style>
+  .reading {
+    display: grid;
+    gap: var(--space-xl);
+    padding-block: var(--space-xl) var(--space-3xl);
+    padding-inline: var(--space-m);
+    justify-content: center;
+  }
+
+  .column {
+    /* min() rather than a bare measure so the column shrinks on a phone
+       instead of overflowing it. */
+    inline-size: min(100%, var(--measure));
+  }
+
+  @media (min-width: 64rem) {
+    .reading {
+      /* The TOC takes its own track, so it never narrows the measure — the
+         column is the same width on a laptop as it is on a monitor. */
+      grid-template-columns: min(100%, var(--measure)) minmax(10rem, 15rem);
+      align-items: start;
+    }
+  }
+</style>

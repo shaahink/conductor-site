@@ -4,19 +4,23 @@
 
 ## Handoff (overwrite this block, ≤12 lines, no history)
 
-last: **planning session** (2026-08-06, by hand, no conductor session). Repo created from
-  `shaahink/site-template`, `npm install` clean, `npm run check` 0 errors, `npm run build` green
-  (3 pages). The 18-run corpus was consolidated into the machine state home first — seven legacy
-  `.conductor/run.db` files imported the conductor way — so S3 has real data to harvest on day one.
-  docs/SPEC.md is the authority and is complete: face, content model, the ten concepts, the four
-  articles, the three reports, the anonymisation rule, and twelve traps in Appendix B.
-do not re-derive: checkpoint counts come from `conductor history --json`, NOT from SQL — a naive
-  `CheckpointConfirmed` count answers 65 where the engine answers 287/300 (SPEC Part VI).
-  `Shamshir/.conductor/run.db` is an empty stub and was deliberately not imported.
-next: **S1.1** — read docs/SPEC.md Part II, then lift the sixteen colour roles out of
-  `C:/code/conductor/face-go/internal/widgets/color.go` for BOTH mocha and latte. Take latte from
-  that file, never from the Catppuccin website: the shipped latte is darkened in-hue and stock
-  latte fails the contrast bar this site inherits.
+last: **session 1** delivered S1.1, S1.2, S1.3. QA of the planning session: its claims hold —
+  check 0 errors, build green 3 pages, generated clean, and the store answers 19 runs (18 + this).
+  `npm run check` now runs `astro check` **and** `node --test`, so the existing check-build gate
+  enforces 17 tests with no new gate. All green at handoff; working tree clean.
+correction: the sixteen roles are in `face-go/internal/widgets/style.go` (mocha :58, latte :84),
+  NOT `color.go` — that file is only Hex/Luminance/IsLight. The contrast bar copied into
+  `test/contrast.test.mjs` is `theme_test.go:44-86`.
+do not re-derive: checkpoint counts come from `conductor history --json`, NOT from SQL (SPEC
+  Part VI). Windows PowerShell mangles `git commit -m` here-strings containing double quotes —
+  use `git commit -F <file>`. `node --test` needs the glob form, a bare directory arg fails.
+next: **S1.4** — delete the two `allow:` lines in `astro.config.mjs` and write real
+  `meta.description` / `meta.ogDescription` (and a real title/hero) into
+  `src/content/pages/home.yaml`; `New Site` and both `TODO:` lines are what the escapes are
+  hiding. Then `npm run build` must be green without them. After that S2.
+open: `Toc.astro` + `Reading.astro` typecheck and build but no page uses a reading layout yet —
+  check the TOC in a browser when S2.4's concept page lands. Bug #1: the review widget's chrome
+  still wears the template's neutral palette. The wordmark reads `field guide` — owner may rename.
 
 ## Baseline numbers
 
