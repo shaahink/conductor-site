@@ -174,7 +174,7 @@ research collected — then the mechanism, then the evidence.
 | 1 | **Agentic engineering / AI-native development** | the session cycle mechanised: pick → spawn → watchdog → verify → record → repeat | the whole corpus: 18 runs, 340 sessions, $3,016.29 |
 | 2 | **Multi-agent orchestration** | six session *kinds* (deliver, fix, resume, audit, verify, review) + a cheap advisor lane on a smaller model; satellite repos | `costs.category` splits agent $3,015 vs advisor $0.09 — orchestration is not "many big models" |
 | 3 | **Context engineering** | `PromptBuilder` templates, read-order, packs, the knowledge ledger, handoff blocks; an unresolved `{token}` **throws** and parks the run | the rendered prompt is written to `logs/session-NNN.prompt.md` every session |
-| 4 | **Token economics & context budgets** | `maxSessionTokens` ceiling, `softBreakRatio` nudge, cooperative wrap-up, rollover | 47.5M in / 17.8M out / **3.8B cache-read**; 123 soft breaks, 53 rollovers |
+| 4 | **Token economics & context budgets** | `maxSessionTokens` ceiling (counts cache reads), `softBreakRatio` nudge, cooperative wrap-up, rollover — and the **floor rule**: a cap must sit above the tokens one session needs to orient, work and commit | 47.5M in / 17.8M out / **3.8B cache-read**; 123 soft breaks, 53 rollovers. **The headline: a cap set below the floor cost 25–54M per checkpoint against 20.0M uncapped** — see article 3 |
 | 5 | **Evals, gates and acceptance** | the gate battery: real commands, real exit codes, per-stage tiers, cached per commit SHA, one unconditional retry | **648/677 gates green** across the corpus |
 | 6 | **Independent verification (guardrails)** | the verifier is a *separate program*: an agent cannot flip a red build green; tracker claim ≠ confirmation; `DONE` vs `DONE ✓` | the phase gate is the only path that confirms a stage |
 | 7 | **Durable execution & resumability** | event-sourced store, session boundaries, plan hot-swap mid-run, crash resume, rollover consuming no attempt | 53 rollovers recovered; a run resumed across a process restart |
@@ -196,17 +196,44 @@ least one number nobody else publishes.
    burned $51.98 (23% of its run) because the engine had no way to express *wait* while a deploy
    window was full, so it paid three agents to re-read a clock. The honest accounting is the
    article.
+   ⚠️ **Re-verify `$51.98` and `23%` against `conductor money` before publishing** — they were
+   hand-derived and have not been re-measured since the verbs shipped. Every other figure in this
+   article comes from the harvest; these two do not yet.
 2. **"Never believe the agent"** — why verification has to be a separate program with real exit
    codes, why a tracker claim is not evidence, and what `DONE` vs `DONE ✓` buys. The 29 red
    gates out of 677 are the point: they are the times the system caught something.
 3. **"The nudge that sat below the median"** — how a token budget gets *measured* instead of
-   guessed. A soft-break nudge set below the median session converted **zero of eleven**
-   rollovers; re-measuring the real session distribution (16.9M median, 30.0M p90) moved the
-   ceiling to 32M and the nudge to 22.4M. A worked method a reader can copy.
-4. **"The ledger that lied"** — when a run's own record of itself is wrong. A rolled-over
-   session used to return before its verdict, so it recorded neither its commits nor its claims;
-   the run's ledger silently disagreed with its git history. What it takes to trust your own
-   telemetry.
+   guessed. **Corrected 2026-08-06 against `conductor budget`. The earlier draft of this entry
+   carried three figures that are not in the ledger — "zero of eleven", "16.9M median" and
+   "30.0M p90". None of them has a source. Use only what is below.**
+
+   The engine's own run, capped at **8M with the nudge measured at 6.07M**, rolled over **10 of 33
+   capped sessions (30%)**. That nudge sat at **1.30× the repo's floor** — which was the rule at
+   the time, and the rule was wrong: 6.07M is **0.84× the 7.26M median session that actually
+   closed a checkpoint**, so it was interrupting the *typical* session, not just the outsized one.
+   Re-derived from the one run that had gone uncapped (median closer **17.5M**), the ceiling moved
+   to **32M** with the measured nudge point at **22.5M** — headroom 9.46M at **5.0× the measured
+   1.86M wrap-up**. Result: **zero rollovers in 26 costed sessions**, and the *cheapest* window of
+   the three at **15.5M per checkpoint** against the capped 8M window's 17.0M.
+
+   The counterintuitive half, and the reason the article exists: a static-site repo in the same
+   fleet was capped at **6M — below its own floor** — and cost **25–54M per checkpoint against
+   20.0M uncapped**. One stage spent **9 sessions and 53.8M tokens to close a single checkpoint**,
+   7 of the 9 rolled over. **A cap below the floor is worse than no cap:** it does not save
+   tokens, it buys churn. Raised to 9M the same repo fell to 12.8–15.3M and one stage rolled zero
+   of six.
+
+   Two rules a reader can copy: set the nudge to clear the **median closing session**, not the
+   floor; and keep **headroom ≥1.5–2× the measured wrap-up**, because wrap-up cost is absolute
+   while expressing the reserve as a *ratio* shrinks it exactly when it must stay constant.
+4. **"The ledger that lied"** — when a run's own record of itself is wrong. A rolled-over session
+   returned before its verdict pass (`SessionRunner.cs:411`), so it recorded neither its commits
+   nor its claims. The ledger therefore says **no rollover ever committed** — 34 rollovers and 11
+   rollovers across two runs, **zero** with a commit count. **That is an accounting artifact, not
+   the truth.** Git ground truth over each rolled-over session's own start/end window says
+   **19 of 34 (56%)** and **10 of 11 (91%)** left at least one agent commit. Rollovers usually
+   *do* commit; what is always zero is the record of it — which is an excellent way to conclude a
+   cap is destroying work when it is not. What it takes to trust your own telemetry.
 
 ---
 
@@ -250,6 +277,21 @@ generated wholly from harvested data.
 `scripts/harvest.mjs` → `src/data/corpus.json`, committed, regenerated by a gate.
 
 **Authoritative sources, in this order:**
+
+0. **`conductor budget` and `conductor money`** for anything budget-shaped — floors, median
+   closers, wrap-up, rollover rates, tokens-per-checkpoint, blended $/M. **Do not re-derive these
+   in SQL.** These verbs compute them from the ledger, and in August 2026 they were run against a
+   hand-derived analysis of exactly these numbers and **contradicted four of it** — the cap's
+   benefit had been published as 4.0× and measured 1.6×, because one window's cost had been
+   divided by another window's checkpoints. Where a hand query and these verbs disagree, the verbs
+   are the ones reading the data. Note the denominator: `budget` rates use **costed** sessions
+   (those that recorded agent tokens), not all sessions.
+
+   ⚠️ **`runs.limits_json` is NULL for every imported run.** The store does not record what a run's
+   cap was, so no cap figure can be recomputed by the `evidence` gate. Either source caps from
+   `conductor budget` (which reconstructs the windows from the data) or state on the page that the
+   cap values come from the plan files and are not gate-verified. Do not publish a cap figure as
+   though the harvest proved it.
 
 1. **`conductor history --json --limit 0`** — the run-level truth: sessions, `checkpointsDone`
    / `checkpointsTotal`, `costUsd`, `tokens`, status, branch, engine version, `limits`.
@@ -322,9 +364,16 @@ $9.37 per session · ~$10.85 per confirmed checkpoint
 `Shamshir/.conductor/run.db` was inspected and **not** imported: it is a 4 KB stub with no
 `runs` table — a store that was created and never written to.
 
-Two runs marked `running` (`1a7c1714`, `1e942d7e`, `0031daaa`) are **abandoned, not live** —
+**Three** runs marked `running` (`1a7c1714`, `1e942d7e`, `0031daaa`) are **abandoned, not live** —
 July runs whose engine exited without closing the record. That is itself an honest data point
-for concept 9, and the reports must not present them as in-flight.
+for concept 9, and the reports must not present them as in-flight. *(Said "Two" and listed three
+until 2026-08-06. `TRACKER.md` S6.4 has always said three; three is correct.)*
+
+⚠️ **Label the denominator on every per-session rate.** The corpus has **340 sessions**, but only
+**315** recorded agent tokens. `conductor budget` divides by **costed** sessions and says so; the
+`$9.37 per session` above divides by 340. Both are defensible, neither is self-describing, and a
+page that mixes them is wrong twice. Pick one, name it in the evidence strip, and keep the whole
+site on it.
 
 ---
 

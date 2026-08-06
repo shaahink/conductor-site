@@ -7,8 +7,16 @@ export default defineConfig({
   /* The Vercel project `conductor-site` was linked in the planning session.
      S7.1 confirms this against the deployed production URL — canonical,
      hreflang, og:url, og:image, sitemap, robots and the footer credit all
-     derive from this one line. */
-  site: "https://conductor-site.vercel.app",
+     derive from this one line.
+
+     ⚠ The short alias `conductor-site.vercel.app` is NOT this project. That
+     name was already taken and serves a third party's rail-tracking site, so
+     the planning session's value was publishing every canonical and every
+     sitemap entry under someone else's domain. The project's real public
+     production alias is below; the `-sheevajans-projects` alias is team-login
+     gated and cannot serve as a public canonical. S7.1 must re-confirm this
+     against the deployed URL rather than trusting this comment. */
+  site: "https://conductor-site-virid.vercel.app",
 
   /* The owner's editor. The whole route is the kit's — this site owns no
      editor page, so a change to the editor's markup or its CSP arrives as a
