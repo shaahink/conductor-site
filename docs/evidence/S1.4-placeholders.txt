@@ -1,0 +1,94 @@
+S1.4 — the two checkPlaceholders escapes are deleted, and the gate bites without them
+=====================================================================================
+Session 2, 2026-08-06. Commit b05efc3. Re-run: `npm run check && npm run build`.
+
+
+1. WHAT WAS DELETED
+-------------------
+astro.config.mjs before (the template's two escapes):
+
+    checkPlaceholders({
+      collections: editable,
+      allow: ["homePage:meta.description", "homePage:meta.ogDescription"]
+    })
+
+after:
+
+    checkPlaceholders({ collections: editable })
+
+Both allowed paths were `TODO:` strings in src/content/pages/home.yaml. They now
+carry the site's real meta description and og description, so the escapes had
+nothing left to escape.
+
+
+2. THE BUILD IS GREEN WITHOUT THEM
+----------------------------------
+$ npm run check
+Result (14 files):
+- 0 errors
+- 0 warnings
+- 0 hints
+[node --test]  tests 17 · pass 17 · fail 0
+
+$ npm run build
+22:23:26 [@shaahink/sitekit:check-annotations] 4 annotations on 1 page all resolve
+22:23:26 [build] 3 page(s) built in 1.25s
+22:23:26 [build] Complete!
+exit code 0
+
+check-placeholders prints nothing on a clean pass, which is why section 3 exists:
+a gate that is silent when it passes and silent when it is switched off looks the
+same from the outside.
+
+
+3. THE GATE BITES — DELIBERATE RED, BOTH RULES, NO ESCAPES AVAILABLE
+--------------------------------------------------------------------
+home.yaml was temporarily reverted to a placeholder in each of the two formerly
+allowed fields — the template's own TODO in one, a reserved documentation domain
+in the other — and the build re-run:
+
+    meta.description   = "TODO: the one-paragraph description search engines show."
+    meta.ogDescription = "Write to hello@example.com."
+
+$ npm run build
+[ERROR] [@shaahink/sitekit:check-placeholders] 2 placeholders in this site's content:
+
+  homePage/home  meta.description = "TODO: the one-paragraph description search engines show."
+    a note to come back to this, left in the content
+    if it is meant to be there: allow: ["homePage:meta.description"]
+  homePage/home  meta.ogDescription = "Write to hello@example.com."
+    `example.com` and its siblings are reserved for documentation and belong to nobody
+    if it is meant to be there: allow: ["homePage:meta.ogDescription"]
+
+[ERROR] An unhandled error occurred while running the "astro:config:done" hook
+2 placeholders in this site's content — each is a string a visitor would read as
+real. Replace it, or add its path to checkPlaceholders' allow list.
+  at astro:config:done (node_modules/@shaahink/sitekit/dist/astro/placeholders.js:241:23)
+
+exit code 9, non-zero, no dist written. (Astro's own exit code is 1; the 9 is a
+libuv teardown assertion this Windows/node 24 pair adds on a failed build. Either
+way the build fails and CI sees a failure.)
+
+Both fields were then restored with `git checkout -- src/content/pages/home.yaml`.
+The tree is clean; sections 2 and 4 are the state that is committed.
+
+
+4. THE REPLACEMENT SENTENCES REACH THE HEAD
+-------------------------------------------
+$ grep dist/index.html
+
+<title>A field guide to agentic engineering</title>
+<meta name="description" content="Ten concepts in agentic engineering, each worked
+  end to end in a real orchestrator, with what it cost. Every figure on this site
+  is recomputed from a run store.">
+<meta property="og:description" content="Ten concepts, each worked end to end in a
+  real orchestrator, with what it cost.">
+
+$ grep -ric "TODO:|example\.com|lorem ipsum" dist/index.html dist/404.html
+dist/index.html:0
+dist/404.html:0
+
+The front page's own words changed with them, because deleting an escape is only
+worth doing if what replaces the placeholder is true: the hero states the one idea
+from SPEC Part I, and the notes section — which was template copy about the
+template — now states the rule the site is built to keep.
