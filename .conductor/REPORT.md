@@ -1,17 +1,17 @@
 ﻿# Conductor — conductor-site - a field guide to agentic engineering run report
 
-_Updated 2026-08-06 21:57 UTC · branch `main` · HEAD `e47bf88`_
+_Updated 2026-08-06 22:20 UTC · branch `main` · HEAD `8ada555`_
 
 **Status:** Idle
-**Stage:** S2 —  · attempts used 0 · working ▸ S2.3
-**Checkpoints:** 6/28 done · **Sessions run:** 3 · **Cost:** $24.4017 (agent $24.3983 + gates $0.0034) · **Tokens:** 421,445 in / 203,383 out
+**Stage:** S2 —  · attempts used 0
+**Checkpoints:** 8/28 done · **Sessions run:** 4 · **Cost:** $32.4445 (agent $32.4399 + gates $0.0047) · **Tokens:** 581,096 in / 282,127 out
 
 ## Stage progress
 
 | Stage | Title | Progress | State |
 |---|---|---|---|
 | S1 |  | ██████████ 4/4 | done |
-| S2 |  | █████░░░░░ 2/4 | **← active** |
+| S2 |  | ██████████ 4/4 | done |
 | S3 |  | ░░░░░░░░░░ 0/4 | todo |
 | S4 |  | ░░░░░░░░░░ 0/4 | todo |
 | S5 |  | ░░░░░░░░░░ 0/4 | todo |
@@ -29,14 +29,14 @@ _Updated 2026-08-06 21:57 UTC · branch `main` · HEAD `e47bf88`_
 
 </details>
 
-<details><summary>S2 —  (2/4)</summary>
+<details> ✅<summary>S2 —  (4/4)</summary>
 
 | # | Title | Status | Commit |
 |---|---|---|---|
 | S2.1 | `concepts`, `articles` and `reports` exist as typed collections — Zod-only schemas in `schema.ts`, loaders in `content.config.ts`, an entry each in the `editable` map — with the concept schema carrying the five-move shape from SPEC Part III including `evidence` as keys rather than values | ✅ DONE | [`a68c0f3`](https://github.com/shaahink/conductor-site/commit/a68c0f3) |
 | S2.2 | The three index pages and the nav render from the collections, ordered by `order`, with `readNext` resolving to real entries and a build that fails on a dangling one | ✅ DONE | [`a68c0f3`](https://github.com/shaahink/conductor-site/commit/a68c0f3) |
-| S2.3 | Every page carries `data-sk-edit` annotations that resolve, real `meta.description` and `meta.ogDescription`, and `npm run check` reports zero errors | ⬜ TODO | - |
-| S2.4 | One concept page is written end to end as the worked example that proves the shape holds, and it passes all three litmus tests in SPEC Part I | ⬜ TODO | - |
+| S2.3 | Every page carries `data-sk-edit` annotations that resolve, real `meta.description` and `meta.ogDescription`, and `npm run check` reports zero errors | ✅ DONE | - |
+| S2.4 | One concept page is written end to end as the worked example that proves the shape holds, and it passes all three litmus tests in SPEC Part I | ✅ DONE | - |
 
 </details>
 
@@ -102,6 +102,7 @@ _Updated 2026-08-06 21:57 UTC · branch `main` · HEAD `e47bf88`_
 | 1 | S1 | Deliver | 1 | 08-06 20:54 | 0:21 | Advanced | S1.1 S1.2 S1.3 | 3 | site-fast:OK · generated:OK | $9.0051 | $0.0010 | 141,057/74,548 |
 | 2 | S1 | Deliver | 1 | 08-06 21:18 | 0:16 | Advanced | S1.4 | 5 | site-fast:OK · generated:OK | $6.3946 | $0.0010 | 119,085/51,110 |
 | 3 | S2 | Deliver | 1 | 08-06 21:34 | 0:22 | Advanced | S2.1 S2.2 | 4 | site-fast:OK · generated:OK | $8.9986 | $0.0014 | 161,303/77,725 |
+| 4 | S2 | Deliver | 1 | 08-06 21:57 | 0:23 | Advanced | S2.3 S2.4 | 4 | site-fast:OK · generated:OK | $8.0416 | $0.0013 | 159,651/78,744 |
 
 ## Money
 
@@ -137,6 +138,10 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 08-06 22:57:06  ▪ gate site-fast pass [session]  (11.7s)
 08-06 22:57:06  ▪ gate generated pass [session]  (2.1s)
 08-06 22:57:09  • session #3 S2 → Advanced · done S2.1,S2.2 · 4 commit(s)  (22m20s)
+08-06 22:57:09  ◆ plan reloaded — v1 · 7 stages · 3 gates
+08-06 22:57:12  • session #4 S2 Deliver started (attempt 1/4)
+08-06 23:20:33  ▪ gate site-fast pass [session]  (10.5s)
+08-06 23:20:33  ▪ gate generated pass [session]  (2.2s)
 ```
 
 ## Health
@@ -144,7 +149,7 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 _Execution-health signals, folded from the event log (`.conductor/events.jsonl`)._
 
 ```
-sessions 3 · retries 0 (0 %) · overall Ok
+sessions 4 · retries 0 (0 %) · overall Ok
 ✓ no health concerns detected
 ```
 
@@ -154,7 +159,7 @@ _Live git snapshot (branch, working tree, sync vs upstream)._
 
 ```
 branch: main
-working tree: M TRACKER.md
+working tree: clean
 vs upstream: up to date
 ```
 
@@ -175,6 +180,11 @@ vs upstream: up to date
   - [`0f81a26`](https://github.com/shaahink/conductor-site/commit/0f81a26) chore(plan): carry the run's own budget tuning into the tree
   - [`2ffa1bc`](https://github.com/shaahink/conductor-site/commit/2ffa1bc) feat(content): three collections, and evidence that cannot be typed
   - [`a68c0f3`](https://github.com/shaahink/conductor-site/commit/a68c0f3) fix(seo): the canonical points at this site, not a stranger's
+- **s4 (S2 Deliver)** — 4 commit(s):
+  - [`8ada555`](https://github.com/shaahink/conductor-site/commit/8ada555) docs(tracker): hand off with S2 complete
+  - [`689854a`](https://github.com/shaahink/conductor-site/commit/689854a) docs(evidence): the three litmus tests, applied to the page that has to be right
+  - [`bd66fc9`](https://github.com/shaahink/conductor-site/commit/bd66fc9) feat(concepts): context engineering, written end to end
+  - [`a6d5f98`](https://github.com/shaahink/conductor-site/commit/a6d5f98) feat(content): the parts of a page nobody looks at, gated
 
 ## Last gate run
 
@@ -182,44 +192,53 @@ site-fast:OK · generated:OK
 
 ## Last session result
 
-> **S2.1 and S2.2 landed with red-and-green proof; canonical URL corrected**
-> - **S2.1** — `concepts`, `articles`, `reports` are typed collections wired in all three places (schema, loader, `editable` map). `evidenceKey` is a regex, not a comment: a leading digit, currency sign, space or slash is refused, so a figure c…
-> - **S2.2** — the three index pages, the per-entry routes and the top bar all render from the collections in `order`. A fourth collection, `sectionPages`, carries each index page's own copy so `checkPlaceholders` can see it — the hole the foot…
-> - **Correction applied (not claimed)** — `astro.config.mjs` `site` was publishing every canonical, og:url and sitemap entry under `conductor-site.vercel.app`, which is a stranger's rail-tracking site. Now `conductor-site-virid.vercel.app`. Th…
-> - (+1 more outcomes not shown)
+> **** S2 complete — S2.3 and S2.4 landed, three litmus tests turned into build gates**
+> - **QA of session 3: both claims hold.** Re-broke the `readNext` gate on a fresh tree and the build died naming the entry, the bad slug and the known entries. One real finding, fixed: the concept cited `PromptBuilder.cs:276` for the ledger go…
+> - **S2.3 (a6d5f98):** audited all eight heads and found two real defects — the articles index ran 186 chars and was being cut mid-clause in the snippet, and the home page sat exactly on 160. Both rewritten, then the bar moved somewhere it bit…
+> - **S2.4 (bd66fc9 + 689854a):** `context-engineering` written end to end, six citations verified line by line against the engine at `1a55437`. Litmus 1 and 3 are now gates rather than intentions — `src/lib/figures.ts` fails the build on a fig…
 >
-> artefacts: `src/content/schema.ts`, `src/content.config.ts`, `src/lib/collections.ts`, `src/lib/text.ts`, `src/layouts/SectionIndex.astro`, `src/layouts/LongForm.astro`, `src/components/EntryList.astro`, `src/components/ReadNext.astro`
+> artefacts: `src/lib/figures.ts`, `test/meta.test.mjs`, `src/content/concepts/context-engineering.yaml`, `src/content/schema.ts`, `src/lib/collections.ts`
 >
-> evidence: `docs/evidence/S2.1-collections.txt`, `docs/evidence/S2.2-indexes.txt` — each carries the deliberate reds and the green battery; build is 10 pages, 56 annotations resolving, 8 content entries placeholder-clean
+> evidence: `docs/evidence/S2.3-annotations-meta.txt`, `docs/evidence/S2.4-context-engineering.md` — check 0 errors / 33 tests, build 10 pages with 63 annotations resolving, five gates each broken on purpose and reverted, all three generated files regenerating with no diff
 >
-> gaps: S2.3 and S2.4 not started — S2.3 is largely an audit of `meta.description`/`ogDescription` across the eight entries since annotations already resolve and check is 0 errors; S2.4 needs `context-engineering` written end to end against the three litmus tests. Bug #2 (`--overlay` at ~3.3:1) still open and still S7.2's call. No evidence section renders on concept pages by design — the corpus does not e…
+> gaps: no evidence strip renders yet (corpus arrives at S3); S3.1 now owes six keys — `sessions`, `cacheRead`, `ledgerEntries`, `tokensIn`, `tokensOut`, `costPerSession` — recorded in the ledger and the handoff, since S3.3 makes a page naming a missing key fail the build; bug #2 (`--overlay` contrast) still open for S7.2
 
 ## Tracker handoff
 
 ```
-last: **session 3** delivered S2.1 and S2.2, and fixed the planning session's `site` URL — the
-  short alias belongs to a stranger's rail site, so canonicals now read
-  `conductor-site-virid.vercel.app` (a68c0f3). **S7.1 must re-confirm that against the deployed
-  URL, not against the config.** QA of session 2: every S1 claim holds on fresh runs — 0 errors,
-  build green, generated files regenerate with no diff, all five evidence files present. No
-  findings.
-now on disk: four collections. `sectionPages` was added beyond the plan's three, because index
-  copy written into a component is invisible to `checkPlaceholders` — the same hole the footer
-  fell through. `src/lib/collections.ts` is the gate: `ordered()` throws on a slug that does not
-  match its file name, on a duplicate `order`, and on a dangling `readNext`, and it runs because
-  a page renders it. Two concepts exist so `readNext` resolves to something real. Build is 10
-  pages, 56 annotations, 8 content entries placeholder-clean.
-next: **S2.3** — every page's annotations already resolve and `check` is 0 errors, so most of it
-  is auditing `meta.description` / `meta.ogDescription` on all eight entries and recording it.
-  Then **S2.4**: write `context-engineering` end to end against SPEC Part I's three litmus tests
-  — it is currently a real but short worked example. Do not render an evidence section; the
-  corpus does not exist until S3.
+last: **session 4** delivered S2.3 (a6d5f98) and S2.4 (bd66fc9, evidence 689854a). **S2 is
+  complete.** QA of session 3: both its claims hold on fresh artifacts — I re-broke the
+  `readNext` gate and the build died naming the entry, the bad slug and the known entries. One
+  real finding, fixed: the concept cited `PromptBuilder.cs:276` for the ledger going in first,
+  and that line is the *comment* describing it, not the code. Now `:283`, plus
+  `PromptBattery.cs:55` beside it, because "goes in first" means nothing until you can see the
+  cap cuts from the end.
+now on disk: three litmus tests that used to be intentions are gates, all inside `ordered()` so
+  they run because a page renders. `src/lib/figures.ts` refuses a figure typed into prose
+  (currency, percent, multiplier, ratio, decimal, thousands separator, any count of two digits
+  or more — a *single* digit still gets through, and the header says so). `theIdea` naming
+  Conductor fails the build. `meta` carries its own bar in `schema.ts` (description 60–160, og
+  45–120, neither may be the title, canonical shape-checked) and `collections.ts` holds each
+  entry's canonical against the route it is served at, using the section page's own canonical as
+  the base. `test/meta.test.mjs` adds annotation **coverage** — and a correction worth having:
+  `checkAnnotations` does not ignore an unannotated page, it warns twice and passes. Battery is
+  0 errors, 33 tests, 63 annotations on 8 pages, 10 pages built.
+next: **S3.1**, the harvest. It now owes five keys, because S3.3 makes a page naming a missing
+  one fail the build: `sessions`, `cacheRead`, `ledgerEntries` (context-engineering) and
+  `tokensIn`, `tokensOut`, `costPerSession` (token-economics). `ledgerEntries` is countable —
+  the store has its own `ledger` table (`SqliteRunStore.Sessions.cs:188`). Checkpoint counts
+  come from `conductor history --json --limit 0`, never SQL; anything budget-shaped from
+  `conductor budget` / `conductor money`; open every run.db `mode=ro`.
 open: bug #2 — `--overlay` prose is ~3.3:1: over the Face's own bar for the role, under WCAG AA
-  for normal text; S7.2's call, not a CSS tweak. Evidence keys use **published** scenario labels
-  (`the-long-build`, `the-engine-run`, `the-fleet-round`) — S3.2's `anonymise.json` must map run
-  ids to exactly those. The wordmark `field guide` and the footer's owner name are owner calls.
-tooling: `conductor bg` cannot exec bare `npm` here — use `npm.cmd`; the flag is `--purpose`, and
-  it cannot take a quoted compound command, so run the battery in the foreground (it is ~10s).
-  A failed Astro build exits 9, not 1. **Never spell a recursive glob inside a `/* */` comment in
-  a .ts file** — it closes the comment and `astro sync` dies with PARSE_ERROR.
+  for normal text; S7.2's call, not a CSS tweak. Published scenario labels are `the-long-build`,
+  `the-engine-run`, `the-fleet-round` — S3.2's `anonymise.json` must map run ids to exactly
+  those. **S7.1 must re-confirm `site` against the deployed URL, not the config.** The wordmark
+  `field guide` and the footer's owner name are owner calls.
+tooling: **never `git checkout --` a file whose new version is uncommitted** — it restores HEAD,
+  not what you were holding, and it silently reverted a finished page here (the tell was the
+  annotation count dropping back). Commit first, break-test second. A `git commit -m` here-string
+  breaks on embedded double quotes; write the message to a file and use `-F`. `conductor bg`
+  cannot exec bare `npm` — use `npm.cmd`; the battery is ~10s, so run it in the foreground. A
+  failed Astro build does not exit 1. **Never spell a recursive glob inside a block comment in a
+  .ts file** — it closes the comment and `astro sync` dies with PARSE_ERROR.
 ```
