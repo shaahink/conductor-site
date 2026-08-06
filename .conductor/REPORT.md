@@ -1,17 +1,17 @@
 ﻿# Conductor — conductor-site - a field guide to agentic engineering run report
 
-_Updated 2026-08-06 21:34 UTC · branch `main` · HEAD `fcdd90e`_
+_Updated 2026-08-06 21:57 UTC · branch `main` · HEAD `6a3d334`_
 
 **Status:** Idle
-**Stage:** S1 —  · attempts used 0
-**Checkpoints:** 4/28 done · **Sessions run:** 2 · **Cost:** $15.4017 (agent $15.3997 + gates $0.0020) · **Tokens:** 260,142 in / 125,658 out
+**Stage:** S2 —  · attempts used 0 · working ▸ S2.3
+**Checkpoints:** 6/28 done · **Sessions run:** 3 · **Cost:** $24.4017 (agent $24.3983 + gates $0.0034) · **Tokens:** 421,445 in / 203,383 out
 
 ## Stage progress
 
 | Stage | Title | Progress | State |
 |---|---|---|---|
 | S1 |  | ██████████ 4/4 | done |
-| S2 |  | ░░░░░░░░░░ 0/4 | todo |
+| S2 |  | █████░░░░░ 2/4 | **← active** |
 | S3 |  | ░░░░░░░░░░ 0/4 | todo |
 | S4 |  | ░░░░░░░░░░ 0/4 | todo |
 | S5 |  | ░░░░░░░░░░ 0/4 | todo |
@@ -25,16 +25,16 @@ _Updated 2026-08-06 21:34 UTC · branch `main` · HEAD `fcdd90e`_
 | S1.1 | The sixteen colour roles ship as CSS custom properties for both mocha and latte, lifted from the Face's own `color.go` rather than from upstream Catppuccin, with a test that fails when any role misses the Face's contrast bar (text ≥4.5:1, semantics and overlay ≥3:1, quiet roles ≥1.5:1 and ordered) | ✅ DONE | [`f11fe55`](https://github.com/shaahink/conductor-site/commit/f11fe55) |
 | S1.2 | Typography and spacing: a humanist sans body at a 62–72ch measure through the Astro Fonts API consuming `cssVariable`, monospace reserved for machine truth, and a type scale used by name — no page hardcodes a size or a hex | ✅ DONE | [`f11fe55`](https://github.com/shaahink/conductor-site/commit/f11fe55) |
 | S1.3 | The layout shell — top bar, three sections, reading column, sticky in-page TOC on wide viewports — plus a theme toggle that follows `prefers-color-scheme`, persists to `localStorage`, and survives first paint without a flash | ✅ DONE | [`f11fe55`](https://github.com/shaahink/conductor-site/commit/f11fe55) |
-| S1.4 | The template's two `checkPlaceholders` `allow:` escapes are deleted and the build is green without them, so this site's own copy is guarded from here on | ✅ DONE | - |
+| S1.4 | The template's two `checkPlaceholders` `allow:` escapes are deleted and the build is green without them, so this site's own copy is guarded from here on | ✅ DONE | [`b05efc3`](https://github.com/shaahink/conductor-site/commit/b05efc3) |
 
 </details>
 
-<details><summary>S2 —  (0/4)</summary>
+<details><summary>S2 —  (2/4)</summary>
 
 | # | Title | Status | Commit |
 |---|---|---|---|
-| S2.1 | `concepts`, `articles` and `reports` exist as typed collections — Zod-only schemas in `schema.ts`, loaders in `content.config.ts`, an entry each in the `editable` map — with the concept schema carrying the five-move shape from SPEC Part III including `evidence` as keys rather than values | ⬜ TODO | - |
-| S2.2 | The three index pages and the nav render from the collections, ordered by `order`, with `readNext` resolving to real entries and a build that fails on a dangling one | ⬜ TODO | - |
+| S2.1 | `concepts`, `articles` and `reports` exist as typed collections — Zod-only schemas in `schema.ts`, loaders in `content.config.ts`, an entry each in the `editable` map — with the concept schema carrying the five-move shape from SPEC Part III including `evidence` as keys rather than values | ✅ DONE | - |
+| S2.2 | The three index pages and the nav render from the collections, ordered by `order`, with `readNext` resolving to real entries and a build that fails on a dangling one | ✅ DONE | - |
 | S2.3 | Every page carries `data-sk-edit` annotations that resolve, real `meta.description` and `meta.ogDescription`, and `npm run check` reports zero errors | ⬜ TODO | - |
 | S2.4 | One concept page is written end to end as the worked example that proves the shape holds, and it passes all three litmus tests in SPEC Part I | ⬜ TODO | - |
 
@@ -101,6 +101,7 @@ _Updated 2026-08-06 21:34 UTC · branch `main` · HEAD `fcdd90e`_
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | S1 | Deliver | 1 | 08-06 20:54 | 0:21 | Advanced | S1.1 S1.2 S1.3 | 3 | site-fast:OK · generated:OK | $9.0051 | $0.0010 | 141,057/74,548 |
 | 2 | S1 | Deliver | 1 | 08-06 21:18 | 0:16 | Advanced | S1.4 | 5 | site-fast:OK · generated:OK | $6.3946 | $0.0010 | 119,085/51,110 |
+| 3 | S2 | Deliver | 1 | 08-06 21:34 | 0:22 | Advanced | S2.1 S2.2 | 4 | site-fast:OK · generated:OK | $8.9986 | $0.0014 | 161,303/77,725 |
 
 ## Money
 
@@ -108,11 +109,11 @@ _What this run has cost, from its own `costs` rows. Same numbers as `conductor m
 
 | scope | sessions | tokens | cache reads | cost | checkpoints | tok/ckpt | $/ckpt |
 |---|---|---|---|---|---|---|---|
-| **run total** | 1 | 11.7M | 98.2% | $9.01 | 3 | 3.89M | $3.00 |
-| stage S1 | 1 | 11.7M | 98.2% | $9.01 | 3 | 3.89M | $3.00 |
-| 2026-08 | 1 | 11.7M | 98.2% | $9.01 | 3 | 3.89M | $3.00 |
+| **run total** | 2 | 19.7M | 98.0% | $15.40 | 4 | 4.92M | $3.85 |
+| stage S1 | 2 | 19.7M | 98.0% | $15.40 | 4 | 4.92M | $3.85 |
+| 2026-08 | 2 | 19.7M | 98.0% | $15.40 | 4 | 4.92M | $3.85 |
 
-_Where the money goes: agent $9.01 (100%) · gate $0.00 (0%) · blended $0.77/M tokens._
+_Where the money goes: agent $15.40 (100%) · gate $0.00 (0%) · blended $0.78/M tokens._
 
 ## Timeline
 
@@ -129,6 +130,11 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 08-06 22:18:18  • session #2 S1 Deliver started (attempt 1/4)
 08-06 22:34:46  ▪ gate site-fast pass [session]  (8.3s)
 08-06 22:34:46  ▪ gate generated pass [session]  (1.8s)
+08-06 22:34:48  • session #2 S1 → Advanced · done S1.4 · 5 commit(s)  (16m30s)
+08-06 22:34:48  ▸ stage S2 entered
+08-06 22:34:48  • session #3 S2 Deliver started (attempt 1/4)
+08-06 22:57:06  ▪ gate site-fast pass [session]  (11.7s)
+08-06 22:57:06  ▪ gate generated pass [session]  (2.1s)
 ```
 
 ## Health
@@ -136,7 +142,7 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 _Execution-health signals, folded from the event log (`.conductor/events.jsonl`)._
 
 ```
-sessions 2 · retries 0 (0 %) · overall Ok
+sessions 3 · retries 0 (0 %) · overall Ok
 ✓ no health concerns detected
 ```
 
@@ -162,6 +168,11 @@ vs upstream: up to date
   - [`2b33f93`](https://github.com/shaahink/conductor-site/commit/2b33f93) fix(face): the review widget wears the site's roles, in both schemes
   - [`b38f39e`](https://github.com/shaahink/conductor-site/commit/b38f39e) docs(evidence): S1.4 — the placeholder gate, proven by making it go red
   - [`b05efc3`](https://github.com/shaahink/conductor-site/commit/b05efc3) feat(content): a real front page, and the placeholder gate without its escapes
+- **s3 (S2 Deliver)** — 4 commit(s):
+  - [`6a3d334`](https://github.com/shaahink/conductor-site/commit/6a3d334) feat(pages): the three indexes, and a nav that cannot disagree with itself
+  - [`0f81a26`](https://github.com/shaahink/conductor-site/commit/0f81a26) chore(plan): carry the run's own budget tuning into the tree
+  - [`2ffa1bc`](https://github.com/shaahink/conductor-site/commit/2ffa1bc) feat(content): three collections, and evidence that cannot be typed
+  - [`a68c0f3`](https://github.com/shaahink/conductor-site/commit/a68c0f3) fix(seo): the canonical points at this site, not a stranger's
 
 ## Last gate run
 
@@ -169,37 +180,44 @@ site-fast:OK · generated:OK
 
 ## Last session result
 
-> **S1.4 landed and bug #1 closed — stage S1 complete, all gates green**
-> - S1.4: both `checkPlaceholders` `allow:` escapes deleted and the build is green without them; the front page now carries real words (title, hero, description, og description, and a notes section stating the site's evidence rule). Proven both…
-> - QA of session 1: every claim holds on fresh runs — `check` 0 errors + 17/17 tests, `build` green at 3 pages with 4 annotations resolving, `headers`/`content`/`editor` regenerate with no diff, all five evidence files present. No findings to …
-> - Bug #1 fixed: the review widget's 66 colour literals are gone; every rule names a role, it follows the theme in both schemes (browser-verified against built output), shadows dropped per SPEC Part II, and the token gate that skipped the file…
+> **S2.1 and S2.2 landed with red-and-green proof; canonical URL corrected**
+> - **S2.1** — `concepts`, `articles`, `reports` are typed collections wired in all three places (schema, loader, `editable` map). `evidenceKey` is a regex, not a comment: a leading digit, currency sign, space or slash is refused, so a figure c…
+> - **S2.2** — the three index pages, the per-entry routes and the top bar all render from the collections in `order`. A fourth collection, `sectionPages`, carries each index page's own copy so `checkPlaceholders` can see it — the hole the foot…
+> - **Correction applied (not claimed)** — `astro.config.mjs` `site` was publishing every canonical, og:url and sitemap entry under `conductor-site.vercel.app`, which is a stranger's rail-tracking site. Now `conductor-site-virid.vercel.app`. Th…
+> - (+1 more outcomes not shown)
 >
-> artefacts: `b05efc3` front page + gate escapes removed · `2b33f93` widget restyle + narrowed token exemption · `cb40575` footer name · `b38f39e`/`fcdd90e` evidence and handoff — all pushed to `main`
+> artefacts: `src/content/schema.ts`, `src/content.config.ts`, `src/lib/collections.ts`, `src/lib/text.ts`, `src/layouts/SectionIndex.astro`, `src/layouts/LongForm.astro`, `src/components/EntryList.astro`, `src/components/ReadNext.astro`
 >
-> evidence: `docs/evidence/S1.4-placeholders.txt`, `docs/evidence/bug1-widget-palette.md`, `docs/evidence/bug1-widget-mocha.png`, `docs/evidence/bug1-widget-latte.png`
+> evidence: `docs/evidence/S2.1-collections.txt`, `docs/evidence/S2.2-indexes.txt` — each carries the deliberate reds and the green battery; build is 10 pages, 56 annotations resolving, 8 content entries placeholder-clean
 >
-> gaps: `Toc.astro`/`Reading.astro` still render on no page until S2.4 · bug #2 (`--overlay` under WCAG AA for normal text) open for S7.2 · the wordmark `field guide` and the footer's owner name are owner calls, not verified with anyone
+> gaps: S2.3 and S2.4 not started — S2.3 is largely an audit of `meta.description`/`ogDescription` across the eight entries since annotations already resolve and check is 0 errors; S2.4 needs `context-engineering` written end to end against the three litmus tests. Bug #2 (`--overlay` at ~3.3:1) still open and still S7.2's call. No evidence section renders on concept pages by design — the corpus does not e…
 
 ## Tracker handoff
 
 ```
-last: **session 2** delivered S1.4 and closed bug #1, so stage S1 is complete. QA of session 1:
-  every claim holds on fresh runs — check 0 errors and 17/17 tests, build green at 3 pages with
-  4 annotations resolving, `headers`/`content`/`editor` regenerate with no diff, all five
-  evidence files present. S1.4's escapes are gone and the gate was proven to bite by putting a
-  TODO and a reserved domain back (docs/evidence/S1.4-placeholders.txt).
-watch out: `checkPlaceholders` reads the `editable` map, so a placeholder written into a
-  **component** is invisible to it — the footer printed `New Site` on every page for three
-  sessions (cb40575). Grep built HTML, not only content.
-tooling: `conductor bg` cannot exec bare `npm` here (MODULE_NOT_FOUND) — use `npm.cmd`, or
-  `node node_modules/astro/bin/astro.mjs preview` for a server; the flag is `--purpose`, and
-  `bg stop` takes the numeric PID. A failed Astro build exits 9 on this box, not 1.
-next: **S2.1** — the three collections from SPEC Part III: Zod-only schemas in `schema.ts`,
-  loaders in `content.config.ts`, an `editable` entry each, `evidence` as keys not values.
-  Keep the `notes` section's shape when reworking `homePage`; its key still reads `notes` while
-  the front page shows it as "How to read this".
+last: **session 3** delivered S2.1 and S2.2, and fixed the planning session's `site` URL — the
+  short alias belongs to a stranger's rail site, so canonicals now read
+  `conductor-site-virid.vercel.app` (a68c0f3). **S7.1 must re-confirm that against the deployed
+  URL, not against the config.** QA of session 2: every S1 claim holds on fresh runs — 0 errors,
+  build green, generated files regenerate with no diff, all five evidence files present. No
+  findings.
+now on disk: four collections. `sectionPages` was added beyond the plan's three, because index
+  copy written into a component is invisible to `checkPlaceholders` — the same hole the footer
+  fell through. `src/lib/collections.ts` is the gate: `ordered()` throws on a slug that does not
+  match its file name, on a duplicate `order`, and on a dangling `readNext`, and it runs because
+  a page renders it. Two concepts exist so `readNext` resolves to something real. Build is 10
+  pages, 56 annotations, 8 content entries placeholder-clean.
+next: **S2.3** — every page's annotations already resolve and `check` is 0 errors, so most of it
+  is auditing `meta.description` / `meta.ogDescription` on all eight entries and recording it.
+  Then **S2.4**: write `context-engineering` end to end against SPEC Part I's three litmus tests
+  — it is currently a real but short worked example. Do not render an evidence section; the
+  corpus does not exist until S3.
 open: bug #2 — `--overlay` prose is ~3.3:1: over the Face's own bar for the role, under WCAG AA
-  for normal text (home lead, widget context strip); it is S7.2's call, not a CSS tweak.
-  `Toc.astro` + `Reading.astro` are still unrendered until S2.4. The wordmark `field guide` and
-  the footer's `Shahin Kiassat` are owner calls.
+  for normal text; S7.2's call, not a CSS tweak. Evidence keys use **published** scenario labels
+  (`the-long-build`, `the-engine-run`, `the-fleet-round`) — S3.2's `anonymise.json` must map run
+  ids to exactly those. The wordmark `field guide` and the footer's owner name are owner calls.
+tooling: `conductor bg` cannot exec bare `npm` here — use `npm.cmd`; the flag is `--purpose`, and
+  it cannot take a quoted compound command, so run the battery in the foreground (it is ~10s).
+  A failed Astro build exits 9, not 1. **Never spell a recursive glob inside a `/* */` comment in
+  a .ts file** — it closes the comment and `astro sync` dies with PARSE_ERROR.
 ```
