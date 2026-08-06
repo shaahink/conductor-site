@@ -4,23 +4,25 @@
 
 ## Handoff (overwrite this block, ≤12 lines, no history)
 
-last: **session 1** delivered S1.1, S1.2, S1.3. QA of the planning session: its claims hold —
-  check 0 errors, build green 3 pages, generated clean, and the store answers 19 runs (18 + this).
-  `npm run check` now runs `astro check` **and** `node --test`, so the existing check-build gate
-  enforces 17 tests with no new gate. All green at handoff; working tree clean.
-correction: the sixteen roles are in `face-go/internal/widgets/style.go` (mocha :58, latte :84),
-  NOT `color.go` — that file is only Hex/Luminance/IsLight. The contrast bar copied into
-  `test/contrast.test.mjs` is `theme_test.go:44-86`.
-do not re-derive: checkpoint counts come from `conductor history --json`, NOT from SQL (SPEC
-  Part VI). Windows PowerShell mangles `git commit -m` here-strings containing double quotes —
-  use `git commit -F <file>`. `node --test` needs the glob form, a bare directory arg fails.
-next: **S1.4** — delete the two `allow:` lines in `astro.config.mjs` and write real
-  `meta.description` / `meta.ogDescription` (and a real title/hero) into
-  `src/content/pages/home.yaml`; `New Site` and both `TODO:` lines are what the escapes are
-  hiding. Then `npm run build` must be green without them. After that S2.
-open: `Toc.astro` + `Reading.astro` typecheck and build but no page uses a reading layout yet —
-  check the TOC in a browser when S2.4's concept page lands. Bug #1: the review widget's chrome
-  still wears the template's neutral palette. The wordmark reads `field guide` — owner may rename.
+last: **session 2** delivered S1.4 and closed bug #1, so stage S1 is complete. QA of session 1:
+  every claim holds on fresh runs — check 0 errors and 17/17 tests, build green at 3 pages with
+  4 annotations resolving, `headers`/`content`/`editor` regenerate with no diff, all five
+  evidence files present. S1.4's escapes are gone and the gate was proven to bite by putting a
+  TODO and a reserved domain back (docs/evidence/S1.4-placeholders.txt).
+watch out: `checkPlaceholders` reads the `editable` map, so a placeholder written into a
+  **component** is invisible to it — the footer printed `New Site` on every page for three
+  sessions (cb40575). Grep built HTML, not only content.
+tooling: `conductor bg` cannot exec bare `npm` here (MODULE_NOT_FOUND) — use `npm.cmd`, or
+  `node node_modules/astro/bin/astro.mjs preview` for a server; the flag is `--purpose`, and
+  `bg stop` takes the numeric PID. A failed Astro build exits 9 on this box, not 1.
+next: **S2.1** — the three collections from SPEC Part III: Zod-only schemas in `schema.ts`,
+  loaders in `content.config.ts`, an `editable` entry each, `evidence` as keys not values.
+  Keep the `notes` section's shape when reworking `homePage`; its key still reads `notes` while
+  the front page shows it as "How to read this".
+open: bug #2 — `--overlay` prose is ~3.3:1: over the Face's own bar for the role, under WCAG AA
+  for normal text (home lead, widget context strip); it is S7.2's call, not a CSS tweak.
+  `Toc.astro` + `Reading.astro` are still unrendered until S2.4. The wordmark `field guide` and
+  the footer's `Shahin Kiassat` are owner calls.
 
 
 ## Baseline numbers (from run.db)
