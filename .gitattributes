@@ -1,0 +1,26 @@
+# Line endings are LF, on every platform, checkout included.
+#
+# Not a style preference — three of CI's five gates work by regenerating a file
+# and diffing it (vercel.json, src/content, public/editor-*.css), and the
+# generators are Node scripts that write LF. Git for Windows ships
+# core.autocrlf=true, so a checkout writes CRLF and the very first
+# `npm run headers` or `npm run editor` leaves a working tree that git reports
+# as modified while `git diff` shows nothing at all. That state is genuinely
+# hard to read, and the instinct it teaches — "commit whatever appeared" — is
+# the wrong one to learn on a repo whose CI diffs generated files.
+#
+# eol=lf makes the checkout match what the generators produce, so the gates
+# behave the same on a Windows laptop as they do on CI's ubuntu-latest.
+* text=auto eol=lf
+
+# Binary, byte for byte.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.mp4 binary
+*.pdf binary

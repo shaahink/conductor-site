@@ -4,8 +4,11 @@ import { checkAnnotations, checkPlaceholders, editorRoute } from "@shaahink/site
 import { editable } from "./src/content/schema.js";
 
 export default defineConfig({
-  /* TODO: the real production URL once the Vercel project exists. */
-  site: "https://example.vercel.app",
+  /* The Vercel project `conductor-site` was linked in the planning session.
+     S7.1 confirms this against the deployed production URL — canonical,
+     hreflang, og:url, og:image, sitemap, robots and the footer credit all
+     derive from this one line. */
+  site: "https://conductor-site.vercel.app",
 
   /* The owner's editor. The whole route is the kit's — this site owns no
      editor page, so a change to the editor's markup or its CSP arrives as a
@@ -37,7 +40,7 @@ export default defineConfig({
      paragraph says TODO would be a check that gets removed rather than a
      check that gets obeyed. */
   integrations: [
-    editorRoute({ title: "Edit — Example" }), checkAnnotations({ collections: editable }),
+    editorRoute({ title: "Edit — conductor-site" }), checkAnnotations({ collections: editable }),
     checkPlaceholders({
       collections: editable,
       /* Two escapes, and they are correct *here* and nowhere else. This

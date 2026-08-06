@@ -1,8 +1,8 @@
 {
-  "name": "site-template",
+  "name": "conductor-site",
   "private": true,
   "type": "module",
-  "description": "TODO: one line on whose site this is. Astro 7, content in typed collections; the feedback machinery comes from @shaahink/sitekit.",
+  "description": "A field guide to agentic engineering, worked end to end in Conductor: ten concepts, four articles, and anonymised reports from real autonomous runs. Astro 7, content in typed collections; the shared machinery comes from @shaahink/sitekit.",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
