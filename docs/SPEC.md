@@ -86,9 +86,12 @@ into CSS custom properties, and *use the role names in every rule*. A component 
 
 **Latte is not stock Catppuccin Latte.** Conductor darkens green/yellow/peach/teal/sky in-hue
 because stock Latte's yellow sits at 2.3:1 on its base — invisible when painted as status text.
-Take the shipped values from `face-go/internal/widgets/color.go`, not from the Catppuccin site.
-Every role must clear the Face's own legibility bar: text ≥4.5:1, semantics and overlay ≥3:1,
-quiet roles ≥1.5:1 and ordered so `pending` recedes furthest.
+Take the shipped values from **`face-go/internal/widgets/style.go`** — the `themes` map, mocha at
+`:58` and latte at `:84` — not from the Catppuccin site. (Corrected in session 1: `color.go` holds
+only `Hex`, `Luminance` and `IsLight`, no palette.) Every role must clear the Face's own legibility
+bar, which is `face-go/internal/widgets/theme_test.go:44-86`
+(`TestEveryThemeIsLegibleOnItsBase`): text ≥4.5:1, semantics and overlay ≥3:1, quiet roles ≥1.5:1
+and ordered so `pending` recedes furthest.
 
 ### Friendly, not a terminal cosplay
 
