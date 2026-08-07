@@ -1,0 +1,85 @@
+citations: 37 across the content, against the engine checkout
+engine revision: 1632b9f
+
+── concepts/agentic-engineering
+   ok       src/Conductor.Core/Orchestration/RunLoop.cs:105
+            | while (!ct.IsCancellationRequested)
+   ok       src/Conductor.Core/Orchestration/RunLoop.cs:200
+            | var track = _ctx.ReadWork();
+   ok       src/Conductor.Core/SessionWatchdog.cs:20
+            | public readonly record struct WatchdogSignals(
+   ok       src/Conductor.Core/SessionWatchdog.cs:212
+            | _stalled = true;
+   ok       src/Conductor.Core/Orchestration/RunLoop.cs:293
+            | _verdicts.ScheduleGateOrAudit(stage.Id, _ctx.State.CurrentStageStartHead ?? Git.Head(_ctx.Plan.Repo));
+   ok       src/Conductor.Core/Orchestration/RunLoop.cs:400
+            | try { await _sessions.RunAsync(stage, track, ct).ConfigureAwait(false); }
+── concepts/context-engineering
+   ok       src/Conductor.Core/PromptBuilder.cs:107
+            | sb.AppendLine("Required reading (in order):");
+   ok       src/Conductor.Core/PromptBuilder.cs:220
+            | PromptValidator.ThrowIfUnresolved(text, templateFile);
+   ok       src/Conductor.Planning/PromptPlaceholders.cs:53
+            | public static string ProtectValue(string value)
+   ok       src/Conductor.Core/PromptBuilder.cs:283
+            | if (!ledgerBattery.IsEmpty) list.Add(ledgerBattery);
+   ok       src/Conductor.Core/PromptBattery.cs:55
+            | if (result.Length > _maxBytes)
+   ok       src/Conductor.Core/BgLogs.cs:55
+            | public static string PromptName(int number) => $"session-{number:000}.prompt.md";
+── concepts/evals-and-gates
+   ok       src/Conductor.Core/GateRunner.cs:265
+            | var passed = !r.TimedOut && r.ExitCode == 0;
+   ok       src/Conductor.Core/GateRunner.cs:27
+            | /// <param name="fastOnly">When true, only run gates tagged tier "fast" (per-session under perPhase policy).
+   ok       src/Conductor.Core/GateRunner.cs:98
+            | // SC4.1: one unconditional retry of every REQUIRED gate that failed, before anything is
+   ok       src/Conductor.Core/GateRunner.cs:112
+            | if (second.Cached || second.Skipped)
+   ok       src/Conductor.Core/GateRunner.cs:132
+            | /// <remarks>SC4.3: the gates' COMMANDS are part of the signature, not just their names. A plan
+   ok       src/Conductor.Core/Orchestration/GateOrchestrator.cs:90
+            | var sha = cfg is null ? head : GateRunner.CacheKey(_plan, cfg, head);
+   ok       src/Conductor/Commands/DoctorCommand.cs:337
+            | var gateless = plan.Stages.Where(s => Core.GateRunner.ConfiguredForStage(plan, s) == 0).Select(s => s.Id).ToList();
+── concepts/independent-verification
+   ok       src/Conductor.Core/Orchestration/VerdictEngine.Claims.cs:6
+            | /// <summary>W1.3 — the claim signal. Done-ness comes from the WORK GRAPH (what
+   ok       src/Conductor.Core/Orchestration/VerdictEngine.Claims.cs:83
+            | _ctx.Log($"WARNING: {legacy.Count} checkpoint(s) flipped DONE only in the tracker markdown: [{string.Join(", ", legacy)}] — accepted via the transition fallback; claim with `conductor task --done` or MCP task_update, the tracker is a generated view", "warn");
+   ok       src/Conductor.Core/Orchestration/VerdictEngine.Claims.cs:38
+            | /// <summary>SF0.2 (bug #10): a claim is a claim whoever was in the chair.
+   ok       src/Conductor.Core/Orchestration/VerdictEngine.Phase.cs:55
+            | _ctx.Log($"phase gate {pg.StageId}: running FULL battery at {Short(head)} to confirm the phase");
+   ok       src/Conductor.Core/Orchestration/VerdictEngine.Phase.cs:163
+            | ConfirmPendingCheckpoints(id, _ctx.State.History.LastOrDefault()?.Number);
+   ok       src/Conductor.Core/Orchestration/VerdictEngine.Phase.cs:113
+            | ProgressSummary = $"phase {pg.StageId} full battery — {GateRunner.Token(gates)} — make the claims true",
+   ok       src/Conductor.Core/Orchestration/VerdictEngine.Phase.cs:183
+            | _ctx.Events.Emit(new StageConfirmed { StageId = id, Audited = _ctx.State.AuditedStages.Contains(id) });
+── concepts/multi-agent-orchestration
+   ok       src/Conductor.Planning/SessionKind.cs:6
+            | public enum SessionKind { Deliver, Fix, Resume, Audit, Verify }
+   ok       src/Conductor.Core/Orchestration/SessionRunner.Kinds.cs:45
+            | if (pendingResume != null) return SessionKind.Resume;
+   ok       src/Conductor.Core/Orchestration/SessionRunner.Kinds.cs:88
+            | _ => isReview
+   ok       src/Conductor.Planning/WorkflowEngine.cs:34
+            | new WorkflowStep { Id = "deliver", Kind = SessionKind.Deliver, Deliver = true },
+   ok       src/Conductor.Core/Models/AdvisorConfig.cs:24
+            | public string Command { get; set; } = "claude";
+   ok       src/Conductor.Core/Orchestration/VerdictEngine.Advisor.cs:43
+            | var action = verdict?.Action ?? defaultAction;
+   ok       src/Conductor.Core/Orchestration/VerdictEngine.Advisor.cs:34
+            | var c = 0.0005m * (decimal)elapsed.TotalSeconds;
+   ok       src/Conductor.Core/SatelliteRepos.cs:5
+            | /// <summary>SC4.3: the sibling repositories a plan declares under <c>satelliteRepos</c>.
+── concepts/token-economics
+   ok       src/Conductor.Core/PromptBuilder.Budget.cs:29
+            | This session has a token ceiling and the orchestrator enforces it. At about
+   ok       src/Conductor.Core/Budget/BudgetProfile.cs:51
+            | public double? NudgeConversion => Nudged > 0 ? (double)NudgedAndClean / Nudged : null;
+   ok       src/Conductor.Core/Budget/BudgetProfile.cs:58
+            | /// <param name="SoftBreakRatio">The prescribed ratio, chosen so the nudge clears the largest closer.</param>
+
+citations: all 37 resolve at 1632b9f.

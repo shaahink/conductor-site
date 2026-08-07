@@ -1,0 +1,170 @@
+meta:
+  title: "Evals, gates and acceptance"
+  description: "A gate is a command and an exit code, not an opinion. What
+    acceptance looks like when it has to survive being run hundreds of times by
+    something in a hurry."
+  ogDescription: "A gate is a command and an exit code, not an opinion — and the
+    number worth publishing is the red one."
+  canonical: "/concepts/evals-and-gates/"
+
+slug: "evals-and-gates"
+order: 5
+title: "Evals, gates and acceptance"
+alsoKnownAs:
+  - "acceptance criteria"
+  - "LLM evals"
+  - "quality gates"
+  - "definition of done"
+oneLine: "A gate is a command and an exit code. Everything else is an opinion
+  with a schedule."
+
+theIdea:
+  - "Acceptance is the difference between an agent saying the work is done and
+    something that is not the agent saying so. That is the whole of it. A gate
+    is a command somebody wrote, run in a real shell, whose exit code is the
+    answer; nothing reads its output looking for reassurance, and nothing weighs
+    its verdict against how convincing the session's summary was. The value is
+    precisely that it cannot be persuaded."
+  - "Evals and gates get talked about together and they are not the same move.
+    An eval scores — it produces a number about behaviour that has no obvious
+    right answer, which is the only honest way to measure the parts of a system
+    that are themselves probabilistic. A gate decides. A score with no threshold
+    on it is a dashboard, and a threshold nobody derived from a score is a coin
+    flip with a policy attached. Deciding where the line goes is the actual
+    work, and it belongs to whoever owns the product rather than to whoever
+    wrote the harness."
+  - "Acceptance written in prose is not acceptance. Every plan has a line like
+    the feature works end to end, and every such line is a promise that some
+    human will one day check. Under an agent that line is worse than useless: it
+    is read, agreed with, and reported as satisfied, by something that has every
+    incentive to agree and no way to be wrong out loud. If a criterion cannot be
+    expressed as something that exits non-zero, it has not been written down
+    yet."
+  - "Then the practical problems start, and they are all about repetition. A
+    battery that runs after every session is run constantly, so it has to be
+    fast, which means caching, which means a cache key — and a cache key is a
+    claim that two situations are the same. Get that claim slightly wrong and
+    the system serves a pass for a question nobody asked. This is the most
+    common way a gate stops being a gate while continuing to look like one."
+  - "The other repetition problem is flakiness, and it wants a policy rather
+    than a habit. A gate that fails intermittently teaches everyone, humans
+    included, to run it again — and a system that retries until green has not
+    verified anything, it has sampled until it got the answer it wanted. One
+    retry, unconditional and recorded, is a defensible policy: it costs a known
+    amount and it says out loud that the first result was not trusted. Retrying
+    until green is laundering."
+  - "And the number worth publishing is the failures. Green gates are the price
+    of admission; every system has them and none of them prove the gates are
+    load-bearing. The red ones are the evidence: each is a moment the machine
+    stopped something that would otherwise have shipped, and a suite that has
+    never gone red has told you nothing except that it agrees with itself."
+
+theProblem:
+  - "Without gates, acceptance collapses into the agent's own report, and the
+    report is always good. Not because anything is lying — because a session
+    that believed it was finished is exactly the session that writes it is
+    finished. The claim and the check have the same author, which means there is
+    no check."
+  - "The subtler failure is the gate that cannot fail. A test command with no
+    tests behind it, a linter with the rules turned off, a build step that
+    swallows its own error and exits zero anyway. These are strictly worse than
+    having no gate: the run is now confirming stages against something with a
+    green light wired to nothing, and everybody downstream reads the
+    confirmation as meaningful."
+  - "The third is scope, and it hides in configuration. A battery that names
+    which parts of the plan it applies to leaves the other parts with no battery
+    at all, and nothing announces that. A run can confirm most of its stages
+    against real commands and one against nothing, and the record of it looks
+    identical either way."
+
+inConductor:
+  mechanism:
+    - "A gate is a name, a command, a working directory and a timeout. It passes
+      if and only if a real process exited zero without timing out — no output
+      parsing, no model in the loop, no interpretation of a failure as probably
+      fine. Gates carry tiers, so a fast set can run after every session while
+      the expensive truth-tier set is held back and only executes when a stage
+      is being confirmed."
+    - "Results are cached per commit, and both corrections that cache needed are
+      still visible in the source. The battery's signature covers what the gates
+      actually run — the command text, not just their names — because a plan
+      edited mid-run to change what a gate executed produced a byte-identical
+      signature and was served the old verdict. And a single gate's result is
+      filed under the head of the directory that gate runs in, not the primary
+      repository's, because a gate pointed at a sibling repo was otherwise
+      answering a question about a tree it never looked at."
+    - "Every required gate that fails is retried exactly once before the battery
+      is called red, and the retry is charged for: both attempts appear in the
+      cost, and the result says it was retried rather than quietly reporting a
+      pass. The guard around it is the interesting part. If the second attempt
+      comes back served from cache, that is not a pass — the failure the gate
+      genuinely produced is kept, because a cache hit on a retry would otherwise
+      turn a red gate green with no process having run at all."
+    - "Optional gates exist and warn instead of blocking, and gates can be
+      scoped to particular stages, which means a stage can end up matching none
+      of them. The plan checker names those stages before a run starts rather
+      than after, because a stage with no battery confirms on claims and commit
+      history alone — a legitimate choice, and a very bad accident. On one run
+      most of the stages had confirmed that way before anyone noticed."
+  citations:
+    - path: "src/Conductor.Core/GateRunner.cs"
+      line: 265
+      note: "The whole definition. A gate passed if the process exited zero and did
+        not time out; there is no other branch, and nothing reads what it
+        printed."
+    - path: "src/Conductor.Core/GateRunner.cs"
+      line: 27
+      note: "Tiers. The fast set runs per session; truth-tier gates are excluded from
+        those runs and execute only when a phase is being confirmed."
+    - path: "src/Conductor.Core/GateRunner.cs"
+      line: 98
+      note: "One unconditional retry of every required gate that failed, before the
+        battery is allowed to be called red. Optional gates are left alone —
+        their failure blocks nothing, so a retry buys nothing."
+    - path: "src/Conductor.Core/GateRunner.cs"
+      line: 112
+      note: "And the guard: a retry that comes back cached or skipped is not a pass.
+        The failure the gate actually produced is the one that is kept."
+    - path: "src/Conductor.Core/GateRunner.cs"
+      line: 132
+      note: "The battery signature covers the gates' commands, not just their names —
+        because a plan edited mid-run to change what a gate ran produced an
+        identical signature and was handed the previous verdict."
+    - path: "src/Conductor.Core/Orchestration/GateOrchestrator.cs"
+      line: 90
+      note: "A result filed under the same key the next lookup will use: the gate's
+        own working directory and command, rather than this repository's head. A
+        pass filed under a bare head can be served for a different command
+        entirely."
+    - path: "src/Conductor/Commands/DoctorCommand.cs"
+      line: 337
+      note: "Stages that match no gate, named before the run starts. Those stages
+        confirm on claims and commits alone, and the remark above this line is
+        the run where most of them did."
+
+evidence:
+  runs:
+    - "the-engine-run"
+    - "the-ci-cleanup"
+  figures:
+    - "totalGatesGreen"
+    - "totalGatesRed"
+    - "gatesGreen"
+
+tryIt:
+  - command: "npm test; echo \"exit $?\""
+    note: "The entire idea, in your own repository, with nothing installed. Whatever
+      that number is, that is what a gate would have decided. If it is zero when
+      the suite is empty, the gate you were about to write would have been a
+      green light wired to nothing."
+  - command: "conductor gate --full"
+    note: "Runs the whole battery the way a phase confirmation runs it, rather than
+      the fast subset a session gets. The right thing to run before believing a
+      stage is finished."
+  - command: "conductor doctor"
+    note: "Among other things, names any stage that matches none of the configured
+      gates. A stage with no battery is a supported choice and an expensive
+      accident, and this is the difference between the two."
+
+readNext:
+  - "independent-verification"

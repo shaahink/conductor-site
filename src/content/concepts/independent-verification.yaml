@@ -1,0 +1,159 @@
+meta:
+  title: "Independent verification"
+  description: "Why the thing that checks the work cannot be the thing that did
+    it, and what a system looks like when a claim and a confirmation are two
+    different facts."
+  ogDescription: "A claim and a confirmation are two different facts. The gap
+    between them is the most useful number a run has."
+  canonical: "/concepts/independent-verification/"
+
+slug: "independent-verification"
+order: 6
+title: "Independent verification"
+alsoKnownAs:
+  - "guardrails"
+  - "AI safety rails"
+  - "trust but verify"
+  - "the verifier pattern"
+oneLine: "The thing that checks cannot be the thing that did it, and a prompt is
+  not a separation."
+
+theIdea:
+  - "Verification is independent when the part that decides whether the work
+    happened is a different program from the part that did it. Different
+    program, not different prompt, not a sterner instruction, not a second turn
+    with the word critically in it. If one process can both perform the work and
+    rule on whether the work is finished, there is only one ruling in the system
+    and it was made by the party with an interest in the answer."
+  - "Independence has three requirements and the third is the one that gets
+    skipped. Separate authorship: the check was written before, by someone else,
+    for a different purpose. Separate inputs: it looks at artifacts rather than
+    at the account of the work. And no write access to itself — because a worker
+    that can edit the test, relax the assertion or add the exemption has not
+    been verified, it has been consulted. Deleting a failing test is a perfectly
+    legal edit, and it turns red green with no dishonesty required anywhere."
+  - "So a claim and a confirmation are two facts and want two fields. One says
+    somebody believed this was finished; the other says something outside them
+    agreed. Collapse them into a single flag and you lose the only interesting
+    quantity in the whole system, which is the gap: how often belief and
+    evidence came apart, and on what. A system with no gap has usually not
+    measured it."
+  - "That distinction only survives if the human-readable version of the state
+    is derived from the state rather than being it. Every project has a file
+    people read — a board, a tracker, a status table. The moment editing that
+    file changes what the system believes, the file is the database, and
+    anything with a text editor can promote its own work. Generated views are
+    not a presentational nicety. They are what makes a claim have to go through
+    the front door."
+  - "The last piece is what to do when verification says no, and the instinct is
+    wrong. The instinct is to withdraw the claim — mark it back to pending, act
+    as though nobody had said anything. But somebody did say something, and that
+    is information: a session believed it was finished, and evidence disagreed.
+    Keep the claim standing and make it true. What was claimed and what has been
+    confirmed are then both readable, and the distance between them is the
+    system's honest picture of itself."
+
+theProblem:
+  - "The failure that costs the most is the guardrail the worker can move.
+    Nobody has to intend it. A test is failing, the failure looks spurious,
+    changing the assertion makes the suite pass, and every step of that is a
+    normal thing an engineer does on a normal day. Repeat it under something
+    that works quickly and does not get bored, and the suite converges on
+    whatever is already true."
+  - "The quieter failure is treating the claim as the confirmation. Everything
+    downstream inherits it: the completion percentage, the report, the decision
+    to move on to the next thing. And the error is undetectable from inside,
+    because the system agrees with itself perfectly — it is only wrong compared
+    to something nobody is looking at."
+  - "The third is verification that never runs. A path exists, was tested once,
+    and then a configuration change routed most of the work around it. Nothing
+    fails. The confirmations keep arriving and look exactly like the ones that
+    were earned, which is why a system should be able to say what each
+    confirmation rested on rather than only that it happened."
+
+inConductor:
+  mechanism:
+    - "The claim signal is the work graph, not the words. A checkpoint is
+      claimed by a verb that writes to the database, and the tracker file
+      everyone reads is generated from that database. A checkpoint flipped to
+      done only in the markdown is still accepted through a fallback — but it is
+      accepted loudly, with a warning naming the verb that should have been used
+      and the fact that the tracker is a view. Editing the view is not how work
+      gets claimed."
+    - "A claim then sits in a pending-confirmation queue, and the only thing
+      that drains it is the phase gate: the full battery, re-run at the current
+      head, against a stage whose rows already all read done. Until that passes,
+      the checkpoint reads as claimed and not as confirmed — two states, spelled
+      differently everywhere they are printed. A stage is not allowed to close
+      over a claim that is still pending, which sounds obvious and was a bug:
+      claims made during an audit session were counted by no session at all, so
+      they could never reach the confirmed state and nothing said why."
+    - "When the battery comes back red, the claim is not withdrawn. A repair
+      session is queued whose entire brief is to make the claims true, carrying
+      the gate failures with it. The distinction matters more than it looks:
+      un-claiming would erase the fact that a session believed it was finished,
+      which is exactly the fact worth keeping."
+    - "And the confirmation itself is written by the engine, as an event, at the
+      moment the battery passes — not by the agent, not into a file the agent
+      can reach. The record also carries what that confirmation rested on, so a
+      stage confirmed by a full battery and a stage confirmed by a reused
+      signature are distinguishable afterwards rather than both reading as
+      confirmed."
+  citations:
+    - path: "src/Conductor.Core/Orchestration/VerdictEngine.Claims.cs"
+      line: 6
+      note: "Done-ness comes from the work graph. The verdict asks two questions —
+        what was claimed during this session, and does the graph say the stage
+        is complete — and prose is not an input to either."
+    - path: "src/Conductor.Core/Orchestration/VerdictEngine.Claims.cs"
+      line: 83
+      note: "A checkpoint flipped to done only in the tracker markdown: accepted, and
+        warned about by name. The message says it plainly — the tracker is a
+        generated view."
+    - path: "src/Conductor.Core/Orchestration/VerdictEngine.Claims.cs"
+      line: 38
+      note: "A claim is a claim whoever was in the chair. The paragraph under this
+        line is the bug: claims made during an audit or a verification belonged
+        to no session, so they sat pending forever and could never be
+        confirmed."
+    - path: "src/Conductor.Core/Orchestration/VerdictEngine.Phase.cs"
+      line: 55
+      note: "The confirming path: the full battery, re-run at the current head, for a
+        stage whose rows all already read done. There is no other route to a
+        confirmed stage."
+    - path: "src/Conductor.Core/Orchestration/VerdictEngine.Phase.cs"
+      line: 163
+      note: "The pending claims drained here, at confirmation. A stage does not get to
+        close over a claim nothing has checked."
+    - path: "src/Conductor.Core/Orchestration/VerdictEngine.Phase.cs"
+      line: 113
+      note: "What happens when the battery is red: a repair session, briefed to make
+        the claims true. The claim stays standing, because a session believing
+        it was finished is worth knowing."
+    - path: "src/Conductor.Core/Orchestration/VerdictEngine.Phase.cs"
+      line: 183
+      note: "The confirmation is an event the engine emits. Nothing an agent writes
+        reaches it, and the record keeps what the confirmation rested on."
+
+evidence:
+  runs:
+    - "the-accounting-run"
+    - "the-long-build"
+  figures:
+    - "totalCheckpointsDone"
+    - "totalGatesRed"
+    - "checkpointsDone"
+    - "sessions"
+
+tryIt:
+  - command: "conductor task --list"
+    note: "The board read straight out of the database, where claimed and confirmed
+      are different statuses on the same row. Whatever any file says about a
+      checkpoint, this is what the run believes."
+  - command: "git log --oneline --no-merges"
+    note: "The verdict's other input, and the reason it is worth having: commits
+      exist whether or not anyone wrote a summary, and they do not improve when
+      the summary does."
+
+readNext:
+  - "multi-agent-orchestration"
