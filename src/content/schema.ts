@@ -207,9 +207,17 @@ export const evidenceKey = z
     "evidence names a key from the corpus, never a value"
   );
 
-/** What a page cites: runs by their published label, figures by name. */
+/** What a page cites: runs and windows by their published label, figures by name.
+    ---------------------------------------------------------------------------
+    A *window* is one stretch of a run's sessions under one ceiling, and it is a
+    third thing rather than a kind of run because the interesting comparison is
+    between two windows of the same run — same repo, same plan, same agents, one
+    number moved. Its label is its run's label with the ceiling on the end, so a
+    cap that moves renames the window and the citation fails rather than
+    quietly meaning something else. */
 export const evidence = z.object({
   runs: z.array(evidenceKey).default([]),
+  windows: z.array(evidenceKey).default([]),
   figures: z.array(evidenceKey).default([])
 });
 

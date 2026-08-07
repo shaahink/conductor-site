@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-08-07T01:31:58.303Z",
+  "generatedAtUtc": "2026-08-07T01:48:22.751Z",
   "corpus": {
     "totalRuns": {
       "value": 18,
@@ -166,6 +166,47 @@
       "display": "1,100",
       "label": "ledger entries",
       "source": "run.db, opened read-only"
+    },
+    "cappedWindows": {
+      "value": 8,
+      "display": "8/22",
+      "label": "windows that ran under a measured ceiling",
+      "source": "conductor budget <run> --json",
+      "note": "a window is one stretch of consecutive sessions under one cap; a run has more than one when somebody moved it"
+    },
+    "sessionsUnderACeiling": {
+      "value": 168,
+      "display": "168",
+      "label": "sessions run under a ceiling",
+      "source": "conductor budget <run> --json",
+      "note": "of 340 in the corpus; the rest had none in force"
+    },
+    "nudgesDelivered": {
+      "value": 122,
+      "display": "122",
+      "label": "sessions were nudged to wrap up",
+      "source": "conductor budget <run> --json",
+      "note": "over 168 sessions under a ceiling"
+    },
+    "nudgesHonoured": {
+      "value": 72,
+      "display": "72/122",
+      "label": "of those stopped and ended clean",
+      "source": "conductor budget <run> --json"
+    },
+    "killedAtACeiling": {
+      "value": 50,
+      "display": "50",
+      "label": "sessions were killed at a ceiling",
+      "source": "conductor budget <run> --json",
+      "note": "the ceiling cross is a kill mid-turn: the agent's own commit and handoff step never runs"
+    },
+    "killedAfterANudge": {
+      "value": 50,
+      "display": "50/50",
+      "label": "of the killed sessions had already been nudged",
+      "source": "conductor budget <run> --json",
+      "note": "every one of them was asked to stop first, in time, and carried on anyway — the cooperative rail converted none of them"
     },
     "costPerSession": {
       "value": 8.87,
@@ -2812,10 +2853,2078 @@
       }
     }
   },
+  "windows": {
+    "the-first-false-start-uncapped": {
+      "key": "the-first-false-start-uncapped",
+      "run": "the-first-false-start",
+      "capMeasured": false,
+      "scenario": "A first attempt at an orchestrator plan, one session long, stopped before it had cost anything — sessions 1 to 1, with no ceiling in force",
+      "figures": {
+        "windowSessions": {
+          "value": 1,
+          "display": "1",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 0,
+          "display": "0",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 0,
+          "display": "0",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 0,
+          "display": "0",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 0,
+          "display": "0",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 0,
+          "display": "0/1",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0,
+          "display": "0%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 0,
+          "display": "0",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 0,
+          "display": "0",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 0 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 0,
+          "display": "0",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        }
+      }
+    },
+    "the-second-false-start-uncapped": {
+      "key": "the-second-false-start-uncapped",
+      "run": "the-second-false-start",
+      "capMeasured": false,
+      "scenario": "The same plan tried again three sessions later, still with no checkpoint declared and no gate green — sessions 3 to 6, with no ceiling in force",
+      "figures": {
+        "windowSessions": {
+          "value": 3,
+          "display": "3",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 3,
+          "display": "3",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 0,
+          "display": "0",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 7353024,
+          "display": "7.4M",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 0,
+          "display": "0",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 1,
+          "display": "1/3",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0.3333,
+          "display": "33.3%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 0,
+          "display": "0",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 0,
+          "display": "0",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 0 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 0,
+          "display": "0",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        }
+      }
+    },
+    "the-aborted-start-uncapped": {
+      "key": "the-aborted-start-uncapped",
+      "run": "the-aborted-start",
+      "capMeasured": false,
+      "scenario": "A run aborted inside its first minute, kept because a corpus that hides its dead starts is not a corpus — sessions 1 to 1, with no ceiling in force",
+      "figures": {
+        "windowSessions": {
+          "value": 1,
+          "display": "1",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 0,
+          "display": "0",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 0,
+          "display": "0",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 0,
+          "display": "0",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 0,
+          "display": "0",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 0,
+          "display": "0/1",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0,
+          "display": "0%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 0,
+          "display": "0",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 0,
+          "display": "0",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 0 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 0,
+          "display": "0",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        }
+      }
+    },
+    "the-abandoned-prototype-uncapped": {
+      "key": "the-abandoned-prototype-uncapped",
+      "run": "the-abandoned-prototype",
+      "capMeasured": false,
+      "scenario": "A prototype run that reached six of eleven checkpoints and was left there when the work moved elsewhere — sessions 1 to 12, with no ceiling in force",
+      "figures": {
+        "windowSessions": {
+          "value": 11,
+          "display": "11",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 3,
+          "display": "3",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 2,
+          "display": "2",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 109739621,
+          "display": "109.7M",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 54869810,
+          "display": "54.9M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 0,
+          "display": "0/11",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0,
+          "display": "0%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 40698204,
+          "display": "40.7M",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 40698204,
+          "display": "40.7M",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 1 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 40698204,
+          "display": "40.7M",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        }
+      }
+    },
+    "the-one-session-chore-uncapped": {
+      "key": "the-one-session-chore-uncapped",
+      "run": "the-one-session-chore",
+      "capMeasured": false,
+      "scenario": "Shared CI and a 404 page added to a site template in a single session — sessions 1 to 1, with no ceiling in force",
+      "figures": {
+        "windowSessions": {
+          "value": 1,
+          "display": "1",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 1,
+          "display": "1",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 2,
+          "display": "2",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 3245028,
+          "display": "3.2M",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 1622514,
+          "display": "1.6M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 0,
+          "display": "0/1",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0,
+          "display": "0%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 3245028,
+          "display": "3.2M",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 3245028,
+          "display": "3.2M",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 1 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 3245028,
+          "display": "3.2M",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        }
+      }
+    },
+    "the-fleet-backlog-uncapped": {
+      "key": "the-fleet-backlog-uncapped",
+      "run": "the-fleet-backlog",
+      "capMeasured": false,
+      "scenario": "A web fleet's accumulated backlog worked to the end of the list across four sites — sessions 1 to 25, with no ceiling in force",
+      "figures": {
+        "windowSessions": {
+          "value": 24,
+          "display": "24",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 23,
+          "display": "23",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 29,
+          "display": "29",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 219193371,
+          "display": "219.2M",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 7558392,
+          "display": "7.6M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 0,
+          "display": "0/24",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0,
+          "display": "0%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 1817275,
+          "display": "1.8M",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 10697112,
+          "display": "10.7M",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 17 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 27839724,
+          "display": "27.8M",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        }
+      }
+    },
+    "the-fleet-round-uncapped": {
+      "key": "the-fleet-round-uncapped",
+      "run": "the-fleet-round",
+      "capMeasured": false,
+      "scenario": "A four-site web fleet, one shared component library, one round of coordinated changes — sessions 1 to 28, with no ceiling in force",
+      "figures": {
+        "windowSessions": {
+          "value": 28,
+          "display": "28",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 27,
+          "display": "27",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 25,
+          "display": "25",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 621365434,
+          "display": "621.4M",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 24854617,
+          "display": "24.9M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 0,
+          "display": "0/28",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0,
+          "display": "0%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 7210477,
+          "display": "7.2M",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 18585527,
+          "display": "18.6M",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 21 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 46352624,
+          "display": "46.4M",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        }
+      }
+    },
+    "the-orchestrator-core-uncapped": {
+      "key": "the-orchestrator-core-uncapped",
+      "run": "the-orchestrator-core",
+      "capMeasured": false,
+      "scenario": "The orchestrator's own core built by the orchestrator: sessions, gates and the event store — sessions 1 to 28, with no ceiling in force",
+      "figures": {
+        "windowSessions": {
+          "value": 28,
+          "display": "28",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 28,
+          "display": "28",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 26,
+          "display": "26",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 504472082,
+          "display": "504.5M",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 19402772,
+          "display": "19.4M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 0,
+          "display": "0/28",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0,
+          "display": "0%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 5519839,
+          "display": "5.5M",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 17475594,
+          "display": "17.5M",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 26 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 35846496,
+          "display": "35.8M",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        }
+      }
+    },
+    "the-fleet-round-after-uncapped": {
+      "key": "the-fleet-round-after-uncapped",
+      "run": "the-fleet-round-after",
+      "capMeasured": false,
+      "scenario": "The round after the round: the same web fleet, a shorter list, and a run that closed every checkpoint it opened — sessions 1 to 17, with no ceiling in force",
+      "figures": {
+        "windowSessions": {
+          "value": 17,
+          "display": "17",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 16,
+          "display": "16",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 17,
+          "display": "17",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 317566710,
+          "display": "317.6M",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 18680395,
+          "display": "18.7M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 0,
+          "display": "0/17",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0,
+          "display": "0%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 4981517,
+          "display": "5M",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 17654522,
+          "display": "17.7M",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 16 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 45598465,
+          "display": "45.6M",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        }
+      }
+    },
+    "the-terminal-face-uncapped": {
+      "key": "the-terminal-face-uncapped",
+      "run": "the-terminal-face",
+      "capMeasured": false,
+      "scenario": "A terminal interface for a long-running engine, written in a second language against the first one's store — sessions 1 to 8, with no ceiling in force",
+      "figures": {
+        "windowSessions": {
+          "value": 8,
+          "display": "8",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 7,
+          "display": "7",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 6,
+          "display": "6",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 158931679,
+          "display": "158.9M",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 26488613,
+          "display": "26.5M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 1,
+          "display": "1/8",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0.1429,
+          "display": "14.3%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 14712289,
+          "display": "14.7M",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 23393419,
+          "display": "23.4M",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 6 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 37322795,
+          "display": "37.3M",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        }
+      }
+    },
+    "the-terminal-face-capped-8m": {
+      "key": "the-terminal-face-capped-8m",
+      "run": "the-terminal-face",
+      "capMeasured": true,
+      "scenario": "A terminal interface for a long-running engine, written in a second language against the first one's store — sessions 9 to 41, under a measured ceiling",
+      "figures": {
+        "windowSessions": {
+          "value": 33,
+          "display": "33",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 33,
+          "display": "33",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 14,
+          "display": "14",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 238273734,
+          "display": "238.3M",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 17019552,
+          "display": "17M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 10,
+          "display": "10/33",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0.303,
+          "display": "30.3%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 4655672,
+          "display": "4.7M",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 7256291,
+          "display": "7.3M",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 14 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 7752892,
+          "display": "7.8M",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCap": {
+          "value": 8000000,
+          "display": "8M",
+          "label": "ceiling in force",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudge": {
+          "value": 6066604,
+          "display": "6.1M",
+          "label": "where the cooperative break fired",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgeVsFloor": {
+          "value": 1.3030565727138854,
+          "display": "1.3x",
+          "label": "the nudge, against this window's floor",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgeVsMedianCloser": {
+          "value": 0.8360475069150342,
+          "display": "0.84x",
+          "label": "the nudge, against the median closing session",
+          "source": "conductor budget <run> --json",
+          "note": "below one means the typical session that finished something was interrupted before it could have"
+        },
+        "windowHeadroom": {
+          "value": 1933396,
+          "display": "1.9M",
+          "label": "left between the nudge and the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudged": {
+          "value": 30,
+          "display": "30",
+          "label": "sessions that were nudged",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgesHonoured": {
+          "value": 20,
+          "display": "20",
+          "label": "of them stopped and ended clean",
+          "source": "conductor budget <run> --json"
+        },
+        "windowKilledAfterANudge": {
+          "value": 10,
+          "display": "10",
+          "label": "were nudged, carried on, and were killed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowWrapUp": {
+          "value": 1365994,
+          "display": "1.4M",
+          "label": "median wrap-up after a nudge",
+          "source": "conductor budget <run> --json",
+          "note": "measured over the 20 sessions here that took one and stopped"
+        },
+        "windowHeadroomVsWrapUp": {
+          "value": 1.4153766414786595,
+          "display": "1.42x",
+          "label": "headroom, against the measured wrap-up",
+          "source": "conductor budget <run> --json",
+          "note": "the reserve is absolute: a session needs the same tokens to finish whatever the ceiling is"
+        }
+      }
+    },
+    "the-long-build-uncapped": {
+      "key": "the-long-build-uncapped",
+      "run": "the-long-build",
+      "capMeasured": false,
+      "scenario": "A large interactive feature built inside an existing site - the run that ended at 45 of 46, and why the last one did not close — sessions 1 to 10, with no ceiling in force",
+      "figures": {
+        "windowSessions": {
+          "value": 10,
+          "display": "10",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 9,
+          "display": "9",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 10,
+          "display": "10",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 129731428,
+          "display": "129.7M",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 12973143,
+          "display": "13M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 0,
+          "display": "0/10",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0,
+          "display": "0%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 6949347,
+          "display": "6.9M",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 15403961,
+          "display": "15.4M",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 7 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 17270629,
+          "display": "17.3M",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        }
+      }
+    },
+    "the-long-build-capped-6m": {
+      "key": "the-long-build-capped-6m",
+      "run": "the-long-build",
+      "capMeasured": true,
+      "scenario": "A large interactive feature built inside an existing site - the run that ended at 45 of 46, and why the last one did not close — sessions 11 to 60, under a measured ceiling",
+      "figures": {
+        "windowSessions": {
+          "value": 50,
+          "display": "50",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 50,
+          "display": "50",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 15,
+          "display": "15",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 293168184,
+          "display": "293.2M",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 19544546,
+          "display": "19.5M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 32,
+          "display": "32/50",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0.64,
+          "display": "64%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 675826,
+          "display": "675.8K",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 5360118,
+          "display": "5.4M",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 14 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 5902781,
+          "display": "5.9M",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCap": {
+          "value": 6000000,
+          "display": "6M",
+          "label": "ceiling in force",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudge": {
+          "value": 4572704,
+          "display": "4.6M",
+          "label": "where the cooperative break fired",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgeVsFloor": {
+          "value": 6.7660965988286925,
+          "display": "6.77x",
+          "label": "the nudge, against this window's floor",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgeVsMedianCloser": {
+          "value": 0.8530976370296326,
+          "display": "0.85x",
+          "label": "the nudge, against the median closing session",
+          "source": "conductor budget <run> --json",
+          "note": "below one means the typical session that finished something was interrupted before it could have"
+        },
+        "windowHeadroom": {
+          "value": 1427296,
+          "display": "1.4M",
+          "label": "left between the nudge and the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudged": {
+          "value": 47,
+          "display": "47",
+          "label": "sessions that were nudged",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgesHonoured": {
+          "value": 15,
+          "display": "15",
+          "label": "of them stopped and ended clean",
+          "source": "conductor budget <run> --json"
+        },
+        "windowKilledAfterANudge": {
+          "value": 32,
+          "display": "32",
+          "label": "were nudged, carried on, and were killed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowWrapUp": {
+          "value": 900177,
+          "display": "900.2K",
+          "label": "median wrap-up after a nudge",
+          "source": "conductor budget <run> --json",
+          "note": "measured over the 15 sessions here that took one and stopped"
+        },
+        "windowHeadroomVsWrapUp": {
+          "value": 1.5855726151634624,
+          "display": "1.59x",
+          "label": "headroom, against the measured wrap-up",
+          "source": "conductor budget <run> --json",
+          "note": "the reserve is absolute: a session needs the same tokens to finish whatever the ceiling is"
+        }
+      }
+    },
+    "the-long-build-capped-9m": {
+      "key": "the-long-build-capped-9m",
+      "run": "the-long-build",
+      "capMeasured": true,
+      "scenario": "A large interactive feature built inside an existing site - the run that ended at 45 of 46, and why the last one did not close — sessions 61 to 69, under a measured ceiling",
+      "figures": {
+        "windowSessions": {
+          "value": 9,
+          "display": "9",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 9,
+          "display": "9",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 5,
+          "display": "5",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 71531177,
+          "display": "71.5M",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 14306235,
+          "display": "14.3M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 2,
+          "display": "2/9",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0.2222,
+          "display": "22.2%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 5949054,
+          "display": "5.9M",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 7664803,
+          "display": "7.7M",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 4 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 8206668,
+          "display": "8.2M",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCap": {
+          "value": 9000000,
+          "display": "9M",
+          "label": "ceiling in force",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudge": {
+          "value": 6360576,
+          "display": "6.4M",
+          "label": "where the cooperative break fired",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgeVsFloor": {
+          "value": 1.069174359486399,
+          "display": "1.07x",
+          "label": "the nudge, against this window's floor",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgeVsMedianCloser": {
+          "value": 0.8298420716096683,
+          "display": "0.83x",
+          "label": "the nudge, against the median closing session",
+          "source": "conductor budget <run> --json",
+          "note": "below one means the typical session that finished something was interrupted before it could have"
+        },
+        "windowHeadroom": {
+          "value": 2639424,
+          "display": "2.6M",
+          "label": "left between the nudge and the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudged": {
+          "value": 8,
+          "display": "8",
+          "label": "sessions that were nudged",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgesHonoured": {
+          "value": 6,
+          "display": "6",
+          "label": "of them stopped and ended clean",
+          "source": "conductor budget <run> --json"
+        },
+        "windowKilledAfterANudge": {
+          "value": 2,
+          "display": "2",
+          "label": "were nudged, carried on, and were killed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowWrapUp": {
+          "value": 1694462,
+          "display": "1.7M",
+          "label": "median wrap-up after a nudge",
+          "source": "conductor budget <run> --json",
+          "note": "measured over the 6 sessions here that took one and stopped"
+        },
+        "windowHeadroomVsWrapUp": {
+          "value": 1.557676713906833,
+          "display": "1.56x",
+          "label": "headroom, against the measured wrap-up",
+          "source": "conductor budget <run> --json",
+          "note": "the reserve is absolute: a session needs the same tokens to finish whatever the ceiling is"
+        }
+      }
+    },
+    "the-engine-run-uncapped": {
+      "key": "the-engine-run-uncapped",
+      "run": "the-engine-run",
+      "capMeasured": false,
+      "scenario": "A static-analysis engine for a compiled language, with an evaluation suite as the release gate — sessions 1 to 26, with no ceiling in force",
+      "figures": {
+        "windowSessions": {
+          "value": 24,
+          "display": "24",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 20,
+          "display": "20",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 20,
+          "display": "20",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 492289782,
+          "display": "492.3M",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 24614489,
+          "display": "24.6M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 0,
+          "display": "0/24",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0,
+          "display": "0%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 13812072,
+          "display": "13.8M",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 24900250,
+          "display": "24.9M",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 16 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 52051774,
+          "display": "52.1M",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        }
+      }
+    },
+    "the-engine-run-capped-20m": {
+      "key": "the-engine-run-capped-20m",
+      "run": "the-engine-run",
+      "capMeasured": true,
+      "scenario": "A static-analysis engine for a compiled language, with an evaluation suite as the release gate — sessions 27 to 28, under a measured ceiling",
+      "figures": {
+        "windowSessions": {
+          "value": 2,
+          "display": "2",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 2,
+          "display": "2",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 2,
+          "display": "2",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 31422668,
+          "display": "31.4M",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 15711334,
+          "display": "15.7M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 0,
+          "display": "0/2",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0,
+          "display": "0%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 14664665,
+          "display": "14.7M",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 15711334,
+          "display": "15.7M",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 2 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 16758003,
+          "display": "16.8M",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCap": {
+          "value": 20000000,
+          "display": "20M",
+          "label": "ceiling in force",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudge": {
+          "value": 14146558,
+          "display": "14.1M",
+          "label": "where the cooperative break fired",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgeVsFloor": {
+          "value": 0.964669700944413,
+          "display": "0.96x",
+          "label": "the nudge, against this window's floor",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgeVsMedianCloser": {
+          "value": 0.9004046378238793,
+          "display": "0.9x",
+          "label": "the nudge, against the median closing session",
+          "source": "conductor budget <run> --json",
+          "note": "below one means the typical session that finished something was interrupted before it could have"
+        },
+        "windowHeadroom": {
+          "value": 5853442,
+          "display": "5.9M",
+          "label": "left between the nudge and the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudged": {
+          "value": 2,
+          "display": "2",
+          "label": "sessions that were nudged",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgesHonoured": {
+          "value": 2,
+          "display": "2",
+          "label": "of them stopped and ended clean",
+          "source": "conductor budget <run> --json"
+        },
+        "windowKilledAfterANudge": {
+          "value": 0,
+          "display": "0",
+          "label": "were nudged, carried on, and were killed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowWrapUp": {
+          "value": 1564776,
+          "display": "1.6M",
+          "label": "median wrap-up after a nudge",
+          "source": "conductor budget <run> --json",
+          "note": "measured over the 2 sessions here that took one and stopped"
+        },
+        "windowHeadroomVsWrapUp": {
+          "value": 3.740753948168939,
+          "display": "3.74x",
+          "label": "headroom, against the measured wrap-up",
+          "source": "conductor budget <run> --json",
+          "note": "the reserve is absolute: a session needs the same tokens to finish whatever the ceiling is"
+        }
+      }
+    },
+    "the-second-feature-capped-9m": {
+      "key": "the-second-feature-capped-9m",
+      "run": "the-second-feature",
+      "capMeasured": true,
+      "scenario": "A second interactive feature on the same site, planned after the first one had taught the plan what to say — sessions 1 to 15, under a measured ceiling",
+      "figures": {
+        "windowSessions": {
+          "value": 15,
+          "display": "15",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 14,
+          "display": "14",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 12,
+          "display": "12",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 118153423,
+          "display": "118.2M",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 9846119,
+          "display": "9.8M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 5,
+          "display": "5/15",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0.3571,
+          "display": "35.7%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 6990562,
+          "display": "7M",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 8155814,
+          "display": "8.2M",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 8 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 8784463,
+          "display": "8.8M",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCap": {
+          "value": 9000000,
+          "display": "9M",
+          "label": "ceiling in force",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudge": {
+          "value": 6375500,
+          "display": "6.4M",
+          "label": "where the cooperative break fired",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgeVsFloor": {
+          "value": 0.9120153715824278,
+          "display": "0.91x",
+          "label": "the nudge, against this window's floor",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgeVsMedianCloser": {
+          "value": 0.7817122852482904,
+          "display": "0.78x",
+          "label": "the nudge, against the median closing session",
+          "source": "conductor budget <run> --json",
+          "note": "below one means the typical session that finished something was interrupted before it could have"
+        },
+        "windowHeadroom": {
+          "value": 2624500,
+          "display": "2.6M",
+          "label": "left between the nudge and the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudged": {
+          "value": 14,
+          "display": "14",
+          "label": "sessions that were nudged",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgesHonoured": {
+          "value": 9,
+          "display": "9",
+          "label": "of them stopped and ended clean",
+          "source": "conductor budget <run> --json"
+        },
+        "windowKilledAfterANudge": {
+          "value": 5,
+          "display": "5",
+          "label": "were nudged, carried on, and were killed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowWrapUp": {
+          "value": 1937959,
+          "display": "1.9M",
+          "label": "median wrap-up after a nudge",
+          "source": "conductor budget <run> --json",
+          "note": "measured over the 9 sessions here that took one and stopped"
+        },
+        "windowHeadroomVsWrapUp": {
+          "value": 1.3542598166421478,
+          "display": "1.35x",
+          "label": "headroom, against the measured wrap-up",
+          "source": "conductor budget <run> --json",
+          "note": "the reserve is absolute: a session needs the same tokens to finish whatever the ceiling is"
+        }
+      }
+    },
+    "the-ci-cleanup-capped-9m": {
+      "key": "the-ci-cleanup-capped-9m",
+      "run": "the-ci-cleanup",
+      "capMeasured": true,
+      "scenario": "Continuous integration made honest across a set of related repos, the cheapest complete run in the corpus — sessions 1 to 12, under a measured ceiling",
+      "figures": {
+        "windowSessions": {
+          "value": 12,
+          "display": "12",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 10,
+          "display": "10",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 20,
+          "display": "20",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 44381175,
+          "display": "44.4M",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 2219059,
+          "display": "2.2M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 0,
+          "display": "0/12",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0,
+          "display": "0%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 1278082,
+          "display": "1.3M",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 5325128,
+          "display": "5.3M",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 7 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 7482881,
+          "display": "7.5M",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCap": {
+          "value": 9000000,
+          "display": "9M",
+          "label": "ceiling in force",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudge": {
+          "value": 6337475,
+          "display": "6.3M",
+          "label": "where the cooperative break fired",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgeVsFloor": {
+          "value": 4.958582469669396,
+          "display": "4.96x",
+          "label": "the nudge, against this window's floor",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgeVsMedianCloser": {
+          "value": 1.190107542954836,
+          "display": "1.19x",
+          "label": "the nudge, against the median closing session",
+          "source": "conductor budget <run> --json",
+          "note": "below one means the typical session that finished something was interrupted before it could have"
+        },
+        "windowHeadroom": {
+          "value": 2662525,
+          "display": "2.7M",
+          "label": "left between the nudge and the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudged": {
+          "value": 3,
+          "display": "3",
+          "label": "sessions that were nudged",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgesHonoured": {
+          "value": 3,
+          "display": "3",
+          "label": "of them stopped and ended clean",
+          "source": "conductor budget <run> --json"
+        },
+        "windowKilledAfterANudge": {
+          "value": 0,
+          "display": "0",
+          "label": "were nudged, carried on, and were killed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowWrapUp": {
+          "value": 1181319,
+          "display": "1.2M",
+          "label": "median wrap-up after a nudge",
+          "source": "conductor budget <run> --json",
+          "note": "measured over the 3 sessions here that took one and stopped"
+        },
+        "windowHeadroomVsWrapUp": {
+          "value": 2.25385776407558,
+          "display": "2.25x",
+          "label": "headroom, against the measured wrap-up",
+          "source": "conductor budget <run> --json",
+          "note": "the reserve is absolute: a session needs the same tokens to finish whatever the ceiling is"
+        }
+      }
+    },
+    "the-third-feature-capped-16m": {
+      "key": "the-third-feature-capped-16m",
+      "run": "the-third-feature",
+      "capMeasured": true,
+      "scenario": "A third feature on the same site, including the way back out of it, closed at twenty of twenty — sessions 1 to 15, under a measured ceiling",
+      "figures": {
+        "windowSessions": {
+          "value": 15,
+          "display": "15",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 13,
+          "display": "13",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 19,
+          "display": "19",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 141840161,
+          "display": "141.8M",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 7465272,
+          "display": "7.5M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 1,
+          "display": "1/15",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0.0769,
+          "display": "7.7%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 4570412,
+          "display": "4.6M",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 11143761,
+          "display": "11.1M",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 12 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 13448651,
+          "display": "13.4M",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCap": {
+          "value": 16000000,
+          "display": "16M",
+          "label": "ceiling in force",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudge": {
+          "value": 9960436,
+          "display": "10M",
+          "label": "where the cooperative break fired",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgeVsFloor": {
+          "value": 2.17933000350953,
+          "display": "2.18x",
+          "label": "the nudge, against this window's floor",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgeVsMedianCloser": {
+          "value": 0.8938127800838515,
+          "display": "0.89x",
+          "label": "the nudge, against the median closing session",
+          "source": "conductor budget <run> --json",
+          "note": "below one means the typical session that finished something was interrupted before it could have"
+        },
+        "windowHeadroom": {
+          "value": 6039564,
+          "display": "6M",
+          "label": "left between the nudge and the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudged": {
+          "value": 11,
+          "display": "11",
+          "label": "sessions that were nudged",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgesHonoured": {
+          "value": 10,
+          "display": "10",
+          "label": "of them stopped and ended clean",
+          "source": "conductor budget <run> --json"
+        },
+        "windowKilledAfterANudge": {
+          "value": 1,
+          "display": "1",
+          "label": "were nudged, carried on, and were killed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowWrapUp": {
+          "value": 1819055,
+          "display": "1.8M",
+          "label": "median wrap-up after a nudge",
+          "source": "conductor budget <run> --json",
+          "note": "measured over the 9 sessions here that took one and stopped"
+        },
+        "windowHeadroomVsWrapUp": {
+          "value": 3.320165690427172,
+          "display": "3.32x",
+          "label": "headroom, against the measured wrap-up",
+          "source": "conductor budget <run> --json",
+          "note": "the reserve is absolute: a session needs the same tokens to finish whatever the ceiling is"
+        }
+      }
+    },
+    "the-accounting-run-capped-32m": {
+      "key": "the-accounting-run-capped-32m",
+      "run": "the-accounting-run",
+      "capMeasured": true,
+      "scenario": "The engine taught to account for itself - what it did and what it cost - and closed at 25 of 32, seven checkpoints short — sessions 1 to 32, under a measured ceiling",
+      "figures": {
+        "windowSessions": {
+          "value": 32,
+          "display": "32",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 30,
+          "display": "30",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 24,
+          "display": "24",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 403913542,
+          "display": "403.9M",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 16829731,
+          "display": "16.8M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 0,
+          "display": "0/32",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0,
+          "display": "0%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 3265268,
+          "display": "3.3M",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 13817747,
+          "display": "13.8M",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 20 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 26060893,
+          "display": "26.1M",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCap": {
+          "value": 32000000,
+          "display": "32M",
+          "label": "ceiling in force",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudge": {
+          "value": 22539159,
+          "display": "22.5M",
+          "label": "where the cooperative break fired",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgeVsFloor": {
+          "value": 6.902698032749532,
+          "display": "6.9x",
+          "label": "the nudge, against this window's floor",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgeVsMedianCloser": {
+          "value": 1.6311746770294753,
+          "display": "1.63x",
+          "label": "the nudge, against the median closing session",
+          "source": "conductor budget <run> --json",
+          "note": "below one means the typical session that finished something was interrupted before it could have"
+        },
+        "windowHeadroom": {
+          "value": 9460841,
+          "display": "9.5M",
+          "label": "left between the nudge and the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudged": {
+          "value": 7,
+          "display": "7",
+          "label": "sessions that were nudged",
+          "source": "conductor budget <run> --json"
+        },
+        "windowNudgesHonoured": {
+          "value": 7,
+          "display": "7",
+          "label": "of them stopped and ended clean",
+          "source": "conductor budget <run> --json"
+        },
+        "windowKilledAfterANudge": {
+          "value": 0,
+          "display": "0",
+          "label": "were nudged, carried on, and were killed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowWrapUp": {
+          "value": 1860890,
+          "display": "1.9M",
+          "label": "median wrap-up after a nudge",
+          "source": "conductor budget <run> --json",
+          "note": "measured over the 7 sessions here that took one and stopped"
+        },
+        "windowHeadroomVsWrapUp": {
+          "value": 5.084040969643557,
+          "display": "5.08x",
+          "label": "headroom, against the measured wrap-up",
+          "source": "conductor budget <run> --json",
+          "note": "the reserve is absolute: a session needs the same tokens to finish whatever the ceiling is"
+        }
+      }
+    },
+    "the-demo-uncapped": {
+      "key": "the-demo-uncapped",
+      "run": "the-demo",
+      "capMeasured": false,
+      "scenario": "The engine demonstrating itself against a throwaway repo, six sessions, no model spend — sessions 1 to 6, with no ceiling in force",
+      "figures": {
+        "windowSessions": {
+          "value": 6,
+          "display": "6",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 6,
+          "display": "6",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 3,
+          "display": "3",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 1620,
+          "display": "1.6K",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 540,
+          "display": "540",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 0,
+          "display": "0/6",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0,
+          "display": "0%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 360,
+          "display": "360",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 360,
+          "display": "360",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 3 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 360,
+          "display": "360",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        }
+      }
+    },
+    "the-rehearsal-uncapped": {
+      "key": "the-rehearsal-uncapped",
+      "run": "the-rehearsal",
+      "capMeasured": false,
+      "scenario": "A rehearsal of one engine feature end to end before it was let near real work — sessions 1 to 10, with no ceiling in force",
+      "figures": {
+        "windowSessions": {
+          "value": 10,
+          "display": "10",
+          "label": "sessions in this window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowCostedSessions": {
+          "value": 10,
+          "display": "10",
+          "label": "of them recorded tokens",
+          "source": "conductor budget <run> --json",
+          "note": "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+        },
+        "windowCheckpoints": {
+          "value": 6,
+          "display": "6",
+          "label": "checkpoints closed",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokens": {
+          "value": 2880,
+          "display": "2.9K",
+          "label": "tokens spent in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowTokensPerCheckpoint": {
+          "value": 480,
+          "display": "480",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor budget <run> --json",
+          "note": "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+        },
+        "windowRollovers": {
+          "value": 0,
+          "display": "0/10",
+          "label": "sessions killed at the ceiling",
+          "source": "conductor budget <run> --json"
+        },
+        "windowRolloverRate": {
+          "value": 0,
+          "display": "0%",
+          "label": "rollover rate",
+          "source": "conductor budget <run> --json"
+        },
+        "windowFloor": {
+          "value": 360,
+          "display": "360",
+          "label": "floor — the cheapest session in the window",
+          "source": "conductor budget <run> --json"
+        },
+        "windowMedianCloser": {
+          "value": 360,
+          "display": "360",
+          "label": "median session that closed a checkpoint",
+          "source": "conductor budget <run> --json",
+          "note": "over the 6 sessions in this window that closed one"
+        },
+        "windowMaxCloser": {
+          "value": 360,
+          "display": "360",
+          "label": "largest session that closed a checkpoint",
+          "source": "conductor budget <run> --json"
+        }
+      }
+    }
+  },
   "sources": {
     "runLevel": "conductor history --json --limit 0",
     "store": "run.db, opened read-only; every query filtered by run_id",
     "labels": "anonymise.json — a run with no entry is excluded, never renamed",
-    "budgetShaped": "asked of the verbs, never computed here: tokens per checkpoint, blended $/M and the stage split come from `conductor money --run <id> --json`; floors, median closers, wrap-up and cap values come from `conductor budget`"
+    "budgetShaped": "asked of the verbs, never computed here: tokens per checkpoint, blended $/M and the stage split come from `conductor money --run <id> --json`; ceilings, nudge points, floors, median closers, wrap-up and rollover rates come from `conductor budget <run> --json`, window by window"
   }
 }

@@ -69,7 +69,45 @@ function fakeRun(runId, overrides = {}) {
       cacheReadShare: 0.9,
       dearestStage: { costUsd: 400, sessions: 30, checkpoints: 2, share: 0.4 },
       ...(overrides.money ?? {})
+    },
+    /* And what `conductor budget <run> --json` answers, reduced the way
+       `readBudget` reduces it. Two windows by default because one window is the
+       uninteresting case: the whole point of the namespace is a run whose
+       ceiling moved. */
+    budget: {
+      capPayoff: null,
+      windows: [fakeWindow({ capMeasured: false }), fakeWindow({})],
+      ...(overrides.budget ?? {})
     }
+  };
+}
+
+/** One window, shaped the way `readBudget` returns them. */
+function fakeWindow(overrides = {}) {
+  return {
+    capTokens: 8_000_000,
+    capMeasured: true,
+    nudgeTokens: 6_000_000,
+    nudgeRatio: 0.75,
+    headroomTokens: 2_000_000,
+    firstSession: 1,
+    lastSession: 10,
+    sessions: 10,
+    costedSessions: 10,
+    tokens: 60_000_000,
+    checkpoints: 5,
+    tokensPerCheckpoint: 12_000_000,
+    rollovers: 4,
+    rolloverRate: 0.4,
+    nudged: 9,
+    nudgedAndEndedClean: 5,
+    closers: 5,
+    floorTokens: 2_000_000,
+    medianCloserTokens: 7_000_000,
+    maxCloserTokens: 7_500_000,
+    wrapUpTokens: 1_000_000,
+    wrapUpSamples: 5,
+    ...overrides
   };
 }
 
@@ -229,6 +267,133 @@ test("the same figure measured by the verb is published", () => {
     {},
     { "a-run": { figures: { medianCloserTokens: figureFrom("conductor budget --json") } } }
   );
+});
+
+/* --------------------------------------------------------------------------
+   The window namespace.
+   --------------------------------------------------------------------------
+   A window is one stretch of a run's sessions under one ceiling. It exists as
+   its own namespace because the whole cap argument is a comparison between two
+   windows of the SAME run — average them together and the comparison is gone.
+   The three things worth a test are the three that would fail silently: a
+   window published under a name a page cannot cite, a cap-shaped figure invented
+   for a window that had no cap, and a window's figures leaking into a run's.
+   -------------------------------------------------------------------------- */
+
+test("a window is keyed by its run and the ceiling it ran under", () => {
+  const built = buildCorpus(
+    [fakeRun("aaaaaaaa1111")],
+    mapOf({ aaaaaaaa: { label: "the-mapped-one", scenario: "A run", repoKey: "one" } })
+  );
+
+  assert.deepEqual(Object.keys(built.payload.windows).sort(), [
+    "the-mapped-one-capped-8m",
+    "the-mapped-one-uncapped"
+  ]);
+  assert.equal(built.payload.windows["the-mapped-one-capped-8m"].run, "the-mapped-one");
+});
+
+test("a window with no ceiling carries no nudge, no headroom and no wrap-up", () => {
+  /* Zero would be a measurement, and it is not one: nothing was ever asked to
+     wrap up, so there is nothing to have measured. The absent key is the fact. */
+  const built = buildCorpus(
+    [fakeRun("aaaaaaaa1111")],
+    mapOf({ aaaaaaaa: { label: "the-mapped-one", scenario: "A run", repoKey: "one" } })
+  );
+  const uncapped = built.payload.windows["the-mapped-one-uncapped"].figures;
+  const capped = built.payload.windows["the-mapped-one-capped-8m"].figures;
+
+  for (const key of ["windowCap", "windowNudge", "windowHeadroom", "windowWrapUp"]) {
+    assert.ok(!(key in uncapped), `an uncapped window published ${key}`);
+    assert.ok(key in capped, `a capped window is missing ${key}`);
+  }
+  /* What both do carry, because both measured it. */
+  assert.equal(uncapped.windowMedianCloser.value, 7_000_000);
+});
+
+test("a capped window that nobody ever nudged publishes no wrap-up", () => {
+  const built = buildCorpus(
+    [
+      fakeRun("aaaaaaaa1111", {
+        budget: { capPayoff: null, windows: [fakeWindow({ wrapUpTokens: null, wrapUpSamples: 0 })] }
+      })
+    ],
+    mapOf({ aaaaaaaa: { label: "the-mapped-one", scenario: "A run", repoKey: "one" } })
+  );
+  const figures = built.payload.windows["the-mapped-one-capped-8m"].figures;
+
+  assert.ok("windowNudge" in figures);
+  assert.ok(!("windowWrapUp" in figures), "a wrap-up was published with nothing measured behind it");
+  assert.ok(!("windowHeadroomVsWrapUp" in figures), "a ratio was published against an assumption");
+});
+
+test("two windows of one run cannot collide on a key", () => {
+  assert.throws(
+    () =>
+      buildCorpus(
+        [fakeRun("aaaaaaaa1111", { budget: { capPayoff: null, windows: [fakeWindow({}), fakeWindow({})] } })],
+        mapOf({ aaaaaaaa: { label: "the-mapped-one", scenario: "A run", repoKey: "one" } })
+      ),
+    /both be published as/
+  );
+});
+
+test("an excluded run takes its windows with it", () => {
+  const built = buildCorpus(
+    [fakeRun("aaaaaaaa1111"), fakeRun("bbbbbbbb2222")],
+    mapOf({ aaaaaaaa: { label: "the-mapped-one", scenario: "A run", repoKey: "one" } })
+  );
+  assert.ok(
+    Object.keys(built.payload.windows).every((key) => key.startsWith("the-mapped-one")),
+    "a window of an unmapped run reached the corpus"
+  );
+});
+
+test("the corpus ceiling block counts only what ran under a measured ceiling", () => {
+  const corpus = buildCorpus(
+    [fakeRun("aaaaaaaa1111")],
+    mapOf({ aaaaaaaa: { label: "the-mapped-one", scenario: "A run", repoKey: "one" } })
+  ).payload.corpus;
+
+  /* One capped window of the fixture's two: 10 sessions, 9 nudged, 5 of them
+     clean, 4 killed. The uncapped window's identical numbers must not appear. */
+  assert.equal(corpus.cappedWindows.value, 1);
+  assert.equal(corpus.sessionsUnderACeiling.value, 10);
+  assert.equal(corpus.nudgesDelivered.value, 9);
+  assert.equal(corpus.nudgesHonoured.value, 5);
+  assert.equal(corpus.killedAtACeiling.value, 4);
+  assert.equal(corpus.killedAfterANudge.value, 4);
+});
+
+test("a run key and a window key never share a name", () => {
+  const perRun = new Set(
+    Object.values(corpusJson.runs).flatMap((run) => Object.keys(run.figures))
+  );
+  const perWindow = new Set(
+    Object.values(corpusJson.windows).flatMap((window) => Object.keys(window.figures))
+  );
+  const clashes = [...perWindow].filter((key) => perRun.has(key));
+  assert.deepEqual(clashes, [], "one key, one meaning: see assertDisjoint() in scripts/harvest.mjs");
+  assert.deepEqual(
+    Object.keys(corpusJson.corpus).filter((key) => perWindow.has(key)),
+    []
+  );
+});
+
+test("every window figure in the committed corpus came from conductor budget", () => {
+  /* Not a name check: a window figure that says it was measured by the verb and
+     was not is already lying on the page, because `source` is what the strip
+     prints under the number. `runs.limits_json` is NULL for every imported run,
+     so nothing here could have been recomputed from the store anyway. */
+  for (const [label, window] of Object.entries(corpusJson.windows)) {
+    for (const [key, figure] of Object.entries(window.figures)) {
+      assert.match(
+        figure.source,
+        /^conductor budget\b/,
+        `${label}.${key} says it came from ${figure.source}`
+      );
+    }
+  }
 });
 
 test("every money-shaped figure in the committed corpus names the verb", () => {

@@ -14,10 +14,17 @@
    for every entry on the way past, and the failure names the key, the entry and
    what the corpus actually holds.
 
-   Two namespaces, deliberately disjoint (see `corpusFigures` in the harvest): a
-   corpus key like `totalSessions` is the whole corpus, a run key like `sessions`
-   is one run and needs the page to have named which runs. One word, one
-   meaning. */
+   Three namespaces, deliberately disjoint (see `assertDisjoint` in the
+   harvest): a corpus key like `totalSessions` is the whole corpus, a run key
+   like `sessions` is one run, and a window key like `windowSessions` is one
+   stretch of one run's sessions under one ceiling. Each needs the page to have
+   named which runs or which windows. One word, one meaning.
+
+   The window namespace has one rule the other two do not: a window is not
+   required to carry every key. A window with no ceiling in force has no nudge,
+   no headroom and no wrap-up, because nothing was ever asked to wrap up — so
+   the cell is absent rather than zero, and the build fails only when *no* named
+   window has the key. That is the difference between a fact and a hole. */
 import corpus from "../data/corpus.json";
 
 export interface Figure {
@@ -37,9 +44,18 @@ interface RunEntry {
   figures: Record<string, Figure>;
 }
 
+interface WindowEntry {
+  key: string;
+  run: string;
+  capMeasured: boolean;
+  scenario: string;
+  figures: Record<string, Figure>;
+}
+
 /** What a page names in its `evidence` field. */
 export interface Evidence {
   runs: string[];
+  windows?: string[];
   figures: string[];
 }
 
@@ -63,11 +79,14 @@ export interface ResolvedEvidence {
 
 const corpusFigures = corpus.corpus as Record<string, Figure>;
 const runs = corpus.runs as Record<string, RunEntry>;
+const windows = corpus.windows as Record<string, WindowEntry>;
 
 const known = {
   corpus: Object.keys(corpusFigures).sort(),
   run: [...new Set(Object.values(runs).flatMap((run) => Object.keys(run.figures)))].sort(),
-  runs: Object.keys(runs).sort()
+  window: [...new Set(Object.values(windows).flatMap((w) => Object.keys(w.figures)))].sort(),
+  runs: Object.keys(runs).sort(),
+  windows: Object.keys(windows).sort()
 };
 
 /** The corpus behind a key, or a build failure naming what is actually there.
@@ -88,8 +107,22 @@ export function resolveEvidence(where: string, evidence: Evidence): ResolvedEvid
     return run;
   });
 
+  const namedWindows: WindowEntry[] = (evidence.windows ?? []).map((label) => {
+    const window = windows[label];
+    if (!window) {
+      throw new Error(
+        `${where}: evidence.windows names "${label}", which the corpus does not publish. A window ` +
+          `key is its run's label followed by the ceiling it ran under, so a cap that moved ends ` +
+          `one window and starts another under a different key. Published windows: ` +
+          `${known.windows.join(", ")}.`
+      );
+    }
+    return window;
+  });
+
   const corpusKeys: string[] = [];
   const runKeys: string[] = [];
+  const windowKeys: string[] = [];
 
   for (const key of evidence.figures) {
     if (key in corpusFigures) {
@@ -107,12 +140,31 @@ export function resolveEvidence(where: string, evidence: Evidence): ResolvedEvid
       runKeys.push(key);
       continue;
     }
+    if (known.window.includes(key)) {
+      /* Not "some window has it" — *this page's* windows. A window with no
+         ceiling carries no nudge, so a page comparing two uncapped windows and
+         naming a nudge would render a group with a gap in it and no error
+         anywhere, which is the shape of failure this whole file exists to
+         refuse. */
+      if (!namedWindows.some((window) => key in window.figures)) {
+        throw new Error(
+          `${where}: evidence.figures names "${key}", which is a per-window figure, but none of ` +
+            `the ${namedWindows.length} window(s) this page names has it. A window with no ` +
+            `ceiling in force has no nudge, no headroom and no wrap-up — the absence is a fact, ` +
+            `and publishing a zero in its place would be inventing a measurement. Windows: ` +
+            `${known.windows.join(", ")}.`
+        );
+      }
+      windowKeys.push(key);
+      continue;
+    }
     throw new Error(
       `${where}: evidence.figures names "${key}", which is not in the corpus. Nothing on this ` +
         `site is typed in, so a key with no figure behind it is a claim with no evidence behind ` +
         `it. Run \`npm run harvest\` if the corpus is stale; otherwise the key is wrong.\n` +
         `  corpus-wide keys: ${known.corpus.join(", ")}\n` +
-        `  per-run keys:     ${known.run.join(", ")}`
+        `  per-run keys:     ${known.run.join(", ")}\n` +
+        `  per-window keys:  ${known.window.join(", ")}`
     );
   }
 
@@ -144,6 +196,18 @@ export function resolveEvidence(where: string, evidence: Evidence): ResolvedEvid
         }
         return figure;
       })
+    });
+  }
+
+  /* Windows come after the runs, because a page that names both is almost
+     always saying "here is the run, and here is the part of it I mean". A
+     window only renders the cited keys it has — see the check above for why the
+     missing ones are absent rather than zero. */
+  for (const window of namedWindows) {
+    groups.push({
+      run: window.run,
+      scenario: window.scenario,
+      cells: windowKeys.filter((key) => key in window.figures).map((key) => window.figures[key]!)
     });
   }
 

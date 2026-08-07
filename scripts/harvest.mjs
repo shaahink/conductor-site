@@ -69,6 +69,15 @@ const STORE = "run.db, opened read-only";
    corpus.json — which is how the first draft of this line was caught. A reader
    repeating this runs it against their own run anyway. */
 const MONEY = "conductor money --run <run> --json";
+/* The fourth source, and the only one that can see a ceiling at all.
+   `runs.limits_json` is NULL for every imported run, so the cap a run was under
+   is not in the store: `conductor budget` reconstructs it from where the
+   sessions actually stopped, and says whether it measured one (`capMeasured`)
+   or found none. Everything a cap is judged by — the floor, the median closing
+   session, the wrap-up spend, the rollover rate — comes back from the same
+   call, over the same window, which is the part a hand query got wrong in
+   August 2026 by dividing one window's cost by another window's checkpoints. */
+const BUDGET = "conductor budget <run> --json";
 
 /* ---------------------------------------------------------------------------
    Collecting
@@ -244,6 +253,69 @@ export function readMoney(runId) {
   };
 }
 
+/** What `conductor budget` says about one run's ceilings, window by window.
+    ---------------------------------------------------------------------------
+    A *window* is a stretch of consecutive sessions that ran under one ceiling.
+    A run has more than one whenever somebody changed the cap mid-run, and those
+    are the interesting runs: the same repo, the same plan, the same agents,
+    with one number moved. That is as close to a controlled experiment as this
+    corpus gets, and it is why windows are published as their own entities
+    rather than folded into a run average — an average across a cap change is a
+    number about nothing.
+
+    `label` comes back from the verb as a human string (`8M / nudge 6.07M`, `no
+    ceiling observed`) and is deliberately NOT what content cites: it carries a
+    rounded figure, and the key a page names has to stay an identifier. The key
+    is built in `windowEntries` below.
+
+    Two fields of the verb's output are dropped here for the same reason
+    `readMoney` drops them: `plan` is a plan's real name and `repo` is a path on
+    somebody's machine. Neither is publishable (SPEC Part VI). */
+export function readBudget(runId) {
+  const raw = execSync(`conductor budget ${runId} --json`, {
+    encoding: "utf8",
+    maxBuffer: 64 * 1024 * 1024
+  });
+  const profiled = JSON.parse(raw.replace(/^﻿/, "")).runs?.find((run) => run.runId === runId);
+  if (!profiled) {
+    throw new Error(
+      `conductor budget ${short(runId)} profiled no run with that id. Cap-shaped figures have ` +
+        `exactly one allowed source, so a silent default here would publish a ceiling nobody ` +
+        `measured.`
+    );
+  }
+  return {
+    /* Absent on a run that never changed its cap, because there is nothing to
+       compare. Kept as null rather than 1, which would read as "no benefit
+       measured" when the truth is "not measurable on this run". */
+    capPayoff: profiled.capPayoff ?? null,
+    windows: (profiled.windows ?? []).map((w) => ({
+      capTokens: w.capTokens ?? null,
+      capMeasured: Boolean(w.capMeasured),
+      nudgeTokens: w.nudgeTokens ?? null,
+      nudgeRatio: w.nudgeRatio ?? null,
+      headroomTokens: w.headroomTokens ?? null,
+      firstSession: w.firstSession ?? 0,
+      lastSession: w.lastSession ?? 0,
+      sessions: w.sessions ?? 0,
+      costedSessions: w.costedSessions ?? 0,
+      tokens: w.tokens ?? 0,
+      checkpoints: w.checkpoints ?? 0,
+      tokensPerCheckpoint: w.tokensPerCheckpoint ?? 0,
+      rollovers: w.rollovers ?? 0,
+      rolloverRate: w.rolloverRate ?? 0,
+      nudged: w.nudged ?? 0,
+      nudgedAndEndedClean: w.nudgedAndEndedClean ?? 0,
+      closers: w.closers ?? 0,
+      floorTokens: w.floorTokens ?? 0,
+      medianCloserTokens: w.medianCloserTokens ?? 0,
+      maxCloserTokens: w.maxCloserTokens ?? 0,
+      wrapUpTokens: w.wrapUp?.median ?? null,
+      wrapUpSamples: w.wrapUp?.samples ?? 0
+    }))
+  };
+}
+
 /** Every run the engine knows about, with its store read alongside it.
     ---------------------------------------------------------------------------
     Runs are grouped by database so each file is opened once, and only the runs
@@ -273,7 +345,8 @@ export function collect({ history = readHistory(), published } = {}) {
           checkpointsTotal: run.checkpointsTotal ?? 0,
           costUsd: run.costUsd ?? 0,
           store: readStore(db, run.runId),
-          money: readMoney(run.runId)
+          money: readMoney(run.runId),
+          budget: readBudget(run.runId)
         });
       }
     } finally {
@@ -423,6 +496,176 @@ function runEntry(run, mapped) {
   };
 }
 
+/** The windows of one run, keyed by what a page is allowed to cite.
+    ---------------------------------------------------------------------------
+    A third namespace, and it earns its own because a window is neither the
+    corpus nor a run: it is one stretch of sessions under one ceiling, and the
+    whole argument about caps is a comparison *between* two of them inside the
+    same run. Averaged to the run they cancel out — `the-long-build` reads as a
+    perfectly ordinary 15.5M per checkpoint until it is split into the three
+    ceilings it actually ran under.
+
+    Unlike the run namespace, a window is NOT required to carry every key, and
+    that is a fact rather than a slip: a window with no ceiling has no nudge, no
+    headroom and no wrap-up, because nothing was ever asked to wrap up. Zero
+    would be a measurement and it is not one. `resolveEvidence` renders the keys
+    a window has and refuses a key no named window has at all.
+
+    The key is built rather than taken from the verb's own `label`, which reads
+    `8M / nudge 6.07M` — a slash and two figures, which is not an identifier and
+    would put a rounded number where content has to name a key. */
+function windowEntries(run, mapped) {
+  if (!run.budget) {
+    throw new Error(
+      `${mapped.label}: no budget block. A ceiling cannot be recomputed from the store — ` +
+        `runs.limits_json is NULL for every imported run — so a run collected without ` +
+        `\`conductor budget\` cannot publish a window.`
+    );
+  }
+
+  const entries = {};
+  for (const w of run.budget.windows) {
+    const key = w.capMeasured
+      ? `${mapped.label}-capped-${round1(w.capTokens / 1e6).replace(".", "-")}m`
+      : `${mapped.label}-uncapped`;
+    if (entries[key]) {
+      throw new Error(
+        `${mapped.label} has two windows that would both be published as "${key}". A window key ` +
+          `is what content cites, so it has to name exactly one stretch of sessions.`
+      );
+    }
+    entries[key] = {
+      key,
+      run: mapped.label,
+      capMeasured: w.capMeasured,
+      scenario:
+        `${mapped.scenario} — sessions ${w.firstSession} to ${w.lastSession}, ` +
+        `${w.capMeasured ? "under a measured ceiling" : "with no ceiling in force"}`,
+      figures: windowFigures(w)
+    };
+  }
+  return entries;
+}
+
+/** One window's figures. Every one of them came back from `conductor budget`. */
+function windowFigures(w) {
+  const budget = BUDGET;
+  const shared = {
+    windowSessions: figure(w.sessions, plain(w.sessions), "sessions in this window", budget),
+    windowCostedSessions: figure(
+      w.costedSessions,
+      plain(w.costedSessions),
+      "of them recorded tokens",
+      budget,
+      "the divisor for every per-session figure here: a session that recorded none cannot be averaged"
+    ),
+    windowCheckpoints: figure(w.checkpoints, plain(w.checkpoints), "checkpoints closed", budget),
+    windowTokens: figure(w.tokens, big(w.tokens), "tokens spent in the window", budget),
+    windowTokensPerCheckpoint: figure(
+      w.tokensPerCheckpoint,
+      big(w.tokensPerCheckpoint),
+      "tokens per checkpoint closed",
+      budget,
+      "this window's tokens over this window's checkpoints — never one window's cost over another's count"
+    ),
+    windowRollovers: figure(
+      w.rollovers,
+      `${w.rollovers}/${w.sessions}`,
+      "sessions killed at the ceiling",
+      budget
+    ),
+    windowRolloverRate: figure(w.rolloverRate, pct(w.rolloverRate), "rollover rate", budget),
+    windowFloor: figure(
+      w.floorTokens,
+      big(w.floorTokens),
+      "floor — the cheapest session in the window",
+      budget
+    ),
+    windowMedianCloser: figure(
+      w.medianCloserTokens,
+      big(w.medianCloserTokens),
+      "median session that closed a checkpoint",
+      budget,
+      `over the ${w.closers} sessions in this window that closed one`
+    ),
+    windowMaxCloser: figure(
+      w.maxCloserTokens,
+      big(w.maxCloserTokens),
+      "largest session that closed a checkpoint",
+      budget
+    )
+  };
+
+  if (!w.capMeasured) return shared;
+
+  const capped = {
+    ...shared,
+    windowCap: figure(w.capTokens, big(w.capTokens), "ceiling in force", budget),
+    windowNudge: figure(
+      w.nudgeTokens,
+      big(w.nudgeTokens),
+      "where the cooperative break fired",
+      budget
+    ),
+    windowNudgeVsFloor: figure(
+      w.nudgeTokens / w.floorTokens,
+      `${round2(w.nudgeTokens / w.floorTokens)}x`,
+      "the nudge, against this window's floor",
+      budget
+    ),
+    windowNudgeVsMedianCloser: figure(
+      w.nudgeTokens / w.medianCloserTokens,
+      `${round2(w.nudgeTokens / w.medianCloserTokens)}x`,
+      "the nudge, against the median closing session",
+      budget,
+      "below one means the typical session that finished something was interrupted before it could have"
+    ),
+    windowHeadroom: figure(
+      w.headroomTokens,
+      big(w.headroomTokens),
+      "left between the nudge and the ceiling",
+      budget
+    ),
+    windowNudged: figure(w.nudged, plain(w.nudged), "sessions that were nudged", budget),
+    windowNudgesHonoured: figure(
+      w.nudgedAndEndedClean,
+      plain(w.nudgedAndEndedClean),
+      "of them stopped and ended clean",
+      budget
+    ),
+    windowKilledAfterANudge: figure(
+      w.nudged - w.nudgedAndEndedClean,
+      plain(w.nudged - w.nudgedAndEndedClean),
+      "were nudged, carried on, and were killed",
+      budget
+    )
+  };
+
+  /* No wrap-up sample means no session in this window was ever nudged, so
+     there is nothing measured to compare the headroom against. The verb falls
+     back to an assumed figure for its own prescription; this site does not
+     publish an assumption as a measurement. */
+  if (w.wrapUpTokens === null) return capped;
+
+  return {
+    ...capped,
+    windowWrapUp: figure(
+      w.wrapUpTokens,
+      big(w.wrapUpTokens),
+      "median wrap-up after a nudge",
+      budget,
+      `measured over the ${w.wrapUpSamples} sessions here that took one and stopped`
+    ),
+    windowHeadroomVsWrapUp: figure(
+      w.headroomTokens / w.wrapUpTokens,
+      `${round2(w.headroomTokens / w.wrapUpTokens)}x`,
+      "headroom, against the measured wrap-up",
+      budget,
+      "the reserve is absolute: a session needs the same tokens to finish whatever the ceiling is"
+    )
+  };
+}
+
 /** What a run's state actually was, which the store cannot always say.
     ---------------------------------------------------------------------------
     Four runs in this corpus are still marked `running`. Three are July runs
@@ -481,6 +724,19 @@ function corpusFigures(runs, repoKeys) {
      carries `gate`. Publishing all three is what stops the page rounding the
      third one away. */
   const inCategory = (name) => round2(sum((r) => r.store.byCategory[name]?.costUsd ?? 0));
+
+  /* The ceilings, summed across every window the verb measured one in. This is
+     the only place the corpus aggregates windows, and it is here rather than in
+     a page because the fact it produces is corpus-wide and holds nowhere
+     smaller: whether the cooperative break has *ever* worked as designed.
+     Summing what `conductor budget` answered is not the same as computing it
+     here — the source stays the verb, and `refuseBudgetShaped` still checks. */
+  const capped = runs.flatMap((r) => r.budget.windows.filter((w) => w.capMeasured));
+  const overCapped = (pick) => capped.reduce((total, w) => total + pick(w), 0);
+  const underACeiling = overCapped((w) => w.sessions);
+  const nudged = overCapped((w) => w.nudged);
+  const honoured = overCapped((w) => w.nudgedAndEndedClean);
+  const killed = overCapped((w) => w.rollovers);
 
   return {
     totalRuns: figure(runs.length, plain(runs.length), "runs", HISTORY),
@@ -587,6 +843,52 @@ function corpusFigures(runs, repoKeys) {
       "ledger entries",
       STORE
     ),
+    /* The ceiling block. `totalRollovers` above counts every session the engine
+       killed anywhere; these count only the ones that happened under a ceiling
+       the verb could measure, which is the population the cap rules are
+       actually about. Both are published so the difference is visible rather
+       than argued over. */
+    cappedWindows: figure(
+      capped.length,
+      `${capped.length}/${runs.reduce((n, r) => n + r.budget.windows.length, 0)}`,
+      "windows that ran under a measured ceiling",
+      BUDGET,
+      "a window is one stretch of consecutive sessions under one cap; a run has more than one when somebody moved it"
+    ),
+    sessionsUnderACeiling: figure(
+      underACeiling,
+      plain(underACeiling),
+      "sessions run under a ceiling",
+      BUDGET,
+      `of ${sessions} in the corpus; the rest had none in force`
+    ),
+    nudgesDelivered: figure(
+      nudged,
+      plain(nudged),
+      "sessions were nudged to wrap up",
+      BUDGET,
+      `over ${underACeiling} sessions under a ceiling`
+    ),
+    nudgesHonoured: figure(
+      honoured,
+      `${honoured}/${nudged}`,
+      "of those stopped and ended clean",
+      BUDGET
+    ),
+    killedAtACeiling: figure(
+      killed,
+      plain(killed),
+      "sessions were killed at a ceiling",
+      BUDGET,
+      "the ceiling cross is a kill mid-turn: the agent's own commit and handoff step never runs"
+    ),
+    killedAfterANudge: figure(
+      nudged - honoured,
+      `${nudged - honoured}/${killed}`,
+      "of the killed sessions had already been nudged",
+      BUDGET,
+      "every one of them was asked to stop first, in time, and carried on anyway — the cooperative rail converted none of them"
+    ),
     costPerSession: figure(
       perSession,
       usd(perSession),
@@ -612,6 +914,7 @@ function corpusFigures(runs, repoKeys) {
 export function buildCorpus(collected, anonymise) {
   const map = anonymise.runs;
   const runs = {};
+  const windows = {};
   const repoKeys = new Set();
   const kept = [];
   const excluded = [];
@@ -636,6 +939,7 @@ export function buildCorpus(collected, anonymise) {
     }
     repoKeys.add(mapped.repoKey);
     runs[mapped.label] = runEntry(run, mapped);
+    Object.assign(windows, windowEntries(run, mapped));
     kept.push(run);
   }
 
@@ -652,8 +956,8 @@ export function buildCorpus(collected, anonymise) {
   }
 
   const corpus = corpusFigures(kept, repoKeys);
-  assertDisjoint(corpus, runs);
-  refuseBudgetShaped(corpus, runs);
+  assertDisjoint(corpus, runs, windows);
+  refuseBudgetShaped(corpus, runs, windows);
 
   /* `excluded` is returned rather than written into the file, and that is not
      tidiness. The count of runs this machine happens to be holding changes
@@ -666,28 +970,53 @@ export function buildCorpus(collected, anonymise) {
     payload: {
       corpus,
       runs,
+      windows,
       sources: {
         runLevel: HISTORY,
         store: `${STORE}; every query filtered by run_id`,
         labels: "anonymise.json — a run with no entry is excluded, never renamed",
         budgetShaped:
           "asked of the verbs, never computed here: tokens per checkpoint, blended $/M and the " +
-          "stage split come from `conductor money --run <id> --json`; floors, median closers, " +
-          "wrap-up and cap values come from `conductor budget`"
+          "stage split come from `conductor money --run <id> --json`; ceilings, nudge points, " +
+          "floors, median closers, wrap-up and rollover rates come from " +
+          "`conductor budget <run> --json`, window by window"
       }
     }
   };
 }
 
-/** One word, one meaning. See `corpusFigures`. */
-function assertDisjoint(corpus, runs) {
-  const perRun = new Set(Object.values(runs).flatMap((run) => Object.keys(run.figures)));
-  const both = Object.keys(corpus).filter((key) => perRun.has(key));
-  if (both.length > 0) {
+/** One word, one meaning. See `corpusFigures`.
+    ---------------------------------------------------------------------------
+    Three namespaces now, so three pairs to keep apart. The window one is the
+    likeliest to collide by accident, because a window and a run answer the same
+    questions at different scales — `sessions` is the obvious name for both, and
+    a page naming it beside one run and one window would be asking for two
+    different numbers under one word. Hence the `window` prefix, checked here
+    rather than trusted. */
+function assertDisjoint(corpus, runs, windows) {
+  const keysOf = (entries) => new Set(Object.values(entries).flatMap((e) => Object.keys(e.figures)));
+  const perRun = keysOf(runs);
+  const perWindow = keysOf(windows);
+  const clashes = [
+    ["a corpus figure and a per-run figure", Object.keys(corpus).filter((k) => perRun.has(k))],
+    ["a corpus figure and a per-window figure", Object.keys(corpus).filter((k) => perWindow.has(k))],
+    ["a per-run figure and a per-window figure", [...perRun].filter((k) => perWindow.has(k))]
+  ].filter(([, keys]) => keys.length > 0);
+
+  if (clashes.length > 0) {
     throw new Error(
-      `These keys are both a corpus figure and a per-run figure: ${both.join(", ")}. ` +
-        `A page names a key and gets a number; the same key cannot mean the whole corpus on one ` +
-        `page and one run on the next.`
+      clashes.map(([what, keys]) => `These keys are both ${what}: ${keys.join(", ")}.`).join(" ") +
+        ` A page names a key and gets a number; the same key cannot mean the whole corpus on one ` +
+        `page and one run — or one window of one run — on the next.`
+    );
+  }
+
+  /* A window label that is also a run label would make `evidence.runs` and
+     `evidence.windows` ambiguous in exactly the place a writer would not look. */
+  const bothNamed = Object.keys(windows).filter((label) => label in runs);
+  if (bothNamed.length > 0) {
+    throw new Error(
+      `These are published as both a run and a window: ${bothNamed.join(", ")}.`
     );
   }
 }
@@ -703,8 +1032,9 @@ function assertDisjoint(corpus, runs) {
     number came from, not what it is called. A later session that reaches for one
     of these names over a SQL query finds this instead of a plausible number. */
 const BUDGET_SHAPED = [
-  /^floor/i,
+  /floor/i,
   /median/i,
+  /closer/i,
   /wrapUp/i,
   /Rate$/,
   /perMillion/i,
@@ -723,10 +1053,11 @@ const BUDGET_SHAPED = [
     from the verb and did not is already lying to a reader on the page. */
 const fromAVerb = (figure) => /^conductor (money|budget)\b/.test(figure.source);
 
-export function refuseBudgetShaped(corpus, runs) {
+export function refuseBudgetShaped(corpus, runs, windows = {}) {
   const entries = [
     ...Object.entries(corpus),
-    ...Object.values(runs).flatMap((run) => Object.entries(run.figures))
+    ...Object.values(runs).flatMap((run) => Object.entries(run.figures)),
+    ...Object.values(windows).flatMap((window) => Object.entries(window.figures))
   ];
   const offenders = [
     ...new Set(
@@ -782,6 +1113,7 @@ export function citedEvidence(dir = contentDir) {
     cited.push({
       where: posix.join(...full.slice(contentDir.length + 1).split(/[\\/]/)),
       runs: data.evidence.runs ?? [],
+      windows: data.evidence.windows ?? [],
       figures: data.evidence.figures ?? []
     });
   }
@@ -811,7 +1143,11 @@ export function unresolvedCitations(payload, cited = citedEvidence()) {
   const runKeys = new Set(
     Object.values(payload.runs).flatMap((run) => Object.keys(run.figures))
   );
+  const windowKeys = new Set(
+    Object.values(payload.windows ?? {}).flatMap((window) => Object.keys(window.figures))
+  );
   const published = new Set(Object.keys(payload.runs));
+  const publishedWindows = new Set(Object.keys(payload.windows ?? {}));
   const problems = [];
 
   for (const entry of cited) {
@@ -824,6 +1160,15 @@ export function unresolvedCitations(payload, cited = citedEvidence()) {
         );
       }
     }
+    for (const label of entry.windows ?? []) {
+      if (!publishedWindows.has(label)) {
+        problems.push(
+          `${entry.where}: evidence.windows names "${label}", which the corpus does not publish. ` +
+            `A window key is its run's label, then the ceiling it ran under — a cap that moved ` +
+            `renames the window, and that is the gate working rather than a typo.`
+        );
+      }
+    }
     for (const key of entry.figures) {
       if (corpusKeys.has(key)) continue;
       if (runKeys.has(key)) {
@@ -831,6 +1176,25 @@ export function unresolvedCitations(payload, cited = citedEvidence()) {
           problems.push(
             `${entry.where}: evidence.figures names "${key}", a per-run figure, but the page ` +
               `names no runs.`
+          );
+        }
+        continue;
+      }
+      if (windowKeys.has(key)) {
+        /* Windows do not all carry every key — an uncapped one has no nudge —
+           so the check is that at least one NAMED window has it. A page citing
+           a nudge beside nothing but uncapped windows would otherwise render a
+           heading with no figure under it, which is the exact silent hole this
+           gate exists for. */
+        const named = [...(entry.windows ?? [])].filter((label) =>
+          Boolean(payload.windows?.[label]?.figures?.[key])
+        );
+        if (named.length === 0) {
+          problems.push(
+            `${entry.where}: evidence.figures names "${key}", a per-window figure, but none of ` +
+              `the windows this page names has it. A window with no ceiling in force has no ` +
+              `nudge, no headroom and no wrap-up, and publishing a zero there would be inventing ` +
+              `a measurement.`
           );
         }
         continue;
@@ -969,6 +1333,23 @@ function main() {
       for (const label of Object.keys(existing.runs ?? {})) {
         if (!payload.runs[label]) {
           console.error(`  ${label}: published, but the store no longer offers it`);
+        }
+      }
+      /* Windows drift for one extra reason runs do not: a cap that moves does
+         not change a window's figures, it ends that window and starts another
+         under a new key. Reporting the appearance and the disappearance by name
+         is what tells the reader which of the two happened. */
+      for (const [label, window] of Object.entries(payload.windows)) {
+        const was = existing.windows?.[label];
+        if (!was) {
+          console.error(`  ${label}: a window the committed corpus does not have`);
+          continue;
+        }
+        drift(was.figures, window.figures, `${label}.`);
+      }
+      for (const label of Object.keys(existing.windows ?? {})) {
+        if (!payload.windows[label]) {
+          console.error(`  ${label}: published, but the store no longer offers that window`);
         }
       }
     }
