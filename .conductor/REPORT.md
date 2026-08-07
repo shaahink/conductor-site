@@ -1,10 +1,10 @@
 ﻿# Conductor — conductor-site - a field guide to agentic engineering run report
 
-_Updated 2026-08-07 03:43 UTC · branch `main` · HEAD `00f2e37`_
+_Updated 2026-08-07 04:11 UTC · branch `main` · HEAD `0f68774`_
 
-**Status:** Idle
-**Stage:** S7 —  · attempts used 0 · working ▸ S7.2
-**Checkpoints:** 25/28 done · **Sessions run:** 16 · **Cost:** $123.2483 (agent $123.2221 + gates $0.0262) · **Tokens:** 2,331,690 in / 990,023 out
+**Status:** Running
+**Stage:** S7 —  · attempts used 0 · working ▸ S7.3
+**Checkpoints:** 26/28 done · **Sessions run:** 17 · **Cost:** $135.1958 (agent $135.1697 + gates $0.0262) · **Tokens:** 2,524,453 in / 1,076,038 out
 
 ## Stage progress
 
@@ -16,7 +16,7 @@ _Updated 2026-08-07 03:43 UTC · branch `main` · HEAD `00f2e37`_
 | S4 |  | ██████████ 4/4 | done |
 | S5 |  | ██████████ 4/4 | done |
 | S6 |  | ██████████ 4/4 | done |
-| S7 |  | ██░░░░░░░░ 1/4 | **← active** |
+| S7 |  | █████░░░░░ 2/4 | **← active** |
 
 <details> ✅<summary>S1 —  (4/4)</summary>
 
@@ -84,12 +84,12 @@ _Updated 2026-08-07 03:43 UTC · branch `main` · HEAD `00f2e37`_
 
 </details>
 
-<details><summary>S7 —  (1/4)</summary>
+<details><summary>S7 —  (2/4)</summary>
 
 | # | Title | Status | Commit |
 |---|---|---|---|
-| S7.1 | SEO and social: canonicals, sitemap, robots, OG images per section, `astro.config` `site` pointing at the real production URL | ✅ DONE | - |
-| S7.2 | Accessibility and performance pass — keyboard reachable, landmarks, focus visible, reduced motion honoured, both themes legible, no layout shift on theme flip | ⬜ TODO | - |
+| S7.1 | SEO and social: canonicals, sitemap, robots, OG images per section, `astro.config` `site` pointing at the real production URL | ✅ DONE | [`f7f7d6f`](https://github.com/shaahink/conductor-site/commit/f7f7d6f) |
+| S7.2 | Accessibility and performance pass — keyboard reachable, landmarks, focus visible, reduced motion honoured, both themes legible, no layout shift on theme flip | ✅ DONE | - |
 | S7.3 | Generated files regenerated and clean (`npm run headers`, `npm run content`, `npm run editor`), README written, and the repo's CI green on `main` | ⬜ TODO | - |
 | S7.4 | **ownerGated** — the Vercel project is linked and the site is live at its production URL, the owner has read the three reports for anonymisation, and the front page has been looked at in both themes | ⬜ TODO | - |
 
@@ -115,6 +115,7 @@ _Updated 2026-08-07 03:43 UTC · branch `main` · HEAD `00f2e37`_
 | 14 | S6 | Deliver | 1 | 08-07 02:21 | 0:27 | Advanced | S6.1 S6.2 S6.3 | 4 | site-fast:OK · generated:OK · evidence:OK | $11.1692 | $0.0025 | 194,497/101,053 |
 | 15 | S6 | Deliver | 1 | 08-07 02:49 | 0:24 | Advanced | S6.4 | 3 | site-fast:OK · generated:OK · evidence:OK | $10.1932 | $0.0026 | 161,188/72,365 |
 | 16 | S7 | Deliver | 1 | 08-07 03:14 | 0:28 | Advanced | S7.1 | 2 | site-fast:OK · generated:OK · evidence:OK | $10.2041 | $0.0027 | 165,052/77,944 |
+| 17 | S7 | Deliver | 1 | 08-07 03:43 | 0:27 | RolledOver | S7.2 | 4 |  | $11.9475 |  | 192,763/86,015 |
 
 ## Money
 
@@ -122,24 +123,23 @@ _What this run has cost, from its own `costs` rows. Same numbers as `conductor m
 
 | scope | sessions | tokens | cache reads | cost | checkpoints | tok/ckpt | $/ckpt |
 |---|---|---|---|---|---|---|---|
-| **run total** | 15 | 140.3M | 97.8% | $113.04 | 22 | 6.38M | $5.14 |
+| **run total** | 16 | 153.8M | 97.8% | $123.25 | 23 | 6.69M | $5.36 |
 | stage S1 | 2 | 19.7M | 98.0% | $15.40 | 4 | 4.92M | $3.85 |
 | stage S2 | 2 | 20.4M | 97.7% | $17.04 | 4 | 5.09M | $4.26 |
 | stage S3 | 4 | 17.1M | 97.4% | $14.31 | 2 | 8.55M | $7.15 |
 | stage S4 | 2 | 22.4M | 97.5% | $18.67 | 4 | 5.59M | $4.67 |
 | stage S5 | 3 | 33.3M | 97.9% | $26.25 | 4 | 8.33M | $6.56 |
 | stage S6 | 2 | 27.5M | 98.1% | $21.37 | 4 | 6.87M | $5.34 |
-| 2026-08 | 15 | 140.3M | 97.8% | $113.04 | 22 | 6.38M | $5.14 |
+| stage S7 | 1 | 13.4M | 98.2% | $10.21 | 1 | 13.4M | $10.21 |
+| 2026-08 | 16 | 153.8M | 97.8% | $123.25 | 23 | 6.69M | $5.36 |
 
-_Where the money goes: agent $113.02 (100%) · gate $0.02 (0%) · blended $0.81/M tokens._
+_Where the money goes: agent $123.22 (100%) · gate $0.03 (0%) · blended $0.80/M tokens._
 
 ## Timeline
 
 _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 
 ```
-08-07 01:46:51  ▪ gate generated pass [session]  (2.0s)
-08-07 01:46:51  ▪ gate evidence pass [session]  (1.4s)
 08-07 01:46:54  • session #9 S4 → Advanced · done S4.1,S4.2 · 4 commit(s)  (24m29s)
 08-07 01:46:54  • session #10 S4 Deliver started (attempt 1/4)
 08-07 02:09:47  ▪ gate site-fast pass [session]  (11.7s)
@@ -178,6 +178,8 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 08-07 04:43:26  ▪ gate site-fast pass [session]  (10.4s)
 08-07 04:43:26  ▪ gate generated pass [session]  (1.8s)
 08-07 04:43:26  ▪ gate evidence pass [session]  (15.1s)
+08-07 04:43:28  • session #16 S7 → Advanced · done S7.1 · 2 commit(s)  (28m45s)
+08-07 04:43:28  • session #17 S7 Deliver started (attempt 1/4)
 ```
 
 ## Health
@@ -185,7 +187,7 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 _Execution-health signals, folded from the event log (`.conductor/events.jsonl`)._
 
 ```
-sessions 16 · retries 0 (0 %) · overall Ok
+sessions 17 · retries 0 (0 %) · overall Ok
 ✓ no health concerns detected
 ```
 
@@ -201,11 +203,6 @@ vs upstream: up to date
 
 ### Commits by session
 
-- **s9 (S4 Deliver)** — 4 commit(s):
-  - [`6ec3467`](https://github.com/shaahink/conductor-site/commit/6ec3467) docs(tracker): hand off with the spine written through six
-  - [`931a40f`](https://github.com/shaahink/conductor-site/commit/931a40f) feat(concepts): what a gate is, and why the checker cannot be the worker
-  - [`2a0e93e`](https://github.com/shaahink/conductor-site/commit/2a0e93e) feat(concepts): the loop, the roles, and a citation that has to point somewhere
-  - [`690304d`](https://github.com/shaahink/conductor-site/commit/690304d) feat(evidence): the three lanes a run pays for, split out of the store
 - **s10 (S4 Deliver)** — 4 commit(s):
   - [`88ab238`](https://github.com/shaahink/conductor-site/commit/88ab238) docs(evidence): S4.4 proved clause by clause, and stage S4 closed
   - [`f1bbf09`](https://github.com/shaahink/conductor-site/commit/f1bbf09) feat(concepts): what you can ask afterwards, and what is worth carrying forward
@@ -233,6 +230,11 @@ vs upstream: up to date
 - **s16 (S7 Deliver)** — 2 commit(s):
   - [`00f2e37`](https://github.com/shaahink/conductor-site/commit/00f2e37) chore(conductor): s16 S7.1 — handoff
   - [`f7f7d6f`](https://github.com/shaahink/conductor-site/commit/f7f7d6f) feat(seo): the sitemap the template left behind, and a card per section
+- **s17 (S7 Deliver)** — 4 commit(s):
+  - [`0f68774`](https://github.com/shaahink/conductor-site/commit/0f68774) chore: drop the commit-message scratch file
+  - [`5ff37dc`](https://github.com/shaahink/conductor-site/commit/5ff37dc) fix(a11y): the last two are the Face's own hues, and latte is where they fail
+  - [`e390bb1`](https://github.com/shaahink/conductor-site/commit/e390bb1) fix(a11y): the quiet ladder is not a text colour either, and the button holds still
+  - [`9309485`](https://github.com/shaahink/conductor-site/commit/9309485) fix(a11y): a muted role of this site's own, a button that stops moving, a way past the bar
 
 ## Last gate run
 
@@ -240,60 +242,62 @@ site-fast:OK · generated:OK · evidence:OK
 
 ## Last session result
 
-> **S7.1 landed — sitemap, canonicals, robots, four evidence-bearing social cards, gate proven red**
-> - QA of session 15: no findings. Battery re-run green from the inherited tree before any edit; all 18 runs render on `/runs`, `>running<` absent from `dist/`.
-> - S7.1 delivered (`f7f7d6f`). `site` **confirmed against the deployment** rather than copied: both candidate hosts answer 200, but only `conductor-site-virid.vercel.app` serves this site. Two real defects fixed — the sitemap listed 1 of 21 pa…
-> - S7.2 measured but deliberately not started — card returned to TODO with an amendment; the theme toggle's two layout shifts, the one Lighthouse contrast failure (bug #2 in the wild) and the missing skip link are all in the ledger with the fi…
+> **S7.2 landed — Lighthouse 100 in both schemes, zero layout shift, skip links, new a11y…**
+> - QA of session 16: no findings. Battery re-run green from the inherited tree before any edit (0 errors, 93 tests, build 27 pages / 478 annotations, evidence + anonymity + seo all exit 0).
+> - `color-contrast` took three passes because each fix moved it: `--overlay` 3.36:1, then `--pending` 2.46:1, then `--blue` 4.34:1 / `--accent` 4.45:1 in latte only. No Face role was changed; `tokens.css` derives `--muted`, `--link`, `--curren…
+> - The toggle's first sizer fix did nothing — measuring caught it. Every candidate label is now a sizer and the children stretch, so a fresh load plus four flips reports **zero** layout-shift entries (was CLS 0.00007 with a 12px nav drag). Ski…
 >
-> artefacts: `src/lib/seo.ts`, `src/pages/og/[card].astro`, `scripts/seo.mjs`, `test/seo.test.mjs`, `src/data/og-cards.json`, `public/og/{home, concepts, articles
+> artefacts: `9309485`, `e390bb1`, `5ff37dc`, `0f68774` on `main` (pushed); `scripts/a11y.mjs`, `test/theme-toggle.test.mjs`, `src/styles/tokens.css`
 >
-> evidence: `docs/evidence/S7.1-seo-and-social.md`, `docs/evidence/S7.1-seo-gate-red.txt` (eight breaks, gate's own exit codes), `docs/evidence/S7.1-battery.txt` (0 errors, 93 tests, 27 pages, evidence/anonymity/seo green)
+> evidence: `docs/evidence/S7.2-accessibility-and-performance.md`, `docs/evidence/S7.2-battery.txt`, `docs/evidence/S7.2-battery-inherited.txt`
 >
-> gaps: S7.2 not started (measured, findings banked); S7.3 and S7.4 untouched; bug #6 means the `seo`, `evidence`, `anonymity` and `node --test` gates still run only locally
+> gaps: bug #2 closed; new bug #7 — the review widget's panels sit on `--surface`, where `--muted` is 3.60:1 in latte (owner-only chrome, no public page). Bug #6 (all local-only gates absent from CI) is S7.3's spine. `npm run a11y` and the 103 tests do not run in CI yet.
 
 ## Tracker handoff
 
 ```
-last: **session 16** delivered **S7.1** (commit `f7f7d6f`, pushed). QA of session 15: **no
-  findings** — battery re-run green from the tree as inherited, *before* any edit (0 errors, 86
-  tests, build 27→23 pages with 478 annotations on 21, evidence green, anonymity exit 0), all 18
-  runs render and `>running<` is absent from `dist/`. Handoff said "ABANDONED"; the markup is
-  lowercase `abandoned` in the peach role, which is what it claimed.
-now on disk: **`site` is CONFIRMED, not copied** — both candidate hosts answer 200, so what
-  settles it is that `conductor-site-virid.vercel.app` serves this site and the short alias
-  serves someone else's Next.js app. Two real defects fixed: the **sitemap listed 1 of 21
-  pages** (the template's file — worse than none, a crawler reads it as *this is the site*), and
-  **no page had an `og:image` at all**, so every shared link was a grey box. New: four 1200×630
-  cards in `public/og/`, screenshotted from **real pages** (`src/pages/og/[card].astro`) so
-  palette, type, words and figures all come from the site — the three figures per card go
-  through `resolveEvidence`. A card is a *picture of numbers taken once*, so
-  `src/data/og-cards.json` records the text at screenshot time and **`npm run seo`** re-renders
-  and compares. That gate (`scripts/seo.mjs`, after `build`) checks six things over `dist/` and
-  is **proven red eight ways** in `docs/evidence/S7.1-seo-gate-red.txt`. Battery at head: **0
-  errors, 93 tests, build 27 pages / 478 annotations on 21, evidence green, anonymity exit 0,
-  seo green.** Evidence: `docs/evidence/S7.1-seo-and-social.md` + `-battery.txt` + `-gate-red.txt`.
-next: **S7.2**, and it is **measured already — fix, do not re-measure** (full numbers in the
-  ledger note and on the card's amendment). Landmarks, `:focus-visible` and reduced motion are
-  **already done**. Three things are not: (a) the theme toggle shifts layout **twice** — on load
-  `Theme`(62px)→`Dark`(50px) drags the nav 12px, CLS 0.00007, and on flip `Dark`→`Light` is 3px;
-  fix by stacking every label the button can show in **one CSS grid cell** (extras
-  `visibility:hidden` + `aria-hidden`) so the browser sizes the box to the widest — **no JS
-  change, so no CSP hash change**. (b) Lighthouse desktop: a11y **96**, BP/SEO/agentic 100, one
-  failure — `color-contrast`, which is **bug #2 in the wild**: `--overlay` is **3.59:1** in mocha
-  on the nav links, the theme label, **`p.lead` on every concept page**, `.aka-label`,
-  `.aka-name`. The role is right (the Face holds overlay to the 3:1 *UI/large-text* bar and
-  `contrast.test.mjs` asserts that); the **usage** is wrong. Suggested: a derived quiet role,
-  `color-mix(in srgb, var(--text), var(--base))` — srgb mix is a plain per-channel lerp, so
-  `contrast.test.mjs` can recompute it and hold it to 4.5:1 — and keep `--overlay` for borders,
-  chrome and text ≥24px. (c) **no skip link on any page.**
-open: **new bug #6** — CI calls the fleet's shared `site-ci.yml`, which runs `astro check`, the
-  build and the three generated-file diffs and **nothing else**: `evidence`, `anonymity`, `seo`
-  and the 93 `node --test` cases are all local-only. A gate that runs on one machine rots. Fix in
-  a **second workflow in this repo**, not in the shared one — S7.3. Bugs #2, #3, #4, #5 still
-  open (#2 is S7.2's to close). SPEC Part V article 3's `26 costed`/`15.5M` are stale (now
-  **30**/**16.8M**); article 4's `19 of 34`/`10 of 11` and the S5.4 git ground truth are
-  unpublished on purpose. Article 1's `$52.06`/`23.2%` correction, concept 2's advisor split and
-  concept 8's "push-only" still stand.
+last: **session 17** delivered **S7.2**. QA of session 16: **no findings** — battery re-run
+  green from the tree as inherited, before any edit (0 errors, 93 tests, build 27 pages / 478
+  annotations on 21, evidence, anonymity and the new `seo` gate all exit 0). Evidence:
+  `docs/evidence/S7.2-accessibility-and-performance.md` + `-battery.txt` + `-battery-inherited.txt`.
+now on disk: **Lighthouse desktop is 100/100/100/100 in BOTH schemes** (was 96 a11y in each),
+  and a fresh load plus four theme flips reports **zero layout-shift entries** — not a small
+  number, none. `color-contrast` took **three passes** because each fix moved the complaint:
+  `--overlay` at 3.36:1, then `--pending` at 2.46:1 once that cleared, then `--blue` 4.34:1 and
+  `--accent` 4.45:1 in **latte only**. One mistake three times — a role the Face holds to *its*
+  bar, spent on a sentence. **No Face role was changed.** `tokens.css` now derives three tokens
+  that are not roles: `--muted` (text→base, **60% mocha / 85% latte** — mocha's text has 11.34:1
+  of headroom, latte's 7.06:1, so one number cannot serve both), `--link` and `--current`
+  (blue/accent →text at 80%, one number, one rule, because mixing *toward* text works in both).
+  **Mantle is the binding surface, not base** — latte's mantle is darker than its base, and the
+  top bar and evidence strip are both mantle; 4.56:1 is the tightest figure on the site.
+  `contrast.test.mjs` recomputes every mix (srgb is a per-channel lerp) and holds it to 4.5:1 on
+  base *and* mantle; `tokens.test.mjs` fails the build on `color: var(--overlay|--pending|--skipped)`
+  outside the 24px cards. Also: a skip link on all 22 pages, `id="main"` on every `<main>`, and
+  **`npm run a11y`** (`scripts/a11y.mjs`, after `build`) for the half that needs no browser.
+next: **S7.3** — regenerate the three generated files, README, CI green. **Bug #6 is its
+  spine:** CI calls the fleet's shared `site-ci.yml`, which runs only `astro check`, the build
+  and the three generated-file diffs — `evidence`, `anonymity`, `seo`, `a11y` and the 103
+  `node --test` cases are **local-only**. Fix in a **second workflow in this repo**, never in
+  the shared one.
+open: **new bug #7** — the review widget's panels sit on `--surface`, where `--muted` is
+  **3.60:1** in latte. Owner-only chrome, on no public page, but short of the bar. Bug #2 is
+  **closed** by this session. #3, #4, #5, #6 still open. SPEC Part V article 3's `26 costed`/
+  `15.5M` are stale (now **30**/**16.8M**); article 4's `19 of 34`/`10 of 11` and the S5.4 git
+  ground truth are unpublished on purpose. Article 1's `$52.06`/`23.2%` correction, concept 2's
+  advisor split and concept 8's "push-only" still stand.
+tooling-new: **an Astro comment is a JSX expression** and that bites twice. It may not sit
+  between `</head>` and `<body>` (ts(2657), "JSX expressions must have one parent element"), and
+  it **may not contain an angle-bracketed tag** — the checker reads the tag as markup, ends the
+  comment there, and reports the rest of the file as broken expressions with line numbers inside
+  prose. The build stays green throughout; only `astro check` sees it. Worse, **one ts(2657)
+  suppresses every other diagnostic in the file**, so fixing the first error made twenty-two
+  more appear that had been there all along. Rule: prose about elements, and any example
+  containing a tag, goes in the **frontmatter fence**. And **Astro ships `<!-- -->` to the
+  browser** — five of them in `Base.astro` were **2,632 bytes on every page, 14.6% of one**; as
+  `{/* */}` they cost nothing and `/concepts/` went 18,038 → 15,406 bytes. Any dist-scanning gate
+  must strip comments before parsing, which `a11y.mjs` learned by reporting its own author's
+  prose as a second `<main>` on all 21 pages.
 tooling: `npx` **cannot be launched under `conductor bg`** here (it resolves npx-cli.js against
   the repo) — use `node node_modules/astro/bin/astro.mjs preview --port 4321`. `conductor bg
   start` takes `--purpose`, not `--name`, and `bg stop` takes the **numeric pid**. A `cmd /c "a
