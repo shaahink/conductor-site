@@ -1,0 +1,210 @@
+meta:
+  title: "The nudge that sat below the median"
+  description: "A token ceiling is usually a guess. Measuring one properly means
+    noticing that the measurement you need is the one the ceiling destroys."
+  ogDescription: "How to measure a session token budget instead of guessing it,
+    and why a cap censors its own evidence."
+  canonical: "/articles/the-nudge-below-the-median/"
+
+slug: "the-nudge-below-the-median"
+order: 3
+title: "The nudge that sat below the median"
+standfirst: "Every autonomous run puts a ceiling on what one session may spend,
+  and almost every ceiling was picked by feel. The ledger can settle it. The
+  awkward part is that the number you most need is the one a ceiling deletes."
+
+evidence:
+  runs: []
+  windows:
+    - "the-terminal-face-capped-8m"
+    - "the-orchestrator-core-uncapped"
+    - "the-accounting-run-capped-32m"
+    - "the-long-build-uncapped"
+    - "the-long-build-capped-6m"
+    - "the-long-build-capped-9m"
+  figures:
+    - "sessionsUnderACeiling"
+    - "nudgesDelivered"
+    - "nudgesHonoured"
+    - "killedAtACeiling"
+    - "killedAfterANudge"
+    - "cappedWindows"
+    - "windowCap"
+    - "windowNudge"
+    - "windowFloor"
+    - "windowMedianCloser"
+    - "windowNudgeVsMedianCloser"
+    - "windowRolloverRate"
+    - "windowTokensPerCheckpoint"
+    - "windowHeadroomVsWrapUp"
+
+sections:
+  - heading: "A ceiling picked by feel"
+    body:
+      - "A session token budget is two numbers, not one. There is the ceiling,
+        which is where the engine stops the session whether or not it has
+        finished, and there is the point below it where the engine asks the
+        agent to wrap up on its own. The second is cooperative and the first is
+        not. Crossing the ceiling is a kill in the middle of a turn, so whatever
+        the agent was about to do — commit, write the handoff, claim the
+        checkpoint it had just finished — does not happen."
+      - "That asymmetry is the whole subject. A session that stops when asked
+        gets to finish: commit what it has, write down what the next one needs,
+        say which checkpoint it closed. A session that is killed ends wherever
+        the kill found it, and whatever it had not written down yet stays
+        unwritten. The two cost about the same and they are not the same event."
+      - "Almost nobody measures either number. A ceiling gets set to something
+        round, or to a multiple of the cheapest session the repo has ever run,
+        which sounds like method and is a guess wearing method's clothes. The
+        strip below is what happened when the ledger was asked instead, across
+        every window in this corpus where a ceiling could be measured at all."
+      - "A window is one stretch of consecutive sessions under one ceiling. It
+        matters because the interesting runs changed their ceiling halfway
+        through, and averaging across that change produces a number about
+        nothing. Split the same run into its windows and it becomes as close to
+        a controlled experiment as this kind of work gets: same repository, same
+        plan, same agents, one number moved."
+
+  - heading: "The rule that was wrong"
+    body:
+      - "Start with the strip's first run block: a terminal interface for a
+        long-running engine, under a measured ceiling. The ceiling and the point
+        where the break fired are both there. The rule that produced them was:
+        take the floor — the cheapest session the repo has recorded — and set
+        the break comfortably above it. By that rule the numbers are fine. The
+        break sits well clear of the floor."
+      - "Now read along to the median session that actually closed a checkpoint
+        in that window. It is larger than the break point, and the strip prints
+        that comparison directly. It is below one. The engine was interrupting
+        the typical session that finished something, not the outsized one."
+      - "The rollover rate says what that cost. Close to a third of the sessions
+        in that window ended by being killed at the ceiling. Not slowed, not
+        trimmed. Killed, with their closing steps still ahead of them."
+      - "The mistake is easy to make and hard to see, because the floor is the
+        wrong statistic and it is the one every repository has to hand. A floor
+        is a measure of the smallest thing a session can be: a one-file fix, a
+        rerun after a red gate, a session that started and found nothing to do.
+        A ceiling is a decision about the largest thing a session is allowed to
+        be. Deriving the second from the first connects two ends of a
+        distribution that have nothing to say to each other."
+
+  - heading: "Two medians from one engine"
+    body:
+      - "The block below it is the same engine's own core, built earlier, with
+        no ceiling in force at all. Its median closing session is more than
+        twice the capped window's. Same repository, same plan, same kind of
+        work, and the two windows disagree by a factor that would embarrass
+        either of them if it were a measurement error."
+      - "It is not an error. It is censorship, and the cap is doing it. A median
+        closing session measured inside a capped window can only count sessions
+        that closed a checkpoint without hitting the ceiling. Every session that
+        needed more was killed before it closed anything, so it never joins the
+        sample. The cap deletes its own counter-evidence and then reports a
+        comfortable number."
+      - "The floor shows the same effect from the other end. The three blocks at
+        the foot of the strip are one run on a site repo, and the middle one
+        carries the lowest ceiling in this corpus. Its floor collapsed to a
+        fraction of what the same repository had recorded in the block above it.
+        Nothing got more efficient. Under a tight ceiling the cheapest session
+        in the sample is not a lean one, it is one that died early enough to be
+        cheap."
+      - "So the rule that matters most here is a rule about where to look rather
+        than what to set. You cannot measure a budget from inside the budget.
+        The numbers worth setting a ceiling from come from a window that had no
+        ceiling, or one high enough that nothing ever reached it. Every
+        statistic taken under the cap you are testing has been shaped by the cap
+        you are testing."
+
+  - heading: "The rail that gets delivered and ignored"
+    body:
+      - "The corpus-wide block at the top of the strip counts the cooperative
+        break itself. Sessions run under a ceiling, nudges delivered, nudges
+        honoured. Fewer than three in five of the sessions that were asked to
+        stop actually stopped and ended clean."
+      - "Then the figure this article exists for. Every session the engine
+        killed at a ceiling, in every capped window in the corpus, had already
+        been nudged. All of them. Not one of them stopped. The cooperative break
+        converted nothing at all in exactly the population it was built for."
+      - "The mechanism is not mysterious once the previous section is on the
+        table. A break point below the median closer arrives in almost every
+        session, and it arrives long before the work could plausibly be
+        finished. The first time an agent rides past it and finishes anyway, the
+        signal has been taught to mean nothing. After that it is a routine line
+        in the transcript, and the ceiling behind it is the only thing left with
+        teeth — which is to say the only remaining way for a capped session to
+        end is on somebody else's terms, mid-turn, with the closing steps
+        unrun."
+      - "That is the real cost of a badly placed nudge, and it is larger than
+        the tokens. It does not merely waste a session here and there. It
+        disables the single mechanism that lets a capped session end on its own
+        terms, and it does so quietly, because a nudge that gets ignored looks
+        exactly like a nudge that was not needed."
+
+  - heading: "A cap below the floor buys churn"
+    body:
+      - "The counterintuitive half is in the last three blocks, and they are one
+        run: a large interactive feature built inside an existing site, which
+        changed its ceiling twice while it was being built."
+      - "The first of the three ran with no ceiling and no rollovers. Then a
+        ceiling was imposed that was below the floor the same repository had
+        just demonstrated — below the cheapest session it had recorded, never
+        mind the typical one. Cost per checkpoint went up, not down. Close to
+        two thirds of the sessions in that window were killed."
+      - "That is the finding worth carrying away. A cap set below the floor does
+        not save tokens. It buys churn: the session is killed, the next one
+        re-reads the same files and re-derives the same context, and the ledger
+        pays for the work twice while the checkpoint count stays where it was.
+        Tokens per checkpoint is the figure that shows it, and it is the one a
+        cap is usually justified by."
+      - "Raised, the same run recovered most of the way — the third block of the
+        three. It did not recover all the way, and the strip says why: the new
+        break point was still below that window's median closing session, and
+        the rollover rate was still not zero. The ceiling had moved. The rule
+        that placed the nudge under it had not."
+      - "None of which is an argument against ceilings. The block for the run
+        where the engine was taught to account for itself is a high ceiling with
+        real headroom, and it is the best of the engine's three windows here: no
+        rollovers at all, and a lower cost per checkpoint than either the
+        uncapped core above it or the badly capped one at the top. A measured
+        cap paid. A guessed cap cost money and looked identical on the
+        configuration line."
+
+  - heading: "Measuring yours"
+    body:
+      - "All of this comes out of one command, and it works against any store
+        the engine has written."
+      - "`conductor budget --repo all --json` splits every run into its windows
+        and prints, for each one, the floor, the median session that closed a
+        checkpoint, the largest session that closed one, the measured wrap-up
+        spend after a nudge, and the rollover rate. Nothing here was computed by
+        hand; a hand-derived version of exactly these figures was contradicted
+        four separate ways when the verb was finally run against it."
+      - "Read the output in this order. First find a window with no ceiling in
+        force, because that is the only place the median closer is honest.
+        Second, place the break point to clear that median, and preferably to
+        clear the largest closing session too. Third, set the gap between the
+        break and the ceiling from the measured wrap-up, not from a percentage
+        of the ceiling."
+      - "The third step is the one that looks like a detail and is not. Wrap-up
+        cost is absolute: committing, writing a handoff and claiming a
+        checkpoint costs about the same whether the ceiling is small or large.
+        Expressing the reserve as a fixed fraction of the ceiling therefore
+        shrinks it exactly where it can least afford to shrink. Two windows in
+        the strip were configured by the same style of ratio, and their reserves
+        measured against their own wrap-up differ by more than three times
+        over."
+      - "The verb names the two failures rather than leaving them to be spotted
+        in a table. One finding fires when a break point sits below the median
+        closing session. Another fires when every killed session in a window had
+        already been nudged, which is the pattern this whole article is about."
+      - "This site's own run was tuned by that verb while it was being written.
+        The ceiling was left where it was and the break ratio raised, so that
+        the nudge cleared the largest session that had so far closed a
+        checkpoint in this repository. That run is not in this corpus and cannot
+        be: it is the one producing the page, and the harvest excludes it, so no
+        figure here comes from it. What it is, is the same method, applied by
+        the same tool, to the work you are reading."
+
+readNext:
+  - "what-a-run-costs"
+  - "never-believe-the-agent"
