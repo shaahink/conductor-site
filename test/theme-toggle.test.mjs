@@ -76,6 +76,23 @@ test("the label the markup ships is sized for too, and is the only extra one", (
   );
 });
 
+/* The mistake this replaced: sizers for every label *except* the one the
+   markup ships. It reads as the tidy version and it does nothing, because the
+   first thing the script does is overwrite the live label — and with `Theme`
+   gone from the document the track shrinks to `Dark`, which is the 12px shift
+   the sizers were added to remove. Measured in a browser, not caught here,
+   which is why the count is now asserted rather than the shape. */
+test("there is a sizer for every candidate label, the live one included", () => {
+  const loop = /LABELS([\s\S]{0,160}?)\.map\(\(label\)/.exec(TOPBAR);
+  assert.ok(loop, "TopBar.astro no longer renders its sizers by mapping over LABELS");
+  assert.equal(
+    loop[1].trim(),
+    "",
+    `the sizer loop narrows LABELS (\`LABELS${loop[1].trim()}\`) before rendering. ` +
+      "Every candidate needs a sizer, the live one included, or the box is only ever as wide as whatever the label currently says."
+  );
+});
+
 /* The list being right is worth nothing if the CSS stopped stacking. These
    three declarations are the fix: one grid cell, every child in it, the
    extras out of the paint but still in the layout. */

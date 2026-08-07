@@ -81,24 +81,35 @@ test("no colour literal outside tokens.css", () => {
   }
 });
 
-/* The other half of `--muted` (tokens.css). The role is fine; the *usage* was
-   the bug — `--overlay` clears the Face's 3:1 bar, which WCAG grants only to
-   text at 24px or 18.66px bold, and this site had it on standfirsts, captions,
-   nav links, table keys and the theme label, none of which is anywhere near
-   that. Lighthouse called it once, as `color-contrast`; a person reading a
-   diff would never call it at all, which is why it is a test.
-   Exactly one file may still paint text in it: the social cards, whose type
-   scale has a 24px floor for this precise reason (type.css). */
-const OVERLAY_TEXT_ALLOWED = [join("src", "pages", "og", "[card].astro").split(sep).join("/")];
+/* The other half of `--muted` (tokens.css). The roles are fine; the *usage*
+   was the bug. The Face holds `--overlay` to 3:1 and the quiet ladder —
+   `--pending`, `--skipped` — to 1.5:1, and both bars are right for a terminal
+   frame: 3:1 is WCAG's bar for text at 24px, and a checkpoint nobody has
+   reached is a row you skim past. This site then spent all three on things a
+   reader is meant to read — standfirsts, captions, nav links, table keys, the
+   theme label, the "also known as" line, the denominator under a rate, the
+   harvest timestamp — none of them anywhere near 24px. Measured on the built
+   site: `--overlay` 3.36:1, `--skipped` 4.44:1, `--pending` 2.46:1, against a
+   bar of 4.5.
 
-test("--overlay is not spent on text: rules and borders only, outside the 24px cards", () => {
+   Lighthouse called two of the three, one page at a time, and only because
+   somebody ran it. A person reading a diff would never call any of them, which
+   is why it is a test. Exactly one file may still paint text in these roles:
+   the social cards, whose type scale has a 24px floor for this precise
+   reason (type.css). */
+const QUIET_ROLES = ["overlay", "pending", "skipped"];
+const QUIET_TEXT_ALLOWED = [join("src", "pages", "og", "[card].astro").split(sep).join("/")];
+
+test("the quiet roles are not spent on text: chrome and 24px cards only", () => {
   for (const { file, css } of SHEETS) {
-    if (OVERLAY_TEXT_ALLOWED.includes(file)) continue;
+    if (QUIET_TEXT_ALLOWED.includes(file)) continue;
     for (const decl of stripComments(css).matchAll(/([a-z-]*?)color\s*:\s*([^;}]*)/g)) {
       const [, prefix, value] = decl;
-      if (prefix !== "" || !value.includes("var(--overlay)")) continue;
+      if (prefix !== "") continue;
+      const role = QUIET_ROLES.find((name) => value.includes(`var(--${name})`));
+      if (!role) continue;
       assert.fail(
-        `${file} writes \`color: ${value.trim()}\`. --overlay is 3:1 — the bar for large text. Muted reading text is var(--muted); --overlay keeps borders, rules and the cards.`
+        `${file} writes \`color: ${value.trim()}\`. --${role} sits below 4.5:1 on this site's surfaces — it is a colour for rules, borders and 24px card type. Reading text that recedes is var(--muted).`
       );
     }
   }

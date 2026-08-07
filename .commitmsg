@@ -1,42 +1,29 @@
-fix(a11y): a muted role of this site's own, a button that stops moving, a way past the bar
+fix(a11y): the quiet ladder is not a text colour either, and the button holds still
 
-Three defects, measured on the built site by the previous session and fixed
-here rather than re-measured.
+Two corrections to the commit before this one, both found by measuring rather
+than by reading.
 
---overlay is the Face's muted role and clears the Face's bar, which is 3:1 —
-a terminal's bar, and WCAG's bar for large text. This site then spent it on
-standfirsts, captions, nav links, table keys and the theme label, none of
-them within sight of 24px: 3.36:1 on base in mocha, 3.59:1 on the top bar's
-mantle, and a color-contrast failure on every page. The role is not wrong;
-the usage was. So tokens.css derives a seventeenth token instead of moving a
-Face value — --muted, --text mixed toward --base, which cannot be a hex that
-is right in one scheme and wrong in the other. The two percentages differ
-because the two palettes do: mocha's text has 11.34:1 of headroom on its own
-base and latte's has 7.06:1, so one number would have muted one scheme and
-blinded the other. srgb mix is a per-channel lerp, so contrast.test.mjs
-recomputes exactly what the browser paints and holds it to 4.5:1 against
-both base and mantle — mantle because latte's is darker than its base, which
-makes the top bar the tightest surface on the site at 4.56:1. tokens.test.mjs
-fails the build on any `color: var(--overlay)` outside the social cards,
-whose type scale has a 24px floor for this precise reason.
+The sizers covered every label except the one the markup ships, which is the
+tidy-looking version and does nothing: the first thing the script does is
+overwrite the live label, and with `Theme` gone from the document the track
+shrinks to `Dark` — the 12px shift, still there. Every candidate is a sizer
+now, the live label included, and the children stretch instead of centring so
+that nothing inside the button has a box that depends on the text in it.
+Measured: the button is 61.516px and the nav's right edge 1170.484px for all
+three labels, and a fresh load followed by four flips reports zero
+layout-shift entries. It was 0.00007 with one shift on load.
 
-The theme button showed three different words in a box sized to its
-contents, so the box changed width twice — 12px when the script painted the
-real label on load, dragging the whole nav row, and 3px on every flip. Every
-candidate label now stacks in one CSS grid cell with the extras hidden, so
-the box is settled before the first of them is chosen. Not a JS fix: the
-first shift happens before any script has run. theme-toggle.test.mjs reads
-the script's label map and the markup's sizer list and fails when they
-disagree, because adding a fourth state to one and not the other brings the
-shift back for that label alone.
+And Lighthouse, re-run, moved its complaint rather than dropping it:
+`--pending` at 2.46:1 on the "also known as" line and on the harvest
+timestamp under the evidence strip. Same shape as `--overlay`, one rung
+further down — the Face holds the quiet ladder to 1.5:1 because a checkpoint
+nobody has reached is a row you skim past, and this site had it carrying the
+denominator under a rate. `--skipped` is 4.44:1, which is a near miss and
+therefore a miss. So the rule is the whole ladder, not one role: none of
+`--overlay`, `--pending`, `--skipped` may be a text colour outside the 24px
+cards, and tokens.test.mjs now says so for all three.
 
-And no page had a skip link, so a keyboard reader walked four top-bar links
-on every one of twenty-one pages.
-
-scripts/a11y.mjs is the gate for the half of this that does not need a
-browser: lang, one identified main, a skip link whose target exists on the
-page, labelled landmarks, an accessible name on every control, alt on every
-image, no positive tabindex. It found the double-main in its own author's
-prose — which is how the last thing here got measured. Astro keeps
-`<!-- -->` and strips `{/* */}`; Base.astro's five HTML comments were 2,632
-bytes on every page, 14.6% of one, and are Astro comments now.
+The page loses a layer for it — four greys for reading text become two — and
+that is the right trade. A layer nobody can read is not a layer, and a second
+muted token four hundredths of a ratio above the first would be a distinction
+only a spreadsheet could see.

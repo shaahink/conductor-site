@@ -32,20 +32,30 @@
 
    Semantic colours are for status only, never decoration (SPEC Part II).
 
-   **The seventeenth token is not a role.** `--muted` is derived, not lifted:
-   the Face holds `--overlay` to 3:1, which is the bar a terminal needs and
-   WCAG's bar for large text, and this site then spent it on standfirsts,
-   captions, nav links and table keys — all of them well under 24px, where the
-   bar is 4.5:1. Measured on the built site, mocha's overlay is 3.36:1 on base
-   and 3.59:1 on the top bar's mantle: legible-ish, and a Lighthouse
-   `color-contrast` failure on every page. The fix is not to move a Face role —
-   the Face is right about its own frames — it is to stop using it for reading
-   text. `--muted` is `--text` mixed toward `--base`, so it stays inside the
-   scheme by construction and cannot be a hex that is correct in one and wrong
-   in the other. `--overlay` keeps rules, borders and card-size type;
-   `test/tokens.test.mjs` fails the build if it is set as a colour anywhere
-   else, and `test/contrast.test.mjs` recomputes the mix and holds it to 4.5:1
-   against both `--base` and `--mantle`.
+   **The seventeenth token is not a role.** Three of the sixteen recede on
+   purpose: the Face holds `--overlay` to 3:1 and the quiet ladder —
+   `--pending`, `--skipped` — to 1.5:1. Both bars are right for a terminal
+   frame. Neither is the bar for a sentence on a web page, which is 4.5:1
+   below 24px, and this site had spent all three on things a reader is meant
+   to read. Measured on the built site: `--overlay` 3.36:1 on base and 3.59:1
+   on the top bar's mantle, `--skipped` 4.44:1, `--pending` 2.46:1 — on
+   standfirsts, nav links, captions, the "also known as" line, the denominator
+   under a rate, the harvest timestamp.
+
+   The fix is not to move a Face role; the Face is right about its own frames.
+   It is to stop using them for reading text, and to have one token for the
+   layer they were standing in for. `--muted` is `--text` mixed toward
+   `--base`, so it stays inside the scheme by construction and cannot be a hex
+   that is correct in one and wrong in the other. The three quiet roles keep
+   rules, borders, fills and card-size type; `test/tokens.test.mjs` fails the
+   build if any of them is set as a colour anywhere else, and
+   `test/contrast.test.mjs` recomputes the mix and holds it to 4.5:1 against
+   both `--base` and `--mantle`.
+
+   This does cost the page a layer. There were four greys for reading text and
+   there are now two, because a layer nobody can read is not a layer — and a
+   second muted token four hundredths of a ratio above the first would be a
+   distinction only a spreadsheet could see.
 
    The two percentages differ because the two palettes do: mocha's text is
    11.34:1 on its base and latte's is 7.06:1, so the same mix that mutes mocha

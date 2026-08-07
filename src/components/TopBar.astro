@@ -52,16 +52,22 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
       because Astro's scoped styles rewrite a selector that starts at <html>
       into one that can never match. */}
   {/* The live label sits in the same single grid cell as a hidden copy of
-      every other word the button can show, so the box is already as wide as
-      the widest one and swapping the text moves nothing. `visibility: hidden`
-      keeps a sizer in the layout while taking it out of the paint and out of
-      the accessibility tree; `aria-hidden` says so a second time, because a
-      screen reader reading "Theme Dark Light" would be worse than the shift
-      this fixes. */}
+      every word the button can show — including its own, which is the part
+      that is easy to get wrong and was: sizing against "the other labels"
+      leaves the box exactly as wide as whatever the live label happens to say,
+      because the moment the script writes `Dark` the word `Theme` is gone from
+      the document and the track shrinks with it. Measured that way first, and
+      the 12px shift was still there. Every candidate is a sizer; the live
+      label is a fourth child that only ever paints.
+
+      `visibility: hidden` keeps a sizer in the layout while taking it out of
+      the paint and out of the accessibility tree; `aria-hidden` says so a
+      second time, because a screen reader reading "Theme Dark Light" would be
+      worse than the shift this fixes. */}
   <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch the theme">
     <span data-theme-label>{INITIAL}</span>
     {
-      LABELS.filter((label) => label !== INITIAL).map((label) => (
+      LABELS.map((label) => (
         <span class="sizer" aria-hidden="true">
           {label}
         </span>
@@ -133,11 +139,17 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
     padding-inline: var(--space-2xs);
     cursor: pointer;
     display: inline-grid;
-    justify-items: center;
   }
 
+  /* Stretched, not centred, and that is the last 0.000005 of it: a centred
+     span is only as wide as its own word, so swapping `Light` for `Dark`
+     shrank the span from 45px to 30px and slid it 8px — inside a button that
+     had stopped moving, but still a layout shift, and still reported as one.
+     Stretching every child to the settled track width leaves nothing with a
+     box that depends on the text in it. */
   .theme-toggle > * {
     grid-area: 1 / 1;
+    text-align: center;
   }
 
   .theme-toggle .sizer {
