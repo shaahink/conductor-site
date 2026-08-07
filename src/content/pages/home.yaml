@@ -12,6 +12,25 @@ hero:
   tagline: "Ten concepts the market is hiring for, each one worked end to end in a
     real orchestrator, with what it cost."
 
+# The corpus, above the fold. Keys, never values — these are recomputed from the
+# run store by `npm run harvest`, and naming one the corpus does not have fails
+# the build.
+#
+# Not `totalRuns` or `totalRepos`: the strip captions its own corpus group with
+# "N runs across N repositories", so citing those two prints them twice.
+evidence:
+  figures:
+    - "totalSessions"
+    - "totalCheckpointsDone"
+    - "totalCostUsd"
+    - "totalGatesGreen"
+
+spine:
+  title: "The ten concepts"
+  intro: "In order, but there is no wrong door — each page states the idea in
+    plain language first, and only then shows how one orchestrator implements
+    it."
+
 # A section the owner can turn off from the editor. `visible` is absent here on
 # purpose: absent means shown, and that is the point of the default — the
 # switch writes the field the first time it is used, and content files that

@@ -135,11 +135,67 @@ export const picture = z.object({
   h: z.number().int().positive()
 });
 
+/** An evidence KEY. Never a value.
+    ---------------------------------------------------------------------------
+    This regex is the mechanism behind the site's first litmus test. Content
+    names a key; `src/data/corpus.json` — recomputed from the run store by the
+    harvest — carries the number. A figure that cannot be typed cannot drift,
+    and a page naming a key the corpus does not have fails the build (S3.3).
+
+    Enforcing it here rather than trusting the comment above it matters,
+    because the failure mode is a writer in a hurry doing the obvious thing.
+    Every literal they might reach for is refused by shape: a key cannot start
+    with a digit (`3016.29`, `18`), cannot carry currency or percent signs
+    (`$425.12`, `30%`), and has no spaces or slashes (`18 runs`, `72/81`).
+    What passes is an identifier: `softBreaks`, `rollovers`, `fleet-round-four`. */
+export const evidenceKey = z
+  .string()
+  .regex(
+    /^[a-z][A-Za-z0-9]*(?:[.-][A-Za-z0-9]+)*$/,
+    "evidence names a key from the corpus, never a value"
+  );
+
+/** What a page cites: runs and windows by their published label, figures by name.
+    ---------------------------------------------------------------------------
+    A *window* is one stretch of a run's sessions under one ceiling, and it is a
+    third thing rather than a kind of run because the interesting comparison is
+    between two windows of the same run — same repo, same plan, same agents, one
+    number moved. Its label is its run's label with the ceiling on the end, so a
+    cap that moves renames the window and the citation fails rather than
+    quietly meaning something else.
+
+    It sits up here with the shared pieces rather than down with the three
+    content collections because the home page cites the corpus too, and a
+    `const` cannot be used above the line that declares it — the build says
+    "Cannot access 'evidence' before initialization" and stops at the config,
+    which reads as a broken config rather than an ordering problem. */
+export const evidence = z.object({
+  runs: z.array(evidenceKey).default([]),
+  windows: z.array(evidenceKey).default([]),
+  figures: z.array(evidenceKey).default([])
+});
+
 export const homePageSchema = z.object({
   meta,
   hero: z.object({
     title: z.string(),
     tagline: z.string().meta({ title: "Tagline under the title" })
+  }),
+  /* The front page cites the corpus like any other page, which is the whole
+     argument of SPEC Part VII requirement 2: what makes this site different
+     from every other page on the topic is above the fold, and it is the
+     numbers rather than the prose. Same field, same keys, same gate — a home
+     page naming a key the corpus does not have fails the build exactly as a
+     concept page does. Declared after `hero` because that is the reading
+     order: the claim, then what is behind it. */
+  evidence,
+  /* The way in. Ten concepts is too many for a paragraph and exactly right for
+     a list, and a reader who already knows what context engineering is should
+     be able to enter at the one they do not. The headings are content; the
+     list itself is arrangement, read from the collection in `order`. */
+  spine: z.object({
+    title: z.string(),
+    intro: z.string().meta({ title: "The line above the list" })
   }),
   /* A section that can be turned off — the working example of the pattern.
      index.astro renders it through `isVisible`, and a site that grows a nav
@@ -185,40 +241,6 @@ export const citation = z.object({
   path: z.string(),
   line: z.number().int().positive(),
   note: z.string()
-});
-
-/** An evidence KEY. Never a value.
-    ---------------------------------------------------------------------------
-    This regex is the mechanism behind the site's first litmus test. Content
-    names a key; `src/data/corpus.json` — recomputed from the run store by the
-    harvest — carries the number. A figure that cannot be typed cannot drift,
-    and a page naming a key the corpus does not have fails the build (S3.3).
-
-    Enforcing it here rather than trusting the comment above it matters,
-    because the failure mode is a writer in a hurry doing the obvious thing.
-    Every literal they might reach for is refused by shape: a key cannot start
-    with a digit (`3016.29`, `18`), cannot carry currency or percent signs
-    (`$425.12`, `30%`), and has no spaces or slashes (`18 runs`, `72/81`).
-    What passes is an identifier: `softBreaks`, `rollovers`, `fleet-round-four`. */
-export const evidenceKey = z
-  .string()
-  .regex(
-    /^[a-z][A-Za-z0-9]*(?:[.-][A-Za-z0-9]+)*$/,
-    "evidence names a key from the corpus, never a value"
-  );
-
-/** What a page cites: runs and windows by their published label, figures by name.
-    ---------------------------------------------------------------------------
-    A *window* is one stretch of a run's sessions under one ceiling, and it is a
-    third thing rather than a kind of run because the interesting comparison is
-    between two windows of the same run — same repo, same plan, same agents, one
-    number moved. Its label is its run's label with the ceiling on the end, so a
-    cap that moves renames the window and the citation fails rather than
-    quietly meaning something else. */
-export const evidence = z.object({
-  runs: z.array(evidenceKey).default([]),
-  windows: z.array(evidenceKey).default([]),
-  figures: z.array(evidenceKey).default([])
 });
 
 /** A heading and the prose under it. Long-form pages are a list of these, and
@@ -366,8 +388,11 @@ export const editable = {
        format "file" says "/index.html". A directory collection takes a
        pattern instead: entryUrl: "/projects/{entry}". Only site-relative
        paths; the kit drops anything else. */
-    entryUrl: "/"
-    // omit: ["hero.image.w", "hero.image.h"]
+    entryUrl: "/",
+    /* Same reason as the other three: editing a key does not produce a
+       different number, it produces a failed build. There is nothing here for
+       an owner to change, so the panel should not offer a box. */
+    omit: ["evidence"]
   },
 
   /* The three collections below are `dir` rather than `file`: one YAML per

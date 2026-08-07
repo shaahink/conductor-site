@@ -3,11 +3,25 @@
    the words. That split is what makes the CMS session possible. */
 import { getEntry } from "astro:content";
 import { isVisible } from "@shaahink/sitekit/visibility";
+import EntryList from "../components/EntryList.astro";
+import EvidenceStrip from "../components/EvidenceStrip.astro";
 import Base from "../layouts/Base.astro";
+import { ordered } from "../lib/collections.js";
 
 const page = await getEntry("homePage", "home");
 if (!page) throw new Error("src/content/pages/home.yaml is missing");
-const { meta, hero, notes } = page.data;
+const { meta, hero, evidence, spine, notes } = page.data;
+
+/* The same list /concepts/ shows, read from the same place in the same order.
+   Not a hand-kept copy of it: ten titles typed onto the front page are ten
+   titles that go stale on the day one is renamed, and the front page is the
+   one nobody re-reads. */
+const concepts = (await ordered("concepts")).map((entry) => ({
+  href: `/concepts/${entry.id}/`,
+  order: entry.data.order,
+  title: entry.data.title,
+  summary: entry.data.oneLine
+}));
 
 /* When this site grows a navigation, filter it from the same data rather than
    maintaining a second list of what exists:
@@ -47,6 +61,19 @@ const { meta, hero, notes } = page.data;
         says so on the page rather than silently refusing to save. */}
     <h1 data-sk-edit="hero.title">{hero.title}</h1>
     <p data-sk-edit="hero.tagline">{hero.tagline}</p>
+
+    {/* SPEC Part VII requirement 2: a cold reader has to be able to see, above
+        the fold, what makes this different from every other page on the topic
+        — and that is the numbers, not the sentence above them. Inline rather
+        than the foot variant for the same reason: at the foot it would be a
+        citation, and here it is the argument. */}
+    <EvidenceStrip where="pages/home.yaml" evidence={evidence} variant="inline" />
+
+    <section id="spine">
+      <h2 data-sk-edit="spine.title">{spine.title}</h2>
+      <p data-sk-edit="spine.intro">{spine.intro}</p>
+      <EntryList items={concepts} ordinalLabel="Concept" />
+    </section>
 
     {/* A section the owner can turn off. Not rendered when it is off, rather
         than hidden with a class: text still in the HTML is text a search
