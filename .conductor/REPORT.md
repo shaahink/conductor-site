@@ -1,10 +1,10 @@
 ﻿# Conductor — conductor-site - a field guide to agentic engineering run report
 
-_Updated 2026-08-07 04:11 UTC · branch `main` · HEAD `0f68774`_
+_Updated 2026-08-07 04:33 UTC · branch `main` · HEAD `dda0f8f`_
 
-**Status:** Running
-**Stage:** S7 —  · attempts used 0 · working ▸ S7.3
-**Checkpoints:** 26/28 done · **Sessions run:** 17 · **Cost:** $135.1958 (agent $135.1697 + gates $0.0262) · **Tokens:** 2,524,453 in / 1,076,038 out
+**Status:** Idle
+**Stage:** S7 —  · attempts used 0 · working ▸ S7.4
+**Checkpoints:** 27/28 done · **Sessions run:** 18 · **Cost:** $144.8539 (agent $144.8251 + gates $0.0288) · **Tokens:** 2,672,048 in / 1,135,466 out
 
 ## Stage progress
 
@@ -16,7 +16,7 @@ _Updated 2026-08-07 04:11 UTC · branch `main` · HEAD `0f68774`_
 | S4 |  | ██████████ 4/4 | done |
 | S5 |  | ██████████ 4/4 | done |
 | S6 |  | ██████████ 4/4 | done |
-| S7 |  | █████░░░░░ 2/4 | **← active** |
+| S7 |  | ████████░░ 3/4 | **← active** |
 
 <details> ✅<summary>S1 —  (4/4)</summary>
 
@@ -84,13 +84,13 @@ _Updated 2026-08-07 04:11 UTC · branch `main` · HEAD `0f68774`_
 
 </details>
 
-<details><summary>S7 —  (2/4)</summary>
+<details><summary>S7 —  (3/4)</summary>
 
 | # | Title | Status | Commit |
 |---|---|---|---|
 | S7.1 | SEO and social: canonicals, sitemap, robots, OG images per section, `astro.config` `site` pointing at the real production URL | ✅ DONE | [`f7f7d6f`](https://github.com/shaahink/conductor-site/commit/f7f7d6f) |
-| S7.2 | Accessibility and performance pass — keyboard reachable, landmarks, focus visible, reduced motion honoured, both themes legible, no layout shift on theme flip | ✅ DONE | - |
-| S7.3 | Generated files regenerated and clean (`npm run headers`, `npm run content`, `npm run editor`), README written, and the repo's CI green on `main` | ⬜ TODO | - |
+| S7.2 | Accessibility and performance pass — keyboard reachable, landmarks, focus visible, reduced motion honoured, both themes legible, no layout shift on theme flip | ✅ DONE | [`9309485`](https://github.com/shaahink/conductor-site/commit/9309485) |
+| S7.3 | Generated files regenerated and clean (`npm run headers`, `npm run content`, `npm run editor`), README written, and the repo's CI green on `main` | ✅ DONE | - |
 | S7.4 | **ownerGated** — the Vercel project is linked and the site is live at its production URL, the owner has read the three reports for anonymisation, and the front page has been looked at in both themes | ⬜ TODO | - |
 
 </details>
@@ -116,6 +116,7 @@ _Updated 2026-08-07 04:11 UTC · branch `main` · HEAD `0f68774`_
 | 15 | S6 | Deliver | 1 | 08-07 02:49 | 0:24 | Advanced | S6.4 | 3 | site-fast:OK · generated:OK · evidence:OK | $10.1932 | $0.0026 | 161,188/72,365 |
 | 16 | S7 | Deliver | 1 | 08-07 03:14 | 0:28 | Advanced | S7.1 | 2 | site-fast:OK · generated:OK · evidence:OK | $10.2041 | $0.0027 | 165,052/77,944 |
 | 17 | S7 | Deliver | 1 | 08-07 03:43 | 0:27 | RolledOver | S7.2 | 4 |  | $11.9475 |  | 192,763/86,015 |
+| 18 | S7 | Deliver | 1 | 08-07 04:11 | 0:21 | Advanced | S7.3 | 5 | site-fast:OK · generated:OK · evidence:OK | $9.6554 | $0.0026 | 147,595/59,428 |
 
 ## Money
 
@@ -123,28 +124,23 @@ _What this run has cost, from its own `costs` rows. Same numbers as `conductor m
 
 | scope | sessions | tokens | cache reads | cost | checkpoints | tok/ckpt | $/ckpt |
 |---|---|---|---|---|---|---|---|
-| **run total** | 16 | 153.8M | 97.8% | $123.25 | 23 | 6.69M | $5.36 |
+| **run total** | 17 | 169.8M | 97.9% | $135.20 | 24 | 7.08M | $5.63 |
 | stage S1 | 2 | 19.7M | 98.0% | $15.40 | 4 | 4.92M | $3.85 |
 | stage S2 | 2 | 20.4M | 97.7% | $17.04 | 4 | 5.09M | $4.26 |
 | stage S3 | 4 | 17.1M | 97.4% | $14.31 | 2 | 8.55M | $7.15 |
 | stage S4 | 2 | 22.4M | 97.5% | $18.67 | 4 | 5.59M | $4.67 |
 | stage S5 | 3 | 33.3M | 97.9% | $26.25 | 4 | 8.33M | $6.56 |
 | stage S6 | 2 | 27.5M | 98.1% | $21.37 | 4 | 6.87M | $5.34 |
-| stage S7 | 1 | 13.4M | 98.2% | $10.21 | 1 | 13.4M | $10.21 |
-| 2026-08 | 16 | 153.8M | 97.8% | $123.25 | 23 | 6.69M | $5.36 |
+| stage S7 | 2 | 29.5M | 98.2% | $22.15 | 2 | 14.8M | $11.08 |
+| 2026-08 | 17 | 169.8M | 97.9% | $135.20 | 24 | 7.08M | $5.63 |
 
-_Where the money goes: agent $123.22 (100%) · gate $0.03 (0%) · blended $0.80/M tokens._
+_Where the money goes: agent $135.17 (100%) · gate $0.03 (0%) · blended $0.80/M tokens._
 
 ## Timeline
 
 _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 
 ```
-08-07 01:46:54  • session #9 S4 → Advanced · done S4.1,S4.2 · 4 commit(s)  (24m29s)
-08-07 01:46:54  • session #10 S4 Deliver started (attempt 1/4)
-08-07 02:09:47  ▪ gate site-fast pass [session]  (11.7s)
-08-07 02:09:47  ▪ gate generated pass [session]  (1.9s)
-08-07 02:09:47  ▪ gate evidence pass [session]  (1.5s)
 08-07 02:09:50  • session #10 S4 → Advanced · done S4.3,S4.4 · 4 commit(s)  (22m56s)
 08-07 02:09:50  ▸ stage S5 entered
 08-07 02:09:50  • session #11 S5 Deliver started (attempt 1/4)
@@ -180,6 +176,11 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 08-07 04:43:26  ▪ gate evidence pass [session]  (15.1s)
 08-07 04:43:28  • session #16 S7 → Advanced · done S7.1 · 2 commit(s)  (28m45s)
 08-07 04:43:28  • session #17 S7 Deliver started (attempt 1/4)
+08-07 05:11:16  • session #17 S7 → RolledOver · done S7.2 · 4 commit(s)  (27m47s)
+08-07 05:11:16  • session #18 S7 Deliver started (attempt 1/4)
+08-07 05:33:26  ▪ gate site-fast pass [session]  (10.3s)
+08-07 05:33:26  ▪ gate generated pass [session]  (1.8s)
+08-07 05:33:26  ▪ gate evidence pass [session]  (14.3s)
 ```
 
 ## Health
@@ -187,7 +188,7 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 _Execution-health signals, folded from the event log (`.conductor/events.jsonl`)._
 
 ```
-sessions 17 · retries 0 (0 %) · overall Ok
+sessions 18 · retries 0 (0 %) · overall Ok
 ✓ no health concerns detected
 ```
 
@@ -203,11 +204,6 @@ vs upstream: up to date
 
 ### Commits by session
 
-- **s10 (S4 Deliver)** — 4 commit(s):
-  - [`88ab238`](https://github.com/shaahink/conductor-site/commit/88ab238) docs(evidence): S4.4 proved clause by clause, and stage S4 closed
-  - [`f1bbf09`](https://github.com/shaahink/conductor-site/commit/f1bbf09) feat(concepts): what you can ask afterwards, and what is worth carrying forward
-  - [`06ca43b`](https://github.com/shaahink/conductor-site/commit/06ca43b) docs(evidence): S4.3 proved, and the gate made to bite before it was believed
-  - [`adbe41f`](https://github.com/shaahink/conductor-site/commit/adbe41f) feat(concepts): work that outlives its worker, and the stop only a person clears
 - **s11 (S5 Deliver)** — 2 commit(s):
   - [`1c56db4`](https://github.com/shaahink/conductor-site/commit/1c56db4) feat(articles): the twenty-nine that went red, and the four that never ran
   - [`1ef5db5`](https://github.com/shaahink/conductor-site/commit/1ef5db5) feat(articles): the bill, including the money that bought nothing
@@ -235,6 +231,12 @@ vs upstream: up to date
   - [`5ff37dc`](https://github.com/shaahink/conductor-site/commit/5ff37dc) fix(a11y): the last two are the Face's own hues, and latte is where they fail
   - [`e390bb1`](https://github.com/shaahink/conductor-site/commit/e390bb1) fix(a11y): the quiet ladder is not a text colour either, and the button holds still
   - [`9309485`](https://github.com/shaahink/conductor-site/commit/9309485) fix(a11y): a muted role of this site's own, a button that stops moving, a way past the bar
+- **s18 (S7 Deliver)** — 5 commit(s):
+  - [`dda0f8f`](https://github.com/shaahink/conductor-site/commit/dda0f8f) chore(conductor): s18 S7.3 — handoff
+  - [`d23da09`](https://github.com/shaahink/conductor-site/commit/d23da09) feat(home): the front page leads with the corpus, then the ten concepts
+  - [`8a7d9ef`](https://github.com/shaahink/conductor-site/commit/8a7d9ef) docs(readme): the placeholder said under construction, and it is built
+  - [`d506c81`](https://github.com/shaahink/conductor-site/commit/d506c81) feat(ci): the four gates this site has and the fleet's pipeline cannot run
+  - [`d95f457`](https://github.com/shaahink/conductor-site/commit/d95f457) fix(ci): the store's paths are Windows paths, and the runner is not
 
 ## Last gate run
 
@@ -242,83 +244,55 @@ site-fast:OK · generated:OK · evidence:OK
 
 ## Last session result
 
-> **S7.2 landed — Lighthouse 100 in both schemes, zero layout shift, skip links, new a11y…**
-> - QA of session 16: no findings. Battery re-run green from the inherited tree before any edit (0 errors, 93 tests, build 27 pages / 478 annotations, evidence + anonymity + seo all exit 0).
-> - `color-contrast` took three passes because each fix moved it: `--overlay` 3.36:1, then `--pending` 2.46:1, then `--blue` 4.34:1 / `--accent` 4.45:1 in latte only. No Face role was changed; `tokens.css` derives `--muted`, `--link`, `--curren…
-> - The toggle's first sizer fix did nothing — measuring caught it. Every candidate label is now a sizer and the children stretch, so a fresh load plus four flips reports **zero** layout-shift entries (was CLS 0.00007 with a 12px nav drag). Ski…
+> **S7.3 landed — CI was red for six commits; fixed, plus a second workflow and…**
+> - **The stage was one defect nobody had looked for.** CI had been failing on `main` for six commits while every session's local battery was green, and both were true: `node:path`'s `basename` is platform-specific, the run store records Window…
+> - **Bug #6 closed, and its premise corrected.** The shared pipeline *does* run the unit suite — that is how the platform bug surfaced. What was local-only is the four dist/store gates, so `gates.yml` runs `seo` and `a11y` whole plus two new s…
+> - **SPEC Part VII requirement 2 was owned by no checkpoint** and the front page was still the template's stub with every gate green on it. It now leads with the evidence strip, then the ten concepts read from the collection in `order`. Found …
 >
-> artefacts: `9309485`, `e390bb1`, `5ff37dc`, `0f68774` on `main` (pushed); `scripts/a11y.mjs`, `test/theme-toggle.test.mjs`, `src/styles/tokens.css`
+> artefacts: `.github/workflows/gates.yml`, `scripts/anonymity.mjs`, `scripts/harvest.mjs`, `src/pages/index.astro`, `src/content/schema.ts`, `src/content/pages/home.yaml`, `README.md`, commits `d95f457` `d506c81` `8a7d9ef` `d23da09` `dda0f8f`
 >
-> evidence: `docs/evidence/S7.2-accessibility-and-performance.md`, `docs/evidence/S7.2-battery.txt`, `docs/evidence/S7.2-battery-inherited.txt`
+> evidence: `docs/evidence/S7.3-generated-readme-ci.md`, `-battery.txt`, `-battery-inherited.txt`, `-ci-gates-red.txt`, `docs/evidence/S7.4-home-{mocha, latte}.png`; CI + Gates both green on `main`
 >
-> gaps: bug #2 closed; new bug #7 — the review widget's panels sit on `--surface`, where `--muted` is 3.60:1 in latte (owner-only chrome, no public page). Bug #6 (all local-only gates absent from CI) is S7.3's spine. `npm run a11y` and the 103 tests do not run in CI yet.
+> gaps: S7.4 is the owner's — HUMAN: read the three reports for anonymisation and look at the front page in both themes, but the two screenshots predate the front-page commit and must be re-taken once `d23da09` deploys. New bug #8: the site ships no favicon at all; filed not fixed because the mark is a design decision.
 
 ## Tracker handoff
 
 ```
-last: **session 17** delivered **S7.2**. QA of session 16: **no findings** — battery re-run
-  green from the tree as inherited, before any edit (0 errors, 93 tests, build 27 pages / 478
-  annotations on 21, evidence, anonymity and the new `seo` gate all exit 0). Evidence:
-  `docs/evidence/S7.2-accessibility-and-performance.md` + `-battery.txt` + `-battery-inherited.txt`.
-now on disk: **Lighthouse desktop is 100/100/100/100 in BOTH schemes** (was 96 a11y in each),
-  and a fresh load plus four theme flips reports **zero layout-shift entries** — not a small
-  number, none. `color-contrast` took **three passes** because each fix moved the complaint:
-  `--overlay` at 3.36:1, then `--pending` at 2.46:1 once that cleared, then `--blue` 4.34:1 and
-  `--accent` 4.45:1 in **latte only**. One mistake three times — a role the Face holds to *its*
-  bar, spent on a sentence. **No Face role was changed.** `tokens.css` now derives three tokens
-  that are not roles: `--muted` (text→base, **60% mocha / 85% latte** — mocha's text has 11.34:1
-  of headroom, latte's 7.06:1, so one number cannot serve both), `--link` and `--current`
-  (blue/accent →text at 80%, one number, one rule, because mixing *toward* text works in both).
-  **Mantle is the binding surface, not base** — latte's mantle is darker than its base, and the
-  top bar and evidence strip are both mantle; 4.56:1 is the tightest figure on the site.
-  `contrast.test.mjs` recomputes every mix (srgb is a per-channel lerp) and holds it to 4.5:1 on
-  base *and* mantle; `tokens.test.mjs` fails the build on `color: var(--overlay|--pending|--skipped)`
-  outside the 24px cards. Also: a skip link on all 22 pages, `id="main"` on every `<main>`, and
-  **`npm run a11y`** (`scripts/a11y.mjs`, after `build`) for the half that needs no browser.
-next: **S7.3** — regenerate the three generated files, README, CI green. **Bug #6 is its
-  spine:** CI calls the fleet's shared `site-ci.yml`, which runs only `astro check`, the build
-  and the three generated-file diffs — `evidence`, `anonymity`, `seo`, `a11y` and the 103
-  `node --test` cases are **local-only**. Fix in a **second workflow in this repo**, never in
-  the shared one.
-open: **new bug #7** — the review widget's panels sit on `--surface`, where `--muted` is
-  **3.60:1** in latte. Owner-only chrome, on no public page, but short of the bar. Bug #2 is
-  **closed** by this session. #3, #4, #5, #6 still open. SPEC Part V article 3's `26 costed`/
-  `15.5M` are stale (now **30**/**16.8M**); article 4's `19 of 34`/`10 of 11` and the S5.4 git
-  ground truth are unpublished on purpose. Article 1's `$52.06`/`23.2%` correction, concept 2's
-  advisor split and concept 8's "push-only" still stand.
-tooling-new: **an Astro comment is a JSX expression** and that bites twice. It may not sit
-  between `</head>` and `<body>` (ts(2657), "JSX expressions must have one parent element"), and
-  it **may not contain an angle-bracketed tag** — the checker reads the tag as markup, ends the
-  comment there, and reports the rest of the file as broken expressions with line numbers inside
-  prose. The build stays green throughout; only `astro check` sees it. Worse, **one ts(2657)
-  suppresses every other diagnostic in the file**, so fixing the first error made twenty-two
-  more appear that had been there all along. Rule: prose about elements, and any example
-  containing a tag, goes in the **frontmatter fence**. And **Astro ships `<!-- -->` to the
-  browser** — five of them in `Base.astro` were **2,632 bytes on every page, 14.6% of one**; as
-  `{/* */}` they cost nothing and `/concepts/` went 18,038 → 15,406 bytes. Any dist-scanning gate
-  must strip comments before parsing, which `a11y.mjs` learned by reporting its own author's
-  prose as a second `<main>` on all 21 pages.
-tooling: `npx` **cannot be launched under `conductor bg`** here (it resolves npx-cli.js against
-  the repo) — use `node node_modules/astro/bin/astro.mjs preview --port 4321`. `conductor bg
-  start` takes `--purpose`, not `--name`, and `bg stop` takes the **numeric pid**. A `cmd /c "a
-  && b"` under `bg` loses its quoting; the battery is ~90s so just run it in the foreground.
-  **Never put backticks in a `node -e` string from the Bash tool** — the shell substitutes them
-  and silently empties your text; use Edit for prose. Chrome DevTools MCP is how the cards get
-  taken: `resize_page` 1200×630, then `take_screenshot` with `filePath`. **Astro strips the
-  whitespace between sibling elements**, so inline spans carrying
-  `white-space: nowrap` have **no break opportunity anywhere** — that made one table cell's
-  min-content the whole line as a single 343px word. Use flex + `flex-wrap`, not inline +
-  margin. **The 68ch measure is wrong for a table** read across; `RunTable` breaks out by
-  `--space-3xl` either side above `64rem`, the one breakpoint this site already has. Prose
-  refuses any number of two digits or more, and a currency/percent/decimal/ratio too — so a
-  `file.cs:411` citation **cannot go in article prose**; name it in words. **Never round-trip a
-  content file through PowerShell `Get-Content`/`Set-Content`** (mojibake + BOM); mutate with
-  node — and `/tmp` is not reliable from the Bash tool here, write scratch files under the repo
-  and delete them. `npm run content` rewraps YAML, so run it before quoting your own lines back.
-  Commit messages to a file, then `-F`. Battery is ~60s. **A failed Astro build exits 0xC0000409,
-  not 1.** `meta.description` caps at 160 chars and Astro reports it only as "does not match
-  collection schema" until you re-run `npx astro check`. **Do not `select *` from `sessions`
-  through `run_query`.** `conductor history --json` emits a UTF-8 BOM on Windows. **One run.db
-  holds several runs** — filter by `run_id`; `conductor money` needs `--run`, `conductor budget`
-  takes the run id positionally.
+last: **session 18** delivered **S7.3** plus the front page. QA of session 17: **no findings** —
+  the battery was green from the tree as inherited, before any edit. But **CI had been red on
+  `main` for six commits** while every session reported a green local battery, and both were
+  true. `node:path` `basename` is platform-specific: the run store records **Windows** paths, so
+  on the Linux runner `basename("C:\code\conductor-site")` came back whole, this site's own run
+  stopped being recognised as its own, and a private repo's name was never extracted from its
+  path. 3 of 103 cases failed there and passed here. `lastSegment` splits on both separators;
+  `d95f457` is the first green CI of this run. **Always check `gh run list`, not just the battery.**
+now on disk: **bug #6 closed** by `.github/workflows/gates.yml` — `seo` and `a11y` run whole on
+  the runner, plus two NEW store-free halves: **`npm run evidence:cited`** (every cited key
+  resolves against the **committed** corpus; staleness needs the store) and
+  **`npm run anonymity:shapes`** (the 8 secret-shape patterns; the derived name list is never
+  written down, so it cannot travel). Each prints on every green run which half it did not do.
+  Full `evidence`/`anonymity` unchanged — derived list byte-identical at 51/15/4/41. Both new
+  halves proven **red** as well as green. Bug #6's premise was half wrong: the shared pipeline
+  runs `npm run check`, which here is `astro check && node --test`, so the tests **do** run in CI.
+  Also **SPEC Part VII requirement 2** — the front page — was owned by **no checkpoint** and was
+  still the template's stub with every gate green on it. It now leads with the evidence strip then
+  the ten concepts read from the collection in `order` (`d23da09`, bug #9 closed).
+next: **S7.4, and it is the owner's**. HUMAN: the owner reads the three reports for anonymisation
+  and looks at the front page in both themes. `docs/evidence/S7.4-home-mocha.png` and `-latte.png`
+  were taken from production **before** the front page landed and now show the old stub —
+  **re-take them once `d23da09` deploys**, then that pair is what the owner reviews.
+open: **new bug #8** — there is **no favicon at all**: `public/` ships none of the four names
+  sitekit looks for and `Base.astro` links no icon, so every tab shows the blank glyph and the
+  editor's webmanifest is iconless (it warns on every build). Filed not fixed: the mark is a
+  design decision. #3, #4, #5, #7 still open; #6 and #9 closed by this session. SPEC Part V
+  article 3's `26 costed`/`15.5M` are stale (now **30**/**16.8M**). Article 1's `$52.06`/`23.2%`
+  correction, concept 2's advisor split and concept 8's "push-only" still stand.
+tooling-new: **`node:path` is platform-specific and the store is not** — any code reading a path
+  out of `conductor history` must split on both separators, because those paths were recorded on
+  Windows and CI is Linux. **The shared `evidence` Zod const must sit ABOVE every schema that uses
+  it**: using it earlier fails as "Cannot access 'evidence' before initialization" reported against
+  `astro.config.mjs`, which reads as a broken config rather than an ordering problem.
+  **`EvidenceStrip` captions its own corpus group** with "N runs across N repositories", so citing
+  `totalRuns`/`totalRepos` as figures prints them twice. `conductor task` has **no `--add`**.
+tooling: an Astro comment is a JSX expression: it may not sit between </head> and <body>, may not contain an angle-bracketed tag, and one ts(2657) hides every other diagnostic in the file. Astro ships <!-- --> to the browser (2,632 bytes a page here) so use {/* */}, and any dist-scanning gate must strip comments first. npx cannot run under conductor bg (use node node_modules/astro/bin/astro.mjs preview --port 4321); bg start takes --purpose and bg stop takes the numeric pid. Never put backticks in a node -e string from the Bash tool, and never round-trip a content file through PowerShell Get-Content/Set-Content (mojibake + BOM) - mutate with node, write scratch under the repo, delete it. Commit messages to a file, then -F. Prose refuses any number of two digits or more. npm run content rewraps YAML, so run it before quoting your own lines back. A failed Astro build exits 0xC0000409, not 1. meta.description caps at 160 chars. Do not select * from sessions through run_query; conductor history --json emits a UTF-8 BOM on Windows; one run.db holds several runs, so filter by run_id. Battery is ~90s in the foreground. Chrome DevTools MCP takes the screenshots: resize_page then take_screenshot with filePath.
 ```
