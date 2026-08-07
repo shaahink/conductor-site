@@ -1,0 +1,116 @@
+S3.4 - the evidence gate, red both ways
+=======================================
+
+The gate was already declared in conductor.plan.json, scoped to stages S4-S7,
+running `node scripts/harvest.mjs --check`, and its failure line already promised
+both halves: "corpus.json is stale or a cited evidence key is missing". Only the
+first half existed. This checkpoint makes the second one true and proves both.
+
+  $ npm run evidence          # the same command, spelled for a person
+  evidence: corpus.json is current - 18 runs, 340 sessions, $3,016.29; and every
+  key cited by 4 content entries resolves.
+  exit 0
+
+  The plan's own gate command, run verbatim:
+  every published figure recomputes from the run store
+
+
+0. It went red on its own before it was ever aimed at anything
+--------------------------------------------------------------
+
+  The first run of the finished check failed, and it was right. Between the S3.1
+  harvest and this one - a rate-limit backoff apart - the engine's own accounting
+  run had closed in the store:
+
+  $ node scripts/harvest.mjs --check
+  evidence: src/data/corpus.json is STALE - the store no longer says what the
+  committed corpus says. Run `npm run harvest` and commit the result.
+    the-accounting-run.status: committed paused -> store completed
+  exit 1
+
+  Nothing about the site had changed. The world had. That run still stands at 25
+  of 32, so anonymise.json dropped the `disposition` it no longer needs - the
+  field is only consulted while the store says `running` - and its scenario
+  sentence stopped calling the run paused. No corpus total moved.
+
+  This is the whole argument for the gate in one incident: a published page had
+  become wrong about something, and nobody would have found out by reading it.
+
+
+1. Red when the corpus is stale
+-------------------------------
+
+  Two figures hand-edited in src/data/corpus.json - one corpus-wide, one inside
+  a run - which is the shape of the mistake this gate exists for: a number that
+  looks entirely plausible on the page.
+
+  $ node scripts/harvest.mjs --check
+  evidence: src/data/corpus.json is STALE - the store no longer says what the
+  committed corpus says. Run `npm run harvest` and commit the result.
+    totalCostUsd: committed $3,999.99 -> store $3,016.29
+    the-long-build.sessions: committed 70 -> store 69
+  exit 1
+
+  It names the field rather than the file. "The corpus is stale" is true and
+  useless; the next person needs to know whether a number changed, a run
+  appeared, or a run left the corpus, because those have three different causes
+  and only one of them is "re-run the harvest". The check reports all three,
+  including a run the store no longer offers.
+
+
+2. Red when a cited key is missing
+----------------------------------
+
+  Two content files edited at once, to show the gate reports every problem it
+  found rather than the first:
+
+    reports/the-fleet-round.yaml     gatesGreen    -> gatesRed
+    articles/what-a-run-costs.yaml   totalCostUsd  -> totalBurnRate
+
+  $ node scripts/harvest.mjs --check
+  evidence: articles/what-a-run-costs.yaml: evidence.figures names
+  "totalBurnRate", which is not in the corpus. A key with no figure behind it is
+  a claim with no evidence behind it.
+  evidence: reports/the-fleet-round.yaml: evidence.figures names "gatesRed",
+  which is not in the corpus. A key with no figure behind it is a claim with no
+  evidence behind it.
+  exit 1
+
+  `gatesRed` is the interesting one: `totalGatesRed` exists corpus-wide, so the
+  key reads exactly like something that should work. Per-run and corpus-wide are
+  separate namespaces on purpose, and the gate is where a writer finds out.
+
+  Both halves run before either is reported. A gate that reveals its second
+  problem only after the first is fixed costs a run per mistake.
+
+  All three files were restored from HEAD afterwards and the gate is green.
+
+
+3. Why this is not a wrapper around `npm run build`
+---------------------------------------------------
+
+  src/lib/evidence.ts already refuses a bad key at build time, and this scan is
+  deliberately a second implementation of the same rule. It has to be: that file
+  is TypeScript imported by Astro, this runs as plain Node inside a gate, and -
+  measured at S3.3 - the build failure it duplicates exits with 0xC0000409 after
+  a libuv assertion rather than exit 1. A gate wants a clean exit code and an
+  answer that does not depend on Astro getting far enough to fail.
+
+  Cited keys are checked against the COMMITTED corpus, not the freshly
+  recomputed one, because the committed file is what the site renders from.
+  Checking against the fresh corpus would hide a key the stale file is missing
+  behind the staleness message.
+
+  A scan's own failure mode is silent under-reporting - a file it did not see is
+  a page the gate passes without looking at. So the parse and a crude grep for
+  the `evidence:` line have to agree on how many files are in play, and the scan
+  throws when they do not. `yaml` was already present as a transitive dependency
+  and is now declared and pinned, the way the rest of the fleet pins.
+
+
+4. Battery, from a clean tree
+-----------------------------
+
+  $ npm run check      astro check 0 errors, 42 tests pass
+  $ npm run build      10 pages, 63 annotations on 8 pages all resolve
+  $ npm run evidence   18 runs, 340 sessions, $3,016.29; 4 entries' keys resolve

@@ -684,10 +684,35 @@ function main() {
         "evidence: src/data/corpus.json is STALE — the store no longer says what the committed " +
           "corpus says. Run `npm run harvest` and commit the result."
       );
-      for (const [key, fresh] of Object.entries(payload.corpus)) {
-        const was = existing.corpus?.[key];
-        if (!was || was.value !== fresh.value) {
-          console.error(`  ${key}: committed ${was ? was.display : "(absent)"} → store ${fresh.display}`);
+      /* Naming what moved, down to the run and the key. "The file is stale" is
+         true and useless; the next person needs to know whether a number
+         changed, a run appeared, or a run left the corpus — those have three
+         different causes and only one of them is "re-run the harvest". */
+      const drift = (was, fresh, where) => {
+        for (const [key, value] of Object.entries(fresh)) {
+          const before = was?.[key];
+          if (!before || before.value !== value.value) {
+            console.error(
+              `  ${where}${key}: committed ${before ? before.display : "(absent)"} → store ${value.display}`
+            );
+          }
+        }
+      };
+      drift(existing.corpus, payload.corpus, "");
+      for (const [label, run] of Object.entries(payload.runs)) {
+        const was = existing.runs?.[label];
+        if (!was) {
+          console.error(`  ${label}: not in the committed corpus at all`);
+          continue;
+        }
+        if (was.status !== run.status) {
+          console.error(`  ${label}.status: committed ${was.status} → store ${run.status}`);
+        }
+        drift(was.figures, run.figures, `${label}.`);
+      }
+      for (const label of Object.keys(existing.runs ?? {})) {
+        if (!payload.runs[label]) {
+          console.error(`  ${label}: published, but the store no longer offers it`);
         }
       }
     }
