@@ -1,10 +1,10 @@
 ﻿# Conductor — conductor-site - a field guide to agentic engineering run report
 
-_Updated 2026-08-07 00:46 UTC · branch `main` · HEAD `6ec3467`_
+_Updated 2026-08-07 01:09 UTC · branch `main` · HEAD `88ab238`_
 
 **Status:** Idle
-**Stage:** S4 —  · attempts used 0 · working ▸ S4.3
-**Checkpoints:** 14/28 done · **Sessions run:** 9 · **Cost:** $57.2355 (agent $57.2280 + gates $0.0075) · **Tokens:** 1,135,312 in / 459,826 out
+**Stage:** S4 —  · attempts used 0
+**Checkpoints:** 16/28 done · **Sessions run:** 10 · **Cost:** $65.4196 (agent $65.4106 + gates $0.0090) · **Tokens:** 1,322,210 in / 537,806 out
 
 ## Stage progress
 
@@ -13,7 +13,7 @@ _Updated 2026-08-07 00:46 UTC · branch `main` · HEAD `6ec3467`_
 | S1 |  | ██████████ 4/4 | done |
 | S2 |  | ██████████ 4/4 | done |
 | S3 |  | ██████████ 4/4 | done |
-| S4 |  | █████░░░░░ 2/4 | **← active** |
+| S4 |  | ██████████ 4/4 | done |
 | S5 |  | ░░░░░░░░░░ 0/4 | todo |
 | S6 |  | ░░░░░░░░░░ 0/4 | todo |
 | S7 |  | ░░░░░░░░░░ 0/4 | todo |
@@ -51,14 +51,14 @@ _Updated 2026-08-07 00:46 UTC · branch `main` · HEAD `6ec3467`_
 
 </details>
 
-<details><summary>S4 —  (2/4)</summary>
+<details> ✅<summary>S4 —  (4/4)</summary>
 
 | # | Title | Status | Commit |
 |---|---|---|---|
-| S4.1 | Concepts 1–3 (agentic engineering, multi-agent orchestration, context engineering) written, each citing Conductor by `file:line` and each carrying evidence keys that resolve | ✅ DONE | - |
-| S4.2 | Concepts 4–6 (token economics, evals and gates, independent verification) written to the same bar | ✅ DONE | - |
-| S4.3 | Concepts 7–8 (durable execution, human-in-the-loop) written to the same bar | ⬜ TODO | - |
-| S4.4 | Concepts 9–10 (agent observability, agent memory) written, the spine reads in `order` end to end, and every `file:line` citation is verified to still resolve against `shaahink/conductor` at a named commit | ⬜ TODO | - |
+| S4.1 | Concepts 1–3 (agentic engineering, multi-agent orchestration, context engineering) written, each citing Conductor by `file:line` and each carrying evidence keys that resolve | ✅ DONE | [`690304d`](https://github.com/shaahink/conductor-site/commit/690304d) |
+| S4.2 | Concepts 4–6 (token economics, evals and gates, independent verification) written to the same bar | ✅ DONE | [`690304d`](https://github.com/shaahink/conductor-site/commit/690304d) |
+| S4.3 | Concepts 7–8 (durable execution, human-in-the-loop) written to the same bar | ✅ DONE | - |
+| S4.4 | Concepts 9–10 (agent observability, agent memory) written, the spine reads in `order` end to end, and every `file:line` citation is verified to still resolve against `shaahink/conductor` at a named commit | ✅ DONE | - |
 
 </details>
 
@@ -108,6 +108,7 @@ _Updated 2026-08-07 00:46 UTC · branch `main` · HEAD `6ec3467`_
 | 7 | S3 | Resume | 1 | 08-06 23:40 | 0:00 | LimitBackoff |  | 0 |  | $0.0000 |  |  |
 | 8 | S3 | Resume | 1 | 08-07 00:10 | 0:11 | Advanced | S3.3 S3.4 | 5 | site-fast:OK · generated:OK | $7.3490 | $0.0013 | 198,956/33,052 |
 | 9 | S4 | Deliver | 1 | 08-07 00:22 | 0:24 | Advanced | S4.1 S4.2 | 4 | site-fast:OK · generated:OK · evidence:OK | $10.4796 | $0.0015 | 208,409/76,148 |
+| 10 | S4 | Deliver | 1 | 08-07 00:46 | 0:22 | Advanced | S4.3 S4.4 | 4 | site-fast:OK · generated:OK · evidence:OK | $8.1825 | $0.0015 | 186,898/77,980 |
 
 ## Money
 
@@ -115,21 +116,20 @@ _What this run has cost, from its own `costs` rows. Same numbers as `conductor m
 
 | scope | sessions | tokens | cache reads | cost | checkpoints | tok/ckpt | $/ckpt |
 |---|---|---|---|---|---|---|---|
-| **run total** | 8 | 57.2M | 97.7% | $46.75 | 10 | 5.72M | $4.68 |
+| **run total** | 9 | 70.4M | 97.7% | $57.24 | 12 | 5.87M | $4.77 |
 | stage S1 | 2 | 19.7M | 98.0% | $15.40 | 4 | 4.92M | $3.85 |
 | stage S2 | 2 | 20.4M | 97.7% | $17.04 | 4 | 5.09M | $4.26 |
 | stage S3 | 4 | 17.1M | 97.4% | $14.31 | 2 | 8.55M | $7.15 |
-| 2026-08 | 8 | 57.2M | 97.7% | $46.75 | 10 | 5.72M | $4.68 |
+| stage S4 | 1 | 13.3M | 97.9% | $10.48 | 2 | 6.63M | $5.24 |
+| 2026-08 | 9 | 70.4M | 97.7% | $57.24 | 12 | 5.87M | $4.77 |
 
-_Where the money goes: agent $46.75 (100%) · gate $0.01 (0%) · blended $0.82/M tokens._
+_Where the money goes: agent $57.23 (100%) · gate $0.01 (0%) · blended $0.81/M tokens._
 
 ## Timeline
 
 _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 
 ```
-08-06 21:54:06  ◆ run started · conductor-site - a field guide to agentic engineering
-08-06 21:54:07  ▸ stage S1 entered
 08-06 21:54:07  • session #1 S1 Deliver started (attempt 1/4)
 08-06 22:16:06  ▪ gate site-fast pass [session]  (8.5s)
 08-06 22:16:06  ▪ gate generated pass [session]  (1.6s)
@@ -165,6 +165,11 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 08-07 01:46:51  ▪ gate site-fast pass [session]  (11.7s)
 08-07 01:46:51  ▪ gate generated pass [session]  (2.0s)
 08-07 01:46:51  ▪ gate evidence pass [session]  (1.4s)
+08-07 01:46:54  • session #9 S4 → Advanced · done S4.1,S4.2 · 4 commit(s)  (24m29s)
+08-07 01:46:54  • session #10 S4 Deliver started (attempt 1/4)
+08-07 02:09:47  ▪ gate site-fast pass [session]  (11.7s)
+08-07 02:09:47  ▪ gate generated pass [session]  (1.9s)
+08-07 02:09:47  ▪ gate evidence pass [session]  (1.5s)
 ```
 
 ## Health
@@ -172,7 +177,7 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 _Execution-health signals, folded from the event log (`.conductor/events.jsonl`)._
 
 ```
-sessions 9 · retries 0 (0 %) · overall Ok
+sessions 10 · retries 0 (0 %) · overall Ok
 ✓ no health concerns detected
 ```
 
@@ -219,6 +224,11 @@ vs upstream: up to date
   - [`931a40f`](https://github.com/shaahink/conductor-site/commit/931a40f) feat(concepts): what a gate is, and why the checker cannot be the worker
   - [`2a0e93e`](https://github.com/shaahink/conductor-site/commit/2a0e93e) feat(concepts): the loop, the roles, and a citation that has to point somewhere
   - [`690304d`](https://github.com/shaahink/conductor-site/commit/690304d) feat(evidence): the three lanes a run pays for, split out of the store
+- **s10 (S4 Deliver)** — 4 commit(s):
+  - [`88ab238`](https://github.com/shaahink/conductor-site/commit/88ab238) docs(evidence): S4.4 proved clause by clause, and stage S4 closed
+  - [`f1bbf09`](https://github.com/shaahink/conductor-site/commit/f1bbf09) feat(concepts): what you can ask afterwards, and what is worth carrying forward
+  - [`06ca43b`](https://github.com/shaahink/conductor-site/commit/06ca43b) docs(evidence): S4.3 proved, and the gate made to bite before it was believed
+  - [`adbe41f`](https://github.com/shaahink/conductor-site/commit/adbe41f) feat(concepts): work that outlives its worker, and the stop only a person clears
 
 ## Last gate run
 
@@ -226,40 +236,34 @@ site-fast:OK · generated:OK · evidence:OK
 
 ## Last session result
 
-> **S4.1 and S4.2 landed — six concept pages, thirty-seven citations resolving**
-> - **QA of session 8: no findings.** Battery re-run green from a clean tree; the evidence gate proven red again by hand (`totalSessions` → 999 printed `committed 999 → store 340` and exited 1, green on restore). S3.3/S3.4 claims hold.
-> - **S4.1** (`690304d`, `2a0e93e`): `agentic-engineering` and `multi-agent-orchestration` written. The harvest now publishes the cost lanes it had always computed and never surfaced — which corrected the SPEC: three categories, not two, and ad…
-> - **S4.2** (`931a40f`): `evals-and-gates` and `independent-verification` written, both built on the failures rather than the wins. Before publishing a red-gate count the label was earned: the corpus has no skipped and no optional gate at all,…
->
-> artefacts: `src/content/concepts/{agentic-engineering, multi-agent-orchestration, evals-and-gates, independent-verification}.yaml`, `scripts/citations.mjs`, `scripts/harvest.mjs`, `src/data/corpus.json`
->
-> evidence: `docs/evidence/S4.1-concepts.md`, `docs/evidence/S4.1-citations.txt`, `docs/evidence/S4.2-concepts.md`, `docs/evidence/S4.2-citations.txt` — astro check 0 errors, 42 tests, evidence gate green over 8 cited entries, 14 pages, 154 annotations
->
-> gaps: S4.3 not started and put back to TODO — but every citation for concepts 7 and 8 is researched, verified and banked in the knowledge ledger, so the next session writes rather than explores. Concept 6's `readNext` points back at concept 2 as a placeholder until concept 7 exists; S4.4 owns closing that chain.
+> **** Stage S4 closed — concepts seven through ten written, spine gated, all citations verified**
+> - **S4.3** (`adbe41f`) — durable execution and human-in-the-loop, 17 new citations. Carries two measured corrections against the SPEC: the notification lane is not push-only (it long-polls and handles callbacks that write `control.json`), and…
+> - **S4.4** (`f1bbf09`) — agent observability and agent memory, 20 new citations including the Face. New gate `test/spine.test.mjs` catches three defects a dangling-slug check cannot: a repeated or gapped `order`, a slug that stopped matching …
+> - **QA of session 9: no findings.** Battery re-run from a clean tree before any edit — 0 errors, 42 tests, 14 pages, 154 annotations, 8 cited entries, 37 citations, all green. Session 9's claims hold as written.
 
 ## Tracker handoff
 
 ```
-last: **session 9** delivered **S4.1** (690304d, 2a0e93e) and **S4.2** (931a40f). Six concept
-  pages now exist and the spine reads in `order` from one to six. QA of session 8: no findings —
-  battery re-run green from a clean tree, and the evidence gate proven red again by hand
-  (`totalSessions` set to 999 → "committed 999 → store 340", exit 1; green on restore).
-now on disk: concepts 1, 2, 5, 6 written (3 and 4 were earlier). New: `scripts/citations.mjs`
-  opens every `inConductor.citations` entry against a conductor checkout and prints the line it
-  landed on — **all 37 resolve at engine `1632b9f`**. The engine path comes from `CONDUCTOR_REPO`
-  or the sibling directory, never from a file this public repo commits. The harvest now publishes
-  the cost lanes: `totalAgentCostUsd`, `totalGateCostUsd`, `totalAdvisorCostUsd`. Battery: 0
-  errors, 42 tests, 8 cited entries green, 14 pages, 154 annotations.
-next: **S4.3** — concepts 7 and 8. **Every citation for both is already researched and verified
-  in the knowledge ledger** (two notes, "S4.3 RESEARCH BANKED" and "concept 8"): do not re-derive
-  them, go straight to writing. Then S4.4, which owns closing the `readNext` chain — concept 6
-  currently points back at 2 as a placeholder, because a dangling slug fails the build.
+last: **session 10** delivered **S4.3** (adbe41f) and **S4.4** (f1bbf09) — **stage S4 is
+  complete**. QA of session 9: **no findings**; battery re-run green from a clean tree before any
+  edit (0 errors, 42 tests, 14 pages, 154 annotations, 8 cited entries, 37 citations).
+now on disk: all ten concept pages. Battery: 0 errors, **45 tests**, 18 pages, 255 annotations,
+  evidence gate green over 12 cited entries, **all 74 citations resolve at engine `1632b9f`**.
+  New gate `test/spine.test.mjs` — `order` a permutation of one to ten, slug equals file name,
+  and the first `readNext` walking the whole spine. Both gates proven red by mutation this
+  session and restored: a bogus `totalOwnerApprovalsX` on concept 8, and all three spine defects.
+next: **S5** — the four articles. Two of them already have their evidence: article 2 is the
+  twenty-nine red gates (all required, none skipped or optional in the corpus), article 3 is the
+  measured-budget method. **Anything budget-shaped comes from `conductor budget` / `conductor
+  money`, never hand SQL** — and `runs.limits_json` is NULL on every imported run, so no cap
+  value can be gate-verified; say so on the page.
 open: **two SPEC figures corrected by measurement, do not retype either.** Part IV concept 2 says
-  agent $3,015 vs advisor $0.09; the store has **three** categories and says agent $3,014.80,
-  gate $1.26, advisor $0.24 — and the advisor line is priced from elapsed seconds, not metered,
-  which the page labels. Part IV concept 8 calls the notification lane "push-only"; it long-polls
-  and handles callbacks that write `control.json`. Bug #3 (Appendix A's `$9.37` and `~$10.85`
-  divisions) and bug #2 (`--overlay` contrast) still stand. **S7.1 must re-confirm `site`.**
+  agent $3,015 vs advisor $0.09; the store has **three** categories — agent $3,014.80, gate
+  $1.26, advisor $0.24 — and the advisor line is priced from elapsed seconds, not metered. Part
+  IV concept 8's "push-only" is wrong and concept 8 now says so on the page. Bug #3 (Appendix
+  A's `$9.37` and `~$10.85` divisions) and bug #2 (`--overlay` contrast) still stand. **S7.1
+  must re-confirm `site`.** Anonymisation trap for S5/S6: `SqliteRunStore.Bugs.cs:26` names a
+  private repo in its own comment — cite the line, paraphrase the measurement, never quote it.
 tooling: prose refuses any number of two digits or more — spell small quantities as words, and
   never write a decimal, a ratio or a currency amount into content. **Never `git checkout --` a
   file whose new version is uncommitted.** Commit messages to a file, then `-F`. The battery is
