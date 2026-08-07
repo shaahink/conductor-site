@@ -3,15 +3,17 @@
 **A field guide to agentic engineering** — ten concepts the market is hiring for, each one worked
 end to end in a real orchestrator, with what it cost.
 
+Live at **<https://conductor-site-virid.vercel.app>**.
+
 The site explains concepts, not a product. Each concept page states the idea in plain language
 you can use anywhere, then shows how [Conductor](https://github.com/shaahink/conductor)
 implements it, then points at a real run and what it cost.
 [Conductor](https://github.com/shaahink/conductor) is the worked example and the evidence — not
 the pitch.
 
-> **Status:** under construction. Built by Conductor driving this repo — see
-> [`TRACKER.md`](TRACKER.md) for live progress and [`docs/SPEC.md`](docs/SPEC.md) for what it is
-> meant to become.
+It was itself built by Conductor driving this repository, unattended, one stage at a time —
+[`TRACKER.md`](TRACKER.md) is the board that run wrote, and [`docs/SPEC.md`](docs/SPEC.md) is the
+design it was given.
 
 ## What is on it
 
@@ -33,22 +35,52 @@ That is the site keeping its own first rule: every number is traceable, or it do
 The reports are **generalised into scenarios** — "a four-site web fleet with a shared component
 library" rather than a client's name. That is for the reader as much as for privacy: you should be
 able to map your own situation onto a report. Runs absent from `anonymise.json` are excluded, never
-published under their real name.
+published under their real name — the rule fails closed.
 
 ## Development
 
 ```bash
 npm install
 npm run dev          # local dev server
-npm run check        # astro check — must be 0 errors
-npm run build        # must be green
-npm run headers      # regenerate vercel.json from headers.config.mjs
-npm run content      # normalise src/content
-npm run editor       # copy the editor stylesheets into public/
+npm run check        # astro check + the unit suite — must be 0 errors, 0 failures
+npm run build        # must be green; the gates below read what it writes
 ```
 
-Built on [Astro](https://astro.build) 7 and [`@shaahink/sitekit`](https://github.com/shaahink/sitekit),
-the shared machinery behind the `sk` site fleet.
+Three files are generated and CI diffs all three, so none of them is ever hand-edited:
+
+```bash
+npm run headers      # vercel.json ← headers.config.mjs
+npm run content      # normalise src/content
+npm run editor       # copy the kit's editor stylesheets into public/
+```
+
+## The gates
+
+Each answers one question about the built site that nothing else would catch, and each is designed
+to be seen red. They run against `dist/`, so they go after `npm run build`.
+
+| Gate | What it answers | Where it runs |
+| --- | --- | --- |
+| `npm run evidence` | Does the committed corpus still match the run store, and does every cited key resolve? | Locally — needs the store |
+| `npm run evidence:cited` | Does every cited key resolve against the committed corpus? | CI too — needs no store |
+| `npm run anonymity` | Do the built bytes carry any machine path, private name, distinctive token or quoted run name? | Locally — the list is derived from the store, never written down |
+| `npm run anonymity:shapes` | Do they carry a path out of a terminal, an API token, a chat id? | CI too — a shape is a pattern, not a name |
+| `npm run seo` | One canonical per page, a sitemap that is the site, robots agreeing with it, social cards that still render their own numbers | CI |
+| `npm run a11y` | A lang, one identified `<main>`, a working skip link, landmarks, accessible names, tab order | CI |
+| `npm run harvest` | *(not a gate)* recompute `corpus.json` from the run store | Locally |
+
+Contrast, focus visibility and layout shift need a browser and are measured by hand — the run and
+its numbers are in [`docs/evidence`](docs/evidence).
+
+## CI
+
+Two workflows, on purpose:
+
+- **`ci.yml`** calls the fleet's reusable pipeline in `shaahink/.github`. It runs what every site
+  in the fleet has: the types, the build, and the three generated files still matching their
+  sources. Six sites were carrying byte-similar copies of that before it moved.
+- **`gates.yml`** runs the four above, which the shared pipeline cannot know about. Two run whole;
+  two run the half that needs no run store, and say on every run which half they did not do.
 
 ## Licence
 

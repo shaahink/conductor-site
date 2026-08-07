@@ -1,0 +1,269 @@
+=== closing battery @ d506c81 2026-08-07T04:23:49Z ===
+
+--- npm run check ---
+
+> check
+> astro check && node --test "test/**/*.test.mjs"
+
+05:23:52 [content] Syncing content
+05:23:52 [content] Synced content
+05:23:52 [types] Generated 444ms
+05:23:52 [check] Getting diagnostics for Astro files in C:\Code\conductor-site...
+Result (33 files): 
+- 0 errors
+- 0 warnings
+- 0 hints
+
+✔ a repository path is read the same way on every platform (1.8116ms)
+✔ this site's own run is not treated as private (1.008ms)
+✔ a private repository's name, path, store and id are all forbidden (0.4699ms)
+✔ a public repository is never listed as a private name (0.4745ms)
+✔ run names are not a token source, because they are English (0.3359ms)
+✔ the published vocabulary allowlists itself (0.284ms)
+✔ a private name planted in a page is found (1.3942ms)
+✔ a finding is redacted, and the redaction is not the name (0.8746ms)
+✔ matching is on whole words, so a substring is not a finding (2.1237ms)
+✔ three consecutive words of a real run name are a finding (0.5461ms)
+✔ field-note prose is caught at eight words, and paraphrase is not (0.3398ms)
+✔ secret shapes are caught wherever they appear (0.2592ms)
+✔ the shapes half stands on its own, with nothing derived (0.216ms)
+✔ vendored bundles are checked for secrets but not for names (0.3427ms)
+✔ schema.ts imports nothing but Zod (3.5723ms)
+✔ every collection the build defines is also editable (2.0461ms)
+✔ every editable collection points at content that exists (8.6476ms)
+✔ evidence names a key, never a value (3.0275ms)
+✔ a concept is the five moves, and every one of them is required (13.8234ms)
+✔ a concept's idea is three to six paragraphs, and cites at least one line (1.7458ms)
+✔ a concept cannot type a figure into its evidence (1.0119ms)
+✔ nor into the sentence beside it (1.2942ms)
+✔ a command may carry digits; a sentence may not (10.8136ms)
+✔ articles and reports are the same shape, and a report also names its scenario (15.9509ms)
+✔ tokens.css declares both of the Face's default schemes (3.5447ms)
+✔ every block declares all sixteen roles, and no role the Face does not have (0.3231ms)
+✔ the repeated latte blocks are identical (0.3987ms)
+✔ every role clears the Face's legibility bar on its own base (0.6791ms)
+✔ the quiet ladder is ordered: pending recedes furthest (0.3551ms)
+✔ the bar bites: stock Catppuccin Latte yellow fails it, the shipped yellow passes (0.2789ms)
+✔ every scheme derives --muted from its own text and base (0.2197ms)
+✔ --muted clears the web's 4.5:1 bar on both surfaces it is set on, in both schemes (0.4545ms)
+✔ --muted actually recedes: it is quieter than text and louder than the quiet ladder (0.4326ms)
+✔ the bar bites: --overlay, which used to carry this text, fails it (0.4437ms)
+✔ latte's five darkened roles are the Face's values, not upstream Catppuccin's (0.3162ms)
+✔ the table is every run in the corpus, oldest first (26.962ms)
+✔ a corpus with more runs than rows fails the build (0.7506ms)
+✔ a run missing a column's figure fails the build rather than printing a gap (0.3207ms)
+✔ a corpus missing a column's total fails the build too (0.3956ms)
+✔ an empty corpus is a stale harvest, not an empty table (0.284ms)
+✔ the column headings are the figures' own labels, not a list kept beside them (0.344ms)
+✔ every cell is a display string from the corpus, never a value formatted here (0.3127ms)
+✔ the footer names its own population rather than saying total (0.3094ms)
+✔ the sources are every distinct place the numbers came from (0.317ms)
+✔ every run the harvest published reaches the table (0.5074ms)
+✔ the runs the store never closed are named abandoned, not in-flight (0.5144ms)
+✔ no row in the shipped corpus has an unlabelled status (0.3013ms)
+✔ every report is named after a run the corpus publishes (1.321ms)
+✔ the layout has an inline script to pin (1.3461ms)
+✔ every inline script's sha256 is declared in the CSP (0.9946ms)
+✔ the CSP pins no hash that no longer belongs to a script (0.287ms)
+✔ the inline snippet still does the two things that must beat first paint (0.4198ms)
+✔ a run with no entry in anonymise.json is excluded from the corpus (49.8739ms)
+✔ an excluded run contributes nothing to any corpus total (3.4202ms)
+✔ publishing nothing at all is refused rather than divided by zero (0.795ms)
+✔ a run still marked running has to say whether it was abandoned or paused (1.7733ms)
+✔ two runs cannot be published under one label, and a label needs a repoKey (0.905ms)
+✔ no run id reaches the published corpus (2.8101ms)
+✔ nothing path-shaped or machine-shaped reaches the published corpus (1.6285ms)
+✔ every mapped run is published, and every published run was mapped (0.3209ms)
+✔ a corpus key and a run key never share a name (0.3906ms)
+✔ a budget-shaped figure the harvest computed itself is refused (0.5711ms)
+✔ the same figure measured by the verb is published (2.1947ms)
+✔ a window is keyed by its run and the ceiling it ran under (4.8337ms)
+✔ a window with no ceiling carries no nudge, no headroom and no wrap-up (1.96ms)
+✔ a capped window that nobody ever nudged publishes no wrap-up (1.6974ms)
+✔ two windows of one run cannot collide on a key (0.6721ms)
+✔ an excluded run takes its windows with it (3.41ms)
+✔ the corpus ceiling block counts only what ran under a measured ceiling (10.5245ms)
+✔ the ledger block splits every session into exactly one of the two halves (5.8826ms)
+✔ a rollover that committed but recorded a zero counts as not recorded (1.9761ms)
+✔ both halves of the ledger block are published, so neither is a bare count (0.5936ms)
+✔ the ledger block came from the store, not from a verb (0.3317ms)
+✔ a run key and a window key never share a name (0.3446ms)
+✔ every window figure in the committed corpus came from conductor budget (3.608ms)
+✔ every money-shaped figure in the committed corpus names the verb (5.9888ms)
+✔ a run collected without asking the verb cannot be published (0.307ms)
+✔ a head that is written passes, and every collection uses the same one (5.5867ms)
+✔ the description bar bites at both ends (1.6946ms)
+✔ neither description may be the title again (0.652ms)
+✔ a canonical is a site-relative directory path (1.1627ms)
+✔ every page showing a content entry says which entry, and can be edited on the page (20.449ms)
+✔ the annotation walk actually reaches the layouts (1.8149ms)
+✔ the / fallback is last, so it cannot swallow the sections above it (2.2996ms)
+✔ no two cards share a key or a base (0.449ms)
+✔ every section on the site has its own card (0.3606ms)
+✔ a page inside a section gets that section's card, not the fallback (0.3501ms)
+✔ the front page and the 404 fall back to the home card (0.2637ms)
+✔ every declared card has a PNG in public/og (0.9503ms)
+✔ the card manifest covers exactly the declared cards (2.3681ms)
+✔ the spine is numbered from one with no gap and no repeat (2.5077ms)
+✔ a concept's file name is its slug (0.4647ms)
+✔ following readNext from the first page walks the whole spine in order (0.578ms)
+✔ every label the script can write is one the button was sized for (1.9288ms)
+✔ the label the markup ships is sized for too, and is the only extra one (1.4938ms)
+✔ there is a sizer for every candidate label, the live one included (6.5362ms)
+✔ the button still stacks its labels in a single grid cell (1.2988ms)
+✔ the sizers are hidden from assistive technology as well as from the paint (0.4839ms)
+✔ the site has stylesheets to check (0.8263ms)
+✔ no colour literal outside tokens.css (1.1579ms)
+✔ the quiet roles are not spent on text: chrome and 24px cards only (0.7042ms)
+✔ no font-size literal outside type.css (0.4293ms)
+✔ no font-family names a face; every family comes through a cssVariable (0.3562ms)
+✔ every font cssVariable astro.config declares is consumed by type.css (0.6315ms)
+✔ no physical left/right properties (0.803ms)
+ℹ tests 105
+ℹ suites 0
+ℹ pass 105
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 527.8936
+EXIT[check]=0
+
+--- npm run build ---
+
+> build
+> astro build
+
+05:23:57 [@shaahink/sitekit:check-placeholders] no placeholder copy in 21 content entrys
+05:23:58 [content] Syncing content
+05:23:58 [content] Synced content
+05:23:58 [types] Generated 514ms
+05:23:58 [build] output: "static"
+05:23:58 [build] mode: "static"
+05:23:58 [build] directory: C:\Code\conductor-site\dist\
+05:23:58 [build] Collecting build info...
+05:23:58 [build] ✓ Completed in 599ms.
+05:23:58 [build] Building static entrypoints...
+05:23:58 [assets] Copying fonts (3 files)...
+05:23:58 [vite] ✓ built in 384ms
+05:23:59 [vite] ✓ built in 99ms
+05:23:59 [build] Rearranging server assets...
+
+ generating static routes 
+05:23:59   ├─ /404.html (+12ms) 
+05:23:59   ├─ /articles/what-a-run-costs/index.html (+11ms) 
+05:23:59   ├─ /articles/never-believe-the-agent/index.html (+5ms) 
+05:23:59   ├─ /articles/the-nudge-below-the-median/index.html (+8ms) 
+05:23:59   ├─ /articles/the-ledger-that-lied/index.html (+8ms) 
+05:23:59   ├─ /articles/index.html (+22ms) 
+05:23:59   ├─ /concepts/agentic-engineering/index.html (+12ms) 
+05:23:59   ├─ /concepts/multi-agent-orchestration/index.html (+7ms) 
+05:23:59   ├─ /concepts/context-engineering/index.html (+7ms) 
+05:23:59   ├─ /concepts/token-economics/index.html (+8ms) 
+05:23:59   ├─ /concepts/evals-and-gates/index.html (+6ms) 
+05:23:59   ├─ /concepts/independent-verification/index.html (+9ms) 
+05:23:59   ├─ /concepts/durable-execution/index.html (+6ms) 
+05:23:59   ├─ /concepts/human-in-the-loop/index.html (+19ms) 
+05:23:59   ├─ /concepts/agent-observability/index.html (+8ms) 
+05:23:59   ├─ /concepts/agent-memory/index.html (+8ms) 
+05:23:59   ├─ /concepts/index.html (+9ms) 
+05:23:59   ├─ /edit/index.html05:23:59 [WARN] [csp] A resource was added to `style-src-elem`, but `style-src` also defines custom resources ('self'). Because `style-src-elem` overrides `style-src` for its scope (browsers do not fall back), those resources will not apply there. Add them to `style-src-elem` as well if needed.
+05:23:59 [WARN] [csp] A resource was added to `style-src-attr`, but `style-src` also defines custom resources ('self'). Because `style-src-attr` overrides `style-src` for its scope (browsers do not fall back), those resources will not apply there. Add them to `style-src-attr` as well if needed.
+ (+6ms) 
+05:23:59   ├─ /og/concepts/index.html (+3ms) 
+05:23:59   ├─ /og/articles/index.html (+2ms) 
+05:23:59   ├─ /og/runs/index.html (+3ms) 
+05:23:59   ├─ /og/home/index.html (+3ms) 
+05:23:59   ├─ /robots.txt (+7ms) 
+05:23:59   ├─ /runs/the-fleet-round/index.html (+9ms) 
+05:23:59   ├─ /runs/the-long-build/index.html (+7ms) 
+05:23:59   ├─ /runs/the-engine-run/index.html (+5ms) 
+05:23:59   ├─ /runs/index.html (+9ms) 
+05:23:59   ├─ /sitemap.xml (+8ms) 
+05:23:59   ├─ /index.html (+6ms) 
+05:23:59 ✓ Completed in 349ms.
+
+05:23:59 [build] ✓ Completed in 884ms.
+05:23:59 [@shaahink/sitekit:editor-route] edit/index.html: dropped 9 build-wide style hashes from style-src-elem, which were switching off the 'unsafe-inline' Google's sign-in stylesheet needs
+05:23:59 [WARN] [@shaahink/sitekit:editor-route] sitekit: /sk-editor.webmanifest has no icons, because this site ships none of favicon.svg, icon.svg, favicon.png or favicon.ico in its publicDir. The editor will work and will never be offered as an installable app. Add one of those files, or pass editorRoute({ app: { icons: [...] } }).
+05:23:59 [@shaahink/sitekit:check-annotations] 478 annotations on 21 pages all resolve
+05:23:59 [build] 27 page(s) built in 1.59s
+05:23:59 [build] Complete!
+EXIT[build]=0
+
+--- npm run evidence ---
+
+> evidence
+> node scripts/harvest.mjs --check
+
+evidence: corpus.json is current — 18 runs, 340 sessions, $3,016.29; and every key cited by 17 content entries resolves.
+EXIT[evidence]=0
+
+--- npm run anonymity ---
+
+> anonymity
+> node scripts/anonymity.mjs
+
+anonymity: 42 built files carry none of 51 machine paths, 15 private names, 4 distinctive tokens, 41 three-word run-name phrases or 8 secret shapes — of those, 10 vendored file(s) were checked for paths and secrets only, not for names; NOT CHECKED for quoted prose: no docs/dev/FIELD-NOTES-*.md on this machine, which is expected in CI because they are untracked — this run did not test that half of the rule.
+EXIT[anonymity]=0
+
+--- npm run seo ---
+
+> seo
+> node scripts/seo.mjs
+
+seo: https://conductor-site-virid.vercel.app — 22 public page(s) all carry their own canonical, og:url and og:image; the sitemap lists exactly the 21 crawlable one(s); robots.txt disallows only [/api/, /edit, /og/]; and 4 social card(s) at 1200×630 still render the text their PNGs were taken from.
+EXIT[seo]=0
+
+--- npm run a11y ---
+
+> a11y
+> node scripts/a11y.mjs
+
+a11y: 22 readable page(s) each carry a lang, one identified <main>, a working skip link as their first link, and header/nav/footer landmarks; 289 control(s) have an accessible name, 0 image(s) declare alt, and no page reorders the tab order. NOT CHECKED here: contrast, focus visibility and layout shift, which need a browser — see docs/evidence for the Lighthouse and trace runs.
+EXIT[a11y]=0
+
+--- npm run evidence:cited ---
+
+> evidence:cited
+> node scripts/harvest.mjs --cited
+
+evidence: every key cited by 17 content entries resolves against the committed corpus.json — 18 runs, 340 sessions. NOT CHECKED here, and it is the half that catches a moved number: whether that file still says what the run store says, which needs the store. Run `npm run evidence` on a machine that has it.
+EXIT[evidence:cited]=0
+
+--- npm run anonymity:shapes ---
+
+> anonymity:shapes
+> node scripts/anonymity.mjs --shapes
+
+anonymity: 42 built files carry none of 8 secret shapes — a path out of a terminal, an API token, a bearer secret, a chat id, a bot token or a reference to the field notes. NOT CHECKED here, and it is the larger half: the machine paths, private repository names, distinctive tokens and run-name phrases, all of which are derived from the run store rather than written down. Run `npm run anonymity` on a machine that has the store before a report goes out.
+EXIT[anonymity:shapes]=0
+
+--- the three generated files, regenerated ---
+
+> headers
+> sitekit-headers
+
+vercel.json ← headers.config.mjs (951 bytes)
+
+> content
+> sitekit-normalize
+
+content already normalized
+
+> editor
+> sitekit-editor-css
+
+editor stylesheet → public/editor-panel.css (36170 bytes)
+editor stylesheet → public/editor-inline.css (15999 bytes)
+git status after regenerating:
+ M README.md
+ M TRACKER.md
+?? docs/evidence/S7.3-battery.txt
+?? docs/evidence/S7.3-generated-readme-ci.md
+
+--- both workflows on main ---
+completed	success	feat(ci): the four gates this site has and the fleet's pipeline canno…	CI	main	push	31147176563	42s	2026-08-07T04:21:47Z
+completed	success	feat(ci): the four gates this site has and the fleet's pipeline canno…	Gates	main	push	31147176178	24s	2026-08-07T04:21:47Z
+completed	success	fix(ci): the store's paths are Windows paths, and the runner is not	CI	main	push	31146921550	27s	2026-08-07T04:16:56Z
+completed	failure	chore(conductor): s17 S7 RolledOver — Running	CI	main	push	31146624736	22s	2026-08-07T04:11:20Z
