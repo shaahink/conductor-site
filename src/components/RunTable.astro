@@ -1,0 +1,236 @@
+---
+/* The corpus table (SPEC Part VI): all eighteen runs, on the page that indexes
+   them.
+   ---------------------------------------------------------------------------
+   Three reports go deep on three runs. This is the other half of `/runs` — the
+   whole corpus in one place, so a reader can see what the three were chosen
+   out of. That matters more than it sounds: a site that publishes only its
+   three good runs and calls them evidence is doing the thing this site is
+   about warning readers off. The false starts are in the table, the abandoned
+   prototype is in the table, and the run that ended one checkpoint short is in
+   the table on the row above its own report.
+
+   A real `<table>`, because this is tabular data and a grid of divs would take
+   the row and column relationships away from anyone reading with a screen
+   reader. `scope` on every header, the scenario sentence as the row header —
+   which makes it the accessible name of every cell in the row and the link
+   text too — and the totals in a `<tfoot>` so they are announced as the
+   summary they are rather than as a nineteenth run.
+
+   No `data-sk-edit` in here, for the same reason `EvidenceStrip.astro` has
+   none: nothing in this component is written. The column headings are the
+   figures' own labels, the cells are their `display` strings, and the row
+   headers are the scenarios `anonymise.json` publishes. Editing any of it in
+   a form would not change a number, it would only make the page disagree with
+   the corpus it claims to be showing. The heading and the paragraphs above
+   this component are copy, and those are in `src/content/sections/runs.yaml`
+   where the editor and `checkPlaceholders` can both see them. */
+import corpus from "../data/corpus.json";
+import { corpusIndex, type CorpusData } from "../lib/corpus.js";
+
+interface Props {
+  /** The id of the heading this table sits under, for the scroll region. */
+  labelledBy: string;
+  /** Run label → the report about it, for the runs that have one. */
+  reports: Record<string, string>;
+}
+
+const { labelledBy, reports } = Astro.props;
+const { headings, rows, totals, sources, generatedAtUtc } = corpusIndex(corpus as CorpusData);
+const measured = generatedAtUtc.slice(0, 10);
+---
+
+{/* Focusable and a labelled region, because on a narrow viewport the figures
+    are off the side of the screen and a scroll container a keyboard cannot
+    reach is a column of numbers some readers simply never get to. */}
+<div class="scroll" role="region" aria-labelledby={labelledBy} tabindex="0">
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">the run</th>
+        {headings.map((heading) => <th scope="col">{heading}</th>)}
+      </tr>
+    </thead>
+
+    <tbody>
+      {rows.map((row) => (
+        <tr>
+          <th scope="row">
+            {reports[row.label] ? (
+              <a href={reports[row.label]}>{row.scenario}</a>
+            ) : (
+              <span>{row.scenario}</span>
+            )}
+
+            <span class="meta">
+              <time datetime={row.started}>{row.started}</time>
+              <span class="repo">{row.repoKey}</span>
+              {/* Only ever painted on a run that did not finish, in the role
+                  the Face uses for the same meaning — the convention the
+                  evidence strip already set. Three of these say `abandoned`,
+                  and they are the three the store still marks `running`. */}
+              {row.status !== "completed" && (
+                <span class:list={["status", row.status]}>{row.status}</span>
+              )}
+            </span>
+          </th>
+
+          {row.cells.map((cell) => (
+            <td>{cell.display}</td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+
+    <tfoot>
+      <tr>
+        <th scope="row">{totals.scenario}</th>
+        {totals.cells.map((cell) => (
+          <td>{cell.display}</td>
+        ))}
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<p class="provenance">
+  Recomputed <time datetime={generatedAtUtc}>{measured}</time> from {sources.join(" and ")}.
+  Nothing in this table is typed in.
+</p>
+
+<style>
+  .scroll {
+    overflow-x: auto;
+    margin-block-start: var(--space-m);
+  }
+
+  /* The focus ring belongs on the box that actually scrolls, so a keyboard
+     reader can see which thing the arrow keys are about to move. */
+  .scroll:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: var(--space-3xs);
+  }
+
+  table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    text-align: start;
+  }
+
+  caption,
+  th {
+    text-align: start;
+    font-weight: var(--weight-body);
+  }
+
+  /* The heading row is set like the evidence strip's own heading: small, quiet
+     and lettered out, so the figures below it are the loudest thing here. */
+  thead th {
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--overlay);
+    padding-block-end: var(--space-2xs);
+    border-block-end: var(--rule);
+    vertical-align: bottom;
+  }
+
+  tbody th,
+  tbody td,
+  tfoot th,
+  tfoot td {
+    padding-block: var(--space-xs);
+    border-block-end: var(--rule);
+    vertical-align: baseline;
+  }
+
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-block-end: none;
+  }
+
+  /* The row header carries the sentence, so it is the one column allowed to
+     wrap and the one set in the body face. Everything else is machine truth
+     and holds its line. */
+  tbody th,
+  tfoot th {
+    font-size: var(--text-small);
+    color: var(--text);
+    padding-inline-end: var(--space-m);
+    min-inline-size: 24ch;
+  }
+
+  /* Shrink-to-fit: `1%` with `nowrap` gives each figure column exactly the
+     width of its widest cell and hands the rest of the table to the sentence. */
+  thead th:not(:first-child),
+  tbody td,
+  tfoot td {
+    inline-size: 1%;
+    white-space: nowrap;
+    text-align: end;
+    padding-inline-start: var(--space-m);
+  }
+
+  tbody td,
+  tfoot td {
+    font-family: var(--mono);
+    color: var(--text);
+  }
+
+  .meta {
+    display: block;
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    color: var(--pending);
+    margin-block-start: var(--space-3xs);
+  }
+
+  .meta > * + * {
+    margin-inline-start: var(--space-2xs);
+  }
+
+  .repo {
+    color: var(--overlay);
+  }
+
+  /* Same three roles the evidence strip paints a run's status in, and for the
+     same reason: peach for work that stopped, yellow for work that is waiting,
+     the quiet role for a run that never began. Colour carries meaning here or
+     it is not used at all. */
+  .status {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .status.abandoned {
+    color: var(--peach);
+  }
+
+  .status.paused {
+    color: var(--yellow);
+  }
+
+  .status.aborted {
+    color: var(--skipped);
+  }
+
+  /* The footer is a different population from the rows above it — the corpus,
+     not a run — so it is separated by a rule rather than merely being the last
+     line of the list. */
+  tfoot th,
+  tfoot td {
+    border-block-start: var(--rule);
+    border-block-end: none;
+    color: var(--overlay);
+  }
+
+  .provenance {
+    margin-block-start: var(--space-s);
+    font-size: var(--text-micro);
+    color: var(--pending);
+  }
+
+  .provenance time {
+    font-family: var(--mono);
+  }
+</style>

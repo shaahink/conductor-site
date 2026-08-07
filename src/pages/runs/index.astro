@@ -1,17 +1,69 @@
 ---
-/* /runs/ — the reports. The one line under each title is the published
-   scenario rather than the standfirst, because the first thing a reader wants
-   from this list is whether a run's shape matches their own situation. */
+/* /runs/ — the reports, then the corpus they were chosen out of.
+   ---------------------------------------------------------------------------
+   The one line under each report title is the published scenario rather than
+   the standfirst, because the first thing a reader wants from this list is
+   whether a run's shape matches their own situation.
+
+   Below the three reports, every run the harvest publishes. The link back from
+   a table row to a report is `entry.id === run.label` and that is checked
+   rather than assumed: a report is named after the run it publishes, so the
+   two agreeing is a fact about the content, and `test/collections.test.mjs`
+   fails when a report is named after a run the corpus does not carry. The
+   alternative — reading the report's `evidence.runs` — would light up three
+   rows for the fleet report, which cites the two rounds either side of the one
+   it is about. */
+import RunTable from "../../components/RunTable.astro";
 import SectionIndex from "../../layouts/SectionIndex.astro";
 import { ordered, sectionPage } from "../../lib/collections.js";
 
 const page = await sectionPage("reports");
-const items = (await ordered("reports")).map((entry) => ({
+const reports = await ordered("reports");
+
+const items = reports.map((entry) => ({
   href: `/runs/${entry.id}/`,
   order: entry.data.order,
   title: entry.data.title,
   summary: entry.data.scenario
 }));
+
+const hrefs = Object.fromEntries(reports.map((entry) => [entry.id, `/runs/${entry.id}/`]));
+
+const { corpusTable } = page.data;
 ---
 
-<SectionIndex page={page} items={items} ordinalLabel="Report" />
+<SectionIndex page={page} items={items} ordinalLabel="Report">
+  {
+    corpusTable && (
+      <section class="corpus" aria-labelledby="the-corpus">
+        <h2 id="the-corpus" data-sk-edit="corpusTable.heading">
+          {corpusTable.heading}
+        </h2>
+
+        {corpusTable.body.map((para, line) => (
+          <p data-sk-edit={`corpusTable.body[${line}]`}>{para}</p>
+        ))}
+
+        <RunTable labelledBy="the-corpus" reports={hrefs} />
+      </section>
+    )
+  }
+</SectionIndex>
+
+<style>
+  .corpus {
+    margin-block-start: var(--space-3xl);
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-l);
+  }
+
+  .corpus h2 {
+    font-size: var(--text-h2);
+    line-height: var(--leading-snug);
+  }
+
+  .corpus p {
+    margin-block-start: var(--space-s);
+    max-inline-size: var(--measure-narrow);
+  }
+</style>

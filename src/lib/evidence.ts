@@ -35,7 +35,10 @@ export interface Figure {
   note?: string;
 }
 
-interface RunEntry {
+/** A published run, as `anonymise.json` allows it to be named and as the
+    harvest measured it. Exported because `corpus.ts` lists every one of them
+    rather than only the ones a page cited. */
+export interface RunEntry {
   label: string;
   scenario: string;
   repoKey: string;

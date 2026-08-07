@@ -14,3 +14,23 @@ title: "The runs"
 standfirst: "Every report here is a real run, published as the shape of the work
   rather than as whose work it was. The numbers are recomputed from the run
   store, and the run that ended one checkpoint short is in the list on purpose."
+
+corpusTable:
+  heading: "The whole corpus"
+  body:
+    - "Three of these runs have a report above. The rest are here because a
+      corpus that shows only the runs worth writing up is not a corpus, it is a
+      portfolio. Every row is recomputed from the same store the reports are:
+      what the run closed against what it planned, how many sessions it took,
+      what it cost, and how its gates went."
+    - "Read down and the fortnight happens in order. It opens with a plan tried
+      twice and dropped, a run aborted inside its first minute, and a prototype
+      left where it stood when the work moved elsewhere. Those are the honest
+      part of the list, and they are why the last row adds up to more than the
+      three reports do."
+    - "The store still marks three of them running. They are not. Their engine
+      exited without ever closing the record, and nobody went back. Whether a
+      stopped run was abandoned or is merely waiting is the one thing about this
+      corpus no query can answer, so it is written down by hand beside the name
+      each run is published under — and the table says abandoned here rather
+      than leaving a reader to assume the work is still in flight."

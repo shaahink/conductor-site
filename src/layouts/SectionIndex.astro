@@ -39,6 +39,13 @@ const { meta, title, standfirst } = page.data;
     <p class="standfirst" data-sk-edit="standfirst">{standfirst}</p>
 
     <EntryList items={items} ordinalLabel={ordinalLabel} />
+
+    {/* Anything a section has beyond its list. Only `/runs` uses it, for the
+        corpus table, and it goes after the entries rather than before them
+        because the three reports are what a reader came for and the corpus is
+        what they were chosen out of. Empty on the other two, which renders
+        nothing at all. */}
+    <slot />
   </main>
 </Base>
 

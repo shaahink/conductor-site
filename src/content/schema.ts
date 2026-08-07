@@ -315,7 +315,29 @@ export const sectionPageSchema = z.object({
   order: z.number().int().positive(),
   navLabel: z.string().meta({ title: "Label in the top bar" }),
   title: z.string(),
-  standfirst: z.string().meta({ title: "The standfirst under the title" })
+  standfirst: z.string().meta({ title: "The standfirst under the title" }),
+  /** The words above `/runs`'s corpus table, and only that page's.
+      ---------------------------------------------------------------------
+      Optional because two of the three sections are a list and nothing else,
+      and a required field they would have to fill with something is how a
+      schema starts collecting fields nobody meant. The table itself is not in
+      here and cannot be: it is every run in `src/data/corpus.json`, rendered
+      by `RunTable.astro`, and a run appears in it because the harvest
+      published it rather than because somebody added a row.
+
+      What *is* here is the paragraph that says what the reader is looking at —
+      including that the runs the store still calls running were abandoned,
+      which is the one thing on that page a number cannot say on its own. That
+      is copy, so it lives in content where `checkPlaceholders` can see it and
+      the owner can change it. See sectionPageSchema's own note above for the
+      three sessions of placeholder this rule was bought with. */
+  corpusTable: z
+    .object({
+      heading: z.string(),
+      body: paragraphs(1, 3)
+    })
+    .optional()
+    .meta({ title: "The words above the corpus table" })
 });
 
 /* Which YAML file backs which collection, for the editor.

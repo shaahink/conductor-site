@@ -56,6 +56,14 @@ export async function sectionPage(collection: Listed) {
         `with collection: "${collection}".`
     );
   }
+
+  /* Litmus test 1 again, on the one collection `ordered()` never walks. A
+     section page's standfirst is prose a reader reads, and `/runs`'s
+     `corpusTable` is three paragraphs of it directly above a table of figures
+     — which is the likeliest place on the whole site for somebody to helpfully
+     type one of those figures into the sentence. */
+  refuseTypedFigures(`sections/${page.id}.yaml`, page.data);
+
   return page;
 }
 
