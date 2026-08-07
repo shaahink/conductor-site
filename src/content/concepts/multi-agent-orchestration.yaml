@@ -1,0 +1,164 @@
+meta:
+  title: "Multi-agent orchestration"
+  description: "Not several models talking to each other, but one agent invoked in
+    different roles, sequenced by what just happened, beside a cheap lane
+    allowed to be wrong."
+  ogDescription: "One agent in several roles, sequenced by what just happened —
+    and a cheap lane allowed to be wrong."
+  canonical: "/concepts/multi-agent-orchestration/"
+
+slug: "multi-agent-orchestration"
+order: 2
+title: "Multi-agent orchestration"
+alsoKnownAs:
+  - "agent workflows"
+  - "agent swarms"
+  - "planner-executor architectures"
+oneLine: "The plural is in the roles, not in the fleet."
+
+theIdea:
+  - "The phrase invites a picture of several models in conversation, and that
+    picture is expensive and mostly wrong. What orchestration usually means in
+    practice is one capable agent invoked repeatedly in different roles: the
+    same binary, the same model, handed a different question, a different slice
+    of context and a different definition of finished. The plural lives in the
+    roles. Nothing is gained by making it live in the headcount."
+  - "The roles are worth separating because each fails differently. A session
+    told to deliver is optimistic — it has to be, or it would never start. A
+    session told to check the delivery has to arrive without that optimism,
+    which means without the delivering session's reasoning, and that is a
+    scheduling property rather than a prompt one. Two roles sharing a context
+    are one role agreeing with itself, however sternly the second prompt is
+    worded."
+  - "Which role runs next is a decision, not a pipeline. A fixed sequence is
+    easy to draw and wrong at the first surprise: a machine that died
+    mid-session needs the interrupted work resumed, not the next box in the
+    diagram; a check that passed makes the repair step a waste of a session; a
+    stage that closed everything it opened needs no more delivery at all. The
+    sequence has to be resolved from what actually just happened, which means
+    the state that decides it lives outside any single agent."
+  - "There is real room for a second, much cheaper model, and it is smaller than
+    people hope. It is good at the question the loop cannot answer for itself —
+    this session ended badly, is that worth another attempt, a different
+    approach, or a human? — and it is a bad place to put control flow. An
+    orchestrator whose next step depends on a model answering has traded a
+    deterministic failure for a probabilistic one. The cheap lane should advise;
+    the loop should already know what it will do if nothing answers."
+  - "The last piece is scope: where the work is allowed to land. Ask one
+    directory whether anything happened and a change delivered next door reads
+    as nothing happening — the agent did the work, the verdict says it did not,
+    and the run retries something already finished. Whatever the system uses to
+    decide that progress occurred has to be pointed at every place progress was
+    permitted."
+
+theProblem:
+  - "Buying the plural literally is the costly failure. Several agents on the
+    same model with the same prompt produce correlated answers at a multiple of
+    the price, and their agreement gets read as corroboration when it is the
+    same reasoning arriving repeatedly. The bill is real and the second opinion
+    is not."
+  - "The opposite failure costs less and takes longer to see. A fixed pipeline
+    is fine until something happens that it has no box for, and then it keeps
+    stepping: it repairs work that passed, re-delivers work that closed, and
+    treats a crash as though the session had simply finished. Nothing errors.
+    The run just does not converge."
+  - "And a system that puts a model in charge of its own control flow inherits
+    every bad day that model has. When the advising call times out, or answers
+    in a shape nobody parsed for, the honest question is what the loop does next
+    — and if the answer is anything other than something already decided, the
+    orchestration is not orchestration."
+
+inConductor:
+  mechanism:
+    - "There are five session kinds, and they live in the planning library
+      rather than the engine because they are shared vocabulary: deliver, fix,
+      resume, audit, verify. A sixth prompt — review — rides on the delivery
+      kind rather than earning an enum member, which is the honest shape for
+      something that is a different question rather than a different lifecycle.
+      All of them are the same agent command with a different prompt and
+      different reading."
+    - "Which one runs is resolved in a fixed order of precedence before any
+      workflow is consulted. Resume wins outright, because it carries the
+      interrupted agent's own session id and nothing else can pick that up. Then
+      the explicit pending states a previous step left behind — an audit, a
+      verification, a repair. Only when none of those is set does the stage's
+      workflow choose, and workflows are data: the default one repeats deliver,
+      then verify, then a repair step that runs only if the verifier did not
+      pass."
+    - "The advisor is a different command entirely, not a different prompt to
+      the same session — its own CLI invocation, headless, asked one question
+      when a session ends badly. Two properties make it safe to have. Its
+      verdict is applied over a deterministic default, so an advisor that times
+      out or is switched off changes nothing about where the run goes. And its
+      cost is charged to its own ledger category, which is what lets the split
+      below be shown rather than asserted."
+    - "That advisor figure carries an asterisk this site would rather print than
+      hide: the engine prices the lane at a flat rate per second of advisor
+      wall-clock instead of metering it, because the amounts involved are below
+      the resolution anyone was going to notice. It is an estimate. It is the
+      only estimate in the strip at the foot of this page, and it is labelled
+      there too."
+  citations:
+    - path: "src/Conductor.Planning/SessionKind.cs"
+      line: 6
+      note: "The kinds, in the planning library rather than the engine: deliver, fix,
+        resume, audit, verify. Shared vocabulary between what decides and what
+        executes."
+    - path: "src/Conductor.Core/Orchestration/SessionRunner.Kinds.cs"
+      line: 45
+      note: "Resume wins before anything else is considered, because it is the only
+        kind that carries the interrupted agent's own session id."
+    - path: "src/Conductor.Core/Orchestration/SessionRunner.Kinds.cs"
+      line: 88
+      note: "The review prompt riding on the delivery kind — a different question, not
+        a different lifecycle, and not given an enum member for looking like
+        one."
+    - path: "src/Conductor.Planning/WorkflowEngine.cs"
+      line: 34
+      note: "The default workflow as data: deliver, verify, and a repair step whose
+        condition is that the verifier did not pass. Replacing a hardcoded state
+        machine is what the file says it is for."
+    - path: "src/Conductor.Core/Models/AdvisorConfig.cs"
+      line: 24
+      note: "The cheap lane is its own command, defaulting to a headless invocation
+        with the question as an argument. A separate process, not a second turn
+        of the delivering session."
+    - path: "src/Conductor.Core/Orchestration/VerdictEngine.Advisor.cs"
+      line: 43
+      note: "The advisor's verdict applied over a deterministic default. Unavailable,
+        slow or disabled, the run still goes somewhere already decided."
+    - path: "src/Conductor.Core/Orchestration/VerdictEngine.Advisor.cs"
+      line: 34
+      note: "And where the advisor's price comes from: elapsed seconds at a flat rate,
+        recorded under its own ledger category. An estimate, which is why the
+        page says so."
+    - path: "src/Conductor.Core/SatelliteRepos.cs"
+      line: 5
+      note: "Sibling repositories a plan declares, so the verdict diffs every place
+        work was allowed to land. The paragraph under this one is the run that
+        scored no progress twice for work delivered next door."
+
+evidence:
+  runs:
+    - "the-fleet-round"
+    - "the-terminal-face"
+  figures:
+    - "totalCostUsd"
+    - "totalAgentCostUsd"
+    - "totalGateCostUsd"
+    - "totalAdvisorCostUsd"
+    - "sessions"
+    - "costUsd"
+
+tryIt:
+  - command: "conductor journey"
+    note: "Every session of a run with its kind and its model in a column. If a plan
+      meant to use a smaller model somewhere and the column reads default, it
+      never happened — and that is silent everywhere else."
+  - command: "conductor money"
+    note: "The same run split by ledger category. The gap between the delivering
+      lane and everything beside it is the whole argument of this page, in the
+      one place it can be checked."
+
+readNext:
+  - "context-engineering"

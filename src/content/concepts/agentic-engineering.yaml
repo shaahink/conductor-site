@@ -1,0 +1,160 @@
+meta:
+  title: "Agentic engineering"
+  description: "What it takes to mechanise the loop around a coding agent: pick
+    the work, start it, watch it, check the claim, write down what happened,
+    then do it again."
+  ogDescription: "The engineering is not in the agent. It is in the loop that
+    picks, watches, checks and records."
+  canonical: "/concepts/agentic-engineering/"
+
+slug: "agentic-engineering"
+order: 1
+title: "Agentic engineering"
+alsoKnownAs:
+  - "AI-native development"
+  - "autonomous software engineering"
+  - "agent-driven development"
+oneLine: "The engineering is not in the agent. It is in the loop around it."
+
+theIdea:
+  - "Agentic engineering is a narrower thing than the name suggests. It is not
+    the practice of asking a model to write code, which needs no name and no
+    discipline. It is what has to exist around that model before the asking can
+    happen while nobody is watching: something that decides what to work on
+    next, starts an agent on it, watches while it runs, checks what it says it
+    did, and writes down what happened. The model is one component of that, and
+    it is the only component you did not build."
+  - "So the unit of the work is the cycle, not the prompt. Every turn makes the
+    same handful of decisions, and each has a wrong answer that looks entirely
+    reasonable. Pick: from the state the repository is actually in, or from the
+    state a plan file declares? Start: carrying what, and with what budget?
+    Watch: against whose definition of stuck? Check: against the agent's own
+    account, or against the artifacts it left behind? Record: enough that the
+    next turn starts better informed, or enough to fill a dashboard?"
+  - "A loop that runs unattended has to survive the failure of everything inside
+    it, and that includes the agent. Agents hang. They block on a build that
+    will not finish, or wait on a question nobody is there to answer. From the
+    outside, a session doing slow careful work and a session that has quietly
+    died look the same: both are silent. The difference has to be constructed
+    rather than observed — signals sampled from outside the agent's own process,
+    and a threshold somebody chose and can defend."
+  - "The check is where most of these systems are actually lost. An agent's
+    report of its own work is the cheapest artifact in the system and the most
+    persuasive one, because it is written in the register of somebody who did
+    the work. A loop that treats that report as the outcome is not verifying
+    anything; it is transcribing. What a claim is worth is decided by whether
+    the thing it claims can be found somewhere the agent does not write."
+  - "And the measure of the whole arrangement is not how many sessions ran or
+    how few of them failed. It is cost per unit of finished work. Those two
+    numbers move in opposite directions more often than anyone expects, which is
+    why the last move in the cycle is recording: a loop that cannot say what a
+    closed piece of work cost cannot tell an expensive success from a cheap one,
+    and will optimise for whichever it happens to be counting."
+
+theProblem:
+  - "Without the loop there is still a loop, and it is a person. Someone decides
+    what the agent does next, notices when it has stopped making sense, reads
+    the diff, and carries what they learned into the next conversation
+    themselves. That works, and it is genuinely productive, and it stops the
+    moment they look away. The ceiling is not the model's ability. It is one
+    human's attention, and attention does not scale by adding agents to it."
+  - "The failure that produces wrong numbers rather than no numbers is a loop
+    that believes the agent. The claim and the fact end up in the same field, so
+    the record says work was delivered because something said it was. Every
+    report built on that record is then confidently wrong in the same direction,
+    and the error is invisible precisely because the system is reporting on
+    itself."
+  - "The third is having no record at all beyond a log nobody reads. A run
+    finishes, the work is there, and there is no way to answer what it cost, how
+    many attempts each piece took, or which of the automatic checks ever caught
+    anything. That is the difference between a system you can improve and one
+    you can only re-run and hope about."
+
+inConductor:
+  mechanism:
+    - "The whole engine is one loop, and one turn of it is one session. The top
+      of that loop is the only place where nothing is running, which makes it
+      the only safe point to swap the plan, apply a pause, or notice that a wait
+      an agent declared has expired. Everything the run can be told to do is
+      consumed there, one turn at a time, rather than interrupting an agent
+      mid-thought."
+    - "What to work on is read from the work graph rather than from the plan's
+      own declaration, and that distinction was paid for: an imported plan keeps
+      declaring its checkpoints as pending for the life of the run, so a loop
+      that scheduled from the declaration re-picked work it had already
+      delivered and never reached the end. The graph knows what actually closed.
+      The declaration only knows what was intended."
+    - "While a session runs, its rails live on a separate thread, sampling
+      liveness from outside the agent: the last activity, the last tool call,
+      and whether any background process it started is still alive. Two things
+      can end a session that way — a hard ceiling on elapsed time, and a stall,
+      which gets a grace window first, because the most common cause of every
+      signal going quiet is not a wedged agent but a session blocking the
+      foreground on a long build."
+    - "When a stage's rows all read done, the loop does not advance. It
+      schedules the verification battery or an audit for that stage, and only a
+      green result confirms it — the claim and the confirmation are different
+      events, written by different things. Then the session's own numbers are
+      folded into the run, cache reads included, which is the correction that
+      made the run total and the per-session totals finally agree."
+  citations:
+    - path: "src/Conductor.Core/Orchestration/RunLoop.cs"
+      line: 105
+      note: "The loop itself. Everything the run does is one turn of this, and the top
+        of it is the session boundary — the one moment when no agent is running
+        and the plan can safely change underneath."
+    - path: "src/Conductor.Core/Orchestration/RunLoop.cs"
+      line: 200
+      note: "Picking reads the work graph, not the plan's declaration. The comment
+        beside it is the bug: scheduling from the declaration re-picked
+        delivered work and never completed."
+    - path: "src/Conductor.Core/SessionWatchdog.cs"
+      line: 20
+      note: "The liveness signals, sampled once a tick from outside the agent's own
+        process: last activity, last tool call, and whether anything it started
+        in the background is still alive."
+    - path: "src/Conductor.Core/SessionWatchdog.cs"
+      line: 212
+      note: "The stall kill, and it fires only after a grace window has also expired.
+        Quiet is not the same as dead, and the engine says so by waiting."
+    - path: "src/Conductor.Core/Orchestration/RunLoop.cs"
+      line: 293
+      note: "A stage whose rows all read done is not done. It gets a battery or an
+        audit scheduled against it, and the loop takes another turn rather than
+        moving on."
+    - path: "src/Conductor.Core/Orchestration/RunLoop.cs"
+      line: 400
+      note: "One session spawned per turn, and the record it returns is what the next
+        turn reasons from. The lines under it fold that session's cost and
+        tokens into the run's own totals."
+
+evidence:
+  runs:
+    - "the-fleet-round-after"
+    - "the-abandoned-prototype"
+  figures:
+    - "totalRuns"
+    - "totalSessions"
+    - "totalCheckpointsDone"
+    - "totalCostUsd"
+    - "costPerCheckpoint"
+    - "sessions"
+    - "checkpointsDone"
+    - "costUsd"
+
+tryIt:
+  - command: "conductor start --dry-run"
+    note: "Takes one turn of the loop without spending anything: it picks the stage,
+      composes the prompt it would have sent, prints it, and stops. If the
+      composition is going to be refused, this is where you find out."
+  - command: "conductor journey"
+    note: "The run as a sequence of sessions — kind, model, outcome, cost. The shape
+      of a run that is working and one that is thrashing are different at a
+      glance, and this is the glance."
+  - command: "conductor history --json --limit 0"
+    note: "Every run the engine has ever recorded, with checkpoints closed against
+      checkpoints planned. Every corpus figure on this site is folded out of
+      this one command."
+
+readNext:
+  - "multi-agent-orchestration"

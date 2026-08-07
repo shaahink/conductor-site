@@ -1,0 +1,55 @@
+citations: 23 across the content, against the engine checkout
+engine revision: 1632b9f
+
+── concepts/agentic-engineering
+   ok       src/Conductor.Core/Orchestration/RunLoop.cs:105
+            | while (!ct.IsCancellationRequested)
+   ok       src/Conductor.Core/Orchestration/RunLoop.cs:200
+            | var track = _ctx.ReadWork();
+   ok       src/Conductor.Core/SessionWatchdog.cs:20
+            | public readonly record struct WatchdogSignals(
+   ok       src/Conductor.Core/SessionWatchdog.cs:212
+            | _stalled = true;
+   ok       src/Conductor.Core/Orchestration/RunLoop.cs:293
+            | _verdicts.ScheduleGateOrAudit(stage.Id, _ctx.State.CurrentStageStartHead ?? Git.Head(_ctx.Plan.Repo));
+   ok       src/Conductor.Core/Orchestration/RunLoop.cs:400
+            | try { await _sessions.RunAsync(stage, track, ct).ConfigureAwait(false); }
+── concepts/context-engineering
+   ok       src/Conductor.Core/PromptBuilder.cs:107
+            | sb.AppendLine("Required reading (in order):");
+   ok       src/Conductor.Core/PromptBuilder.cs:220
+            | PromptValidator.ThrowIfUnresolved(text, templateFile);
+   ok       src/Conductor.Planning/PromptPlaceholders.cs:53
+            | public static string ProtectValue(string value)
+   ok       src/Conductor.Core/PromptBuilder.cs:283
+            | if (!ledgerBattery.IsEmpty) list.Add(ledgerBattery);
+   ok       src/Conductor.Core/PromptBattery.cs:55
+            | if (result.Length > _maxBytes)
+   ok       src/Conductor.Core/BgLogs.cs:55
+            | public static string PromptName(int number) => $"session-{number:000}.prompt.md";
+── concepts/multi-agent-orchestration
+   ok       src/Conductor.Planning/SessionKind.cs:6
+            | public enum SessionKind { Deliver, Fix, Resume, Audit, Verify }
+   ok       src/Conductor.Core/Orchestration/SessionRunner.Kinds.cs:45
+            | if (pendingResume != null) return SessionKind.Resume;
+   ok       src/Conductor.Core/Orchestration/SessionRunner.Kinds.cs:88
+            | _ => isReview
+   ok       src/Conductor.Planning/WorkflowEngine.cs:34
+            | new WorkflowStep { Id = "deliver", Kind = SessionKind.Deliver, Deliver = true },
+   ok       src/Conductor.Core/Models/AdvisorConfig.cs:24
+            | public string Command { get; set; } = "claude";
+   ok       src/Conductor.Core/Orchestration/VerdictEngine.Advisor.cs:43
+            | var action = verdict?.Action ?? defaultAction;
+   ok       src/Conductor.Core/Orchestration/VerdictEngine.Advisor.cs:34
+            | var c = 0.0005m * (decimal)elapsed.TotalSeconds;
+   ok       src/Conductor.Core/SatelliteRepos.cs:5
+            | /// <summary>SC4.3: the sibling repositories a plan declares under <c>satelliteRepos</c>.
+── concepts/token-economics
+   ok       src/Conductor.Core/PromptBuilder.Budget.cs:29
+            | This session has a token ceiling and the orchestrator enforces it. At about
+   ok       src/Conductor.Core/Budget/BudgetProfile.cs:51
+            | public double? NudgeConversion => Nudged > 0 ? (double)NudgedAndClean / Nudged : null;
+   ok       src/Conductor.Core/Budget/BudgetProfile.cs:58
+            | /// <param name="SoftBreakRatio">The prescribed ratio, chosen so the nudge clears the largest closer.</param>
+
+citations: all 23 resolve at 1632b9f.
