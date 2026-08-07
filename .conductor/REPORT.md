@@ -1,10 +1,10 @@
 ﻿# Conductor — conductor-site - a field guide to agentic engineering run report
 
-_Updated 2026-08-07 00:22 UTC · branch `main` · HEAD `5612369`_
+_Updated 2026-08-07 00:46 UTC · branch `main` · HEAD `6ec3467`_
 
 **Status:** Idle
-**Stage:** S3 —  · attempts used 0
-**Checkpoints:** 12/28 done · **Sessions run:** 8 · **Cost:** $46.7545 (agent $46.7485 + gates $0.0060) · **Tokens:** 926,903 in / 383,678 out
+**Stage:** S4 —  · attempts used 0 · working ▸ S4.3
+**Checkpoints:** 14/28 done · **Sessions run:** 9 · **Cost:** $57.2355 (agent $57.2280 + gates $0.0075) · **Tokens:** 1,135,312 in / 459,826 out
 
 ## Stage progress
 
@@ -13,7 +13,7 @@ _Updated 2026-08-07 00:22 UTC · branch `main` · HEAD `5612369`_
 | S1 |  | ██████████ 4/4 | done |
 | S2 |  | ██████████ 4/4 | done |
 | S3 |  | ██████████ 4/4 | done |
-| S4 |  | ░░░░░░░░░░ 0/4 | todo |
+| S4 |  | █████░░░░░ 2/4 | **← active** |
 | S5 |  | ░░░░░░░░░░ 0/4 | todo |
 | S6 |  | ░░░░░░░░░░ 0/4 | todo |
 | S7 |  | ░░░░░░░░░░ 0/4 | todo |
@@ -46,17 +46,17 @@ _Updated 2026-08-07 00:22 UTC · branch `main` · HEAD `5612369`_
 |---|---|---|---|
 | S3.1 | `scripts/harvest.mjs` reads `conductor history --json --limit 0` for run-level truth and read-only SQLite for what that does not expose (costs by category, gate pass rates, bugs, scores, event counts, rollovers), and writes `src/data/corpus.json` | ✅ DONE | - |
 | S3.2 | `anonymise.json` maps run id → published scenario label, and the harvest **fails closed**: a run with no entry is excluded from the corpus rather than published under its real name, proven by a test that adds an unmapped run | ✅ DONE | - |
-| S3.3 | The evidence strip component renders figures from `corpus.json` by key, and a page that names a key absent from the corpus fails the build rather than rendering blank | ✅ DONE | - |
-| S3.4 | The `evidence` gate re-runs the harvest and goes red when `corpus.json` is stale or a cited key is missing, proven by a deliberate staleness both ways | ✅ DONE | - |
+| S3.3 | The evidence strip component renders figures from `corpus.json` by key, and a page that names a key absent from the corpus fails the build rather than rendering blank | ✅ DONE | [`0f5f4c9`](https://github.com/shaahink/conductor-site/commit/0f5f4c9) |
+| S3.4 | The `evidence` gate re-runs the harvest and goes red when `corpus.json` is stale or a cited key is missing, proven by a deliberate staleness both ways | ✅ DONE | [`0f5f4c9`](https://github.com/shaahink/conductor-site/commit/0f5f4c9) |
 
 </details>
 
-<details><summary>S4 —  (0/4)</summary>
+<details><summary>S4 —  (2/4)</summary>
 
 | # | Title | Status | Commit |
 |---|---|---|---|
-| S4.1 | Concepts 1–3 (agentic engineering, multi-agent orchestration, context engineering) written, each citing Conductor by `file:line` and each carrying evidence keys that resolve | ⬜ TODO | - |
-| S4.2 | Concepts 4–6 (token economics, evals and gates, independent verification) written to the same bar | ⬜ TODO | - |
+| S4.1 | Concepts 1–3 (agentic engineering, multi-agent orchestration, context engineering) written, each citing Conductor by `file:line` and each carrying evidence keys that resolve | ✅ DONE | - |
+| S4.2 | Concepts 4–6 (token economics, evals and gates, independent verification) written to the same bar | ✅ DONE | - |
 | S4.3 | Concepts 7–8 (durable execution, human-in-the-loop) written to the same bar | ⬜ TODO | - |
 | S4.4 | Concepts 9–10 (agent observability, agent memory) written, the spine reads in `order` end to end, and every `file:line` citation is verified to still resolve against `shaahink/conductor` at a named commit | ⬜ TODO | - |
 
@@ -107,6 +107,7 @@ _Updated 2026-08-07 00:22 UTC · branch `main` · HEAD `5612369`_
 | 6 | S3 | Resume | 1 | 08-06 23:10 | 0:00 | LimitBackoff |  | 0 |  | $0.0000 |  |  |
 | 7 | S3 | Resume | 1 | 08-06 23:40 | 0:00 | LimitBackoff |  | 0 |  | $0.0000 |  |  |
 | 8 | S3 | Resume | 1 | 08-07 00:10 | 0:11 | Advanced | S3.3 S3.4 | 5 | site-fast:OK · generated:OK | $7.3490 | $0.0013 | 198,956/33,052 |
+| 9 | S4 | Deliver | 1 | 08-07 00:22 | 0:24 | Advanced | S4.1 S4.2 | 4 | site-fast:OK · generated:OK · evidence:OK | $10.4796 | $0.0015 | 208,409/76,148 |
 
 ## Money
 
@@ -114,13 +115,13 @@ _What this run has cost, from its own `costs` rows. Same numbers as `conductor m
 
 | scope | sessions | tokens | cache reads | cost | checkpoints | tok/ckpt | $/ckpt |
 |---|---|---|---|---|---|---|---|
-| **run total** | 7 | 47.9M | 97.7% | $39.40 | 8 | 5.98M | $4.93 |
+| **run total** | 8 | 57.2M | 97.7% | $46.75 | 10 | 5.72M | $4.68 |
 | stage S1 | 2 | 19.7M | 98.0% | $15.40 | 4 | 4.92M | $3.85 |
 | stage S2 | 2 | 20.4M | 97.7% | $17.04 | 4 | 5.09M | $4.26 |
-| stage S3 | 3 | 7.79M | 97.2% | $6.96 | - | - | - |
-| 2026-08 | 7 | 47.9M | 97.7% | $39.40 | 8 | 5.98M | $4.93 |
+| stage S3 | 4 | 17.1M | 97.4% | $14.31 | 2 | 8.55M | $7.15 |
+| 2026-08 | 8 | 57.2M | 97.7% | $46.75 | 10 | 5.72M | $4.68 |
 
-_Where the money goes: agent $39.40 (100%) · gate $0.00 (0%) · blended $0.82/M tokens._
+_Where the money goes: agent $46.75 (100%) · gate $0.01 (0%) · blended $0.82/M tokens._
 
 ## Timeline
 
@@ -158,6 +159,12 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 08-07 01:10:22  • session #8 S3 Resume started (attempt 1/4)
 08-07 01:22:20  ▪ gate site-fast pass [session]  (10.7s)
 08-07 01:22:20  ▪ gate generated pass [session]  (2.4s)
+08-07 01:22:24  • session #8 S3 → Advanced · done S3.3,S3.4 · 5 commit(s)  (12m01s)
+08-07 01:22:24  ▸ stage S4 entered
+08-07 01:22:24  • session #9 S4 Deliver started (attempt 1/4)
+08-07 01:46:51  ▪ gate site-fast pass [session]  (11.7s)
+08-07 01:46:51  ▪ gate generated pass [session]  (2.0s)
+08-07 01:46:51  ▪ gate evidence pass [session]  (1.4s)
 ```
 
 ## Health
@@ -165,7 +172,7 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 _Execution-health signals, folded from the event log (`.conductor/events.jsonl`)._
 
 ```
-sessions 8 · retries 0 (0 %) · overall Ok
+sessions 9 · retries 0 (0 %) · overall Ok
 ✓ no health concerns detected
 ```
 
@@ -207,53 +214,55 @@ vs upstream: up to date
   - [`6ca4398`](https://github.com/shaahink/conductor-site/commit/6ca4398) feat(evidence): the gate goes red two ways, and caught one on its own
   - [`ddebdf6`](https://github.com/shaahink/conductor-site/commit/ddebdf6) docs(evidence): what the strip prints, and the two ways it refuses to
   - [`0f5f4c9`](https://github.com/shaahink/conductor-site/commit/0f5f4c9) feat(evidence): the strip, and a key with nothing behind it fails the build
+- **s9 (S4 Deliver)** — 4 commit(s):
+  - [`6ec3467`](https://github.com/shaahink/conductor-site/commit/6ec3467) docs(tracker): hand off with the spine written through six
+  - [`931a40f`](https://github.com/shaahink/conductor-site/commit/931a40f) feat(concepts): what a gate is, and why the checker cannot be the worker
+  - [`2a0e93e`](https://github.com/shaahink/conductor-site/commit/2a0e93e) feat(concepts): the loop, the roles, and a citation that has to point somewhere
+  - [`690304d`](https://github.com/shaahink/conductor-site/commit/690304d) feat(evidence): the three lanes a run pays for, split out of the store
 
 ## Last gate run
 
-site-fast:OK · generated:OK
+site-fast:OK · generated:OK · evidence:OK
 
 ## Last session result
 
-> **S3 complete — harvest, fail-closed anonymisation, evidence strip, and the gate red both ways**
-> - All four checkpoints claimed with fresh evidence; battery green (0 errors, 42 tests, 10 pages, 63 annotations)
-> - Harvest reproduces the measured corpus exactly and caught three unreproducible figures in the spec itself (bug #3)
-> - The evidence gate caught a real store change unprompted before it was ever aimed at anything
+> **S4.1 and S4.2 landed — six concept pages, thirty-seven citations resolving**
+> - **QA of session 8: no findings.** Battery re-run green from a clean tree; the evidence gate proven red again by hand (`totalSessions` → 999 printed `committed 999 → store 340` and exited 1, green on restore). S3.3/S3.4 claims hold.
+> - **S4.1** (`690304d`, `2a0e93e`): `agentic-engineering` and `multi-agent-orchestration` written. The harvest now publishes the cost lanes it had always computed and never surfaced — which corrected the SPEC: three categories, not two, and ad…
+> - **S4.2** (`931a40f`): `evals-and-gates` and `independent-verification` written, both built on the failures rather than the wins. Before publishing a red-gate count the label was earned: the corpus has no skipped and no optional gate at all,…
 >
-> artefacts: scripts/harvest.mjs, anonymise.json, src/data/corpus.json, src/lib/evidence.ts, src/components/EvidenceStrip.astro, test/harvest.test.mjs
+> artefacts: `src/content/concepts/{agentic-engineering, multi-agent-orchestration, evals-and-gates, independent-verification}.yaml`, `scripts/citations.mjs`, `scripts/harvest.mjs`, `src/data/corpus.json`
 >
-> evidence: docs/evidence/S3.1-harvest.txt, docs/evidence/S3.2-fails-closed.txt, docs/evidence/S3.3-evidence-strip.txt, docs/evidence/S3.4-evidence-gate.txt
+> evidence: `docs/evidence/S4.1-concepts.md`, `docs/evidence/S4.1-citations.txt`, `docs/evidence/S4.2-concepts.md`, `docs/evidence/S4.2-citations.txt` — astro check 0 errors, 42 tests, evidence gate green over 8 cited entries, 14 pages, 154 annotations
 >
-> gaps: bug #3 (SPEC's per-session and per-checkpoint rates are arithmetic errors) is recorded, not fixed in SPEC — S5.1 must name keys, never retype `$9.37` or `~$10.85`
+> gaps: S4.3 not started and put back to TODO — but every citation for concepts 7 and 8 is researched, verified and banked in the knowledge ledger, so the next session writes rather than explores. Concept 6's `readNext` points back at concept 2 as a placeholder until concept 7 exists; S4.4 owns closing that chain.
 
 ## Tracker handoff
 
 ```
-last: **session 5** delivered all four of S3 — harvest (cb373bb), fail-closed (24bfb37,
-  4cfdc00), strip (0f5f4c9, ddebdf6), gate (6ca4398, 3a97fd3). **S3 is complete.** QA of
-  session 4: no findings. Its S2.4 page named `sessions`, `cacheRead`, `ledgerEntries` and all
-  three resolved against a corpus built afterwards from the store, with nothing adjusted to fit.
-now on disk: `npm run harvest` reads `conductor history --json --limit 0` plus each run.db
-  read-only into `src/data/corpus.json`, and reproduces Appendix A to the digit — 18 runs, 7
-  repos, 340 sessions, 287/300, $3,016.29, 47.5M/17.8M/3.8B, 648/677, 53 rollovers, 123 soft
-  breaks, 7 approvals, 167 bugs. `npm run evidence` is the gate: red on a stale corpus (naming
-  the field that moved) and red on a cited key or run label the corpus lacks. `EvidenceStrip`
-  renders keys at the foot of concepts and inline in long-form; `ordered()` fails the build on a
-  key that does not resolve. Battery: 0 errors, 42 tests, 10 pages, 63 annotations.
-next: **S4.1** — concepts 1–3. `context-engineering` is already written (S2.4); agentic
-  engineering and multi-agent orchestration are new. Corpus keys available to cite are printed by
-  any failing build, or read `corpus` and any run's `figures` in corpus.json. Per-run and
-  corpus-wide are **separate namespaces**: `sessions` is one run, `totalSessions` is the corpus,
-  and a per-run key on a page naming no runs is refused.
-open: **three published figures in SPEC do not reproduce and must never be retyped** — bug #3:
-  Appendix A's `$9.37` a session is `$8.87` (3016.29/340) and `~$10.85` a checkpoint is `$10.51`
-  (3016.29/287); its "315 costed sessions" is 314 under the definition the corpus states. The
-  totals are all exact; only the divisions are wrong. S5.1 names the keys and gets the right
-  ones. Bug #2 — `--overlay` prose ~3.3:1, S7.2's call. **S7.1 must re-confirm `site` against
-  the deployed URL.** The wordmark and the footer's owner name are owner calls.
-tooling: **never `git checkout --` a file whose new version is uncommitted** — commit first,
-  break-test second. Write commit messages to a file and use `-F`. `conductor bg` cannot exec
-  bare `npm` — use `npm.cmd`; the battery is ~15s, so foreground it. **A failed Astro build
-  exits 0xC0000409 after a libuv assertion, not 1** — which is why the evidence gate is plain
-  Node and not a build wrapper. `conductor history --json` emits a UTF-8 BOM on Windows; strip
-  it before `JSON.parse`. **One run.db holds several runs** — filter every query by `run_id`.
+last: **session 9** delivered **S4.1** (690304d, 2a0e93e) and **S4.2** (931a40f). Six concept
+  pages now exist and the spine reads in `order` from one to six. QA of session 8: no findings —
+  battery re-run green from a clean tree, and the evidence gate proven red again by hand
+  (`totalSessions` set to 999 → "committed 999 → store 340", exit 1; green on restore).
+now on disk: concepts 1, 2, 5, 6 written (3 and 4 were earlier). New: `scripts/citations.mjs`
+  opens every `inConductor.citations` entry against a conductor checkout and prints the line it
+  landed on — **all 37 resolve at engine `1632b9f`**. The engine path comes from `CONDUCTOR_REPO`
+  or the sibling directory, never from a file this public repo commits. The harvest now publishes
+  the cost lanes: `totalAgentCostUsd`, `totalGateCostUsd`, `totalAdvisorCostUsd`. Battery: 0
+  errors, 42 tests, 8 cited entries green, 14 pages, 154 annotations.
+next: **S4.3** — concepts 7 and 8. **Every citation for both is already researched and verified
+  in the knowledge ledger** (two notes, "S4.3 RESEARCH BANKED" and "concept 8"): do not re-derive
+  them, go straight to writing. Then S4.4, which owns closing the `readNext` chain — concept 6
+  currently points back at 2 as a placeholder, because a dangling slug fails the build.
+open: **two SPEC figures corrected by measurement, do not retype either.** Part IV concept 2 says
+  agent $3,015 vs advisor $0.09; the store has **three** categories and says agent $3,014.80,
+  gate $1.26, advisor $0.24 — and the advisor line is priced from elapsed seconds, not metered,
+  which the page labels. Part IV concept 8 calls the notification lane "push-only"; it long-polls
+  and handles callbacks that write `control.json`. Bug #3 (Appendix A's `$9.37` and `~$10.85`
+  divisions) and bug #2 (`--overlay` contrast) still stand. **S7.1 must re-confirm `site`.**
+tooling: prose refuses any number of two digits or more — spell small quantities as words, and
+  never write a decimal, a ratio or a currency amount into content. **Never `git checkout --` a
+  file whose new version is uncommitted.** Commit messages to a file, then `-F`. The battery is
+  ~20s, so foreground it. **A failed Astro build exits 0xC0000409, not 1.** `conductor history
+  --json` emits a UTF-8 BOM on Windows. **One run.db holds several runs** — filter by `run_id`.
 ```
