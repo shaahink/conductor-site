@@ -1,10 +1,10 @@
 ﻿# Conductor — conductor-site - a field guide to agentic engineering run report
 
-_Updated 2026-08-07 03:14 UTC · branch `main` · HEAD `cb44186`_
+_Updated 2026-08-07 03:43 UTC · branch `main` · HEAD `00f2e37`_
 
 **Status:** Idle
-**Stage:** S6 —  · attempts used 0
-**Checkpoints:** 24/28 done · **Sessions run:** 15 · **Cost:** $113.0415 (agent $113.0180 + gates $0.0234) · **Tokens:** 2,166,638 in / 912,079 out
+**Stage:** S7 —  · attempts used 0 · working ▸ S7.2
+**Checkpoints:** 25/28 done · **Sessions run:** 16 · **Cost:** $123.2483 (agent $123.2221 + gates $0.0262) · **Tokens:** 2,331,690 in / 990,023 out
 
 ## Stage progress
 
@@ -16,7 +16,7 @@ _Updated 2026-08-07 03:14 UTC · branch `main` · HEAD `cb44186`_
 | S4 |  | ██████████ 4/4 | done |
 | S5 |  | ██████████ 4/4 | done |
 | S6 |  | ██████████ 4/4 | done |
-| S7 |  | ░░░░░░░░░░ 0/4 | todo |
+| S7 |  | ██░░░░░░░░ 1/4 | **← active** |
 
 <details> ✅<summary>S1 —  (4/4)</summary>
 
@@ -80,15 +80,15 @@ _Updated 2026-08-07 03:14 UTC · branch `main` · HEAD `cb44186`_
 | S6.1 | Report A, the fleet round, published as a scenario with no client name, no private repo name and no field-note prose — and a check that greps the built output for the forbidden list | ✅ DONE | [`fcbbb72`](https://github.com/shaahink/conductor-site/commit/fcbbb72) |
 | S6.2 | Report B, the long build that ended at 45 of 46, published with the shortfall as the subject rather than a footnote | ✅ DONE | [`fcbbb72`](https://github.com/shaahink/conductor-site/commit/fcbbb72) |
 | S6.3 | Report C, the engine run with an evaluation suite as its release gate | ✅ DONE | [`fcbbb72`](https://github.com/shaahink/conductor-site/commit/fcbbb72) |
-| S6.4 | `/runs` lists all 18 runs from harvested data with generalised labels and real numbers, and names the three abandoned July runs as abandoned rather than in-flight | ✅ DONE | - |
+| S6.4 | `/runs` lists all 18 runs from harvested data with generalised labels and real numbers, and names the three abandoned July runs as abandoned rather than in-flight | ✅ DONE | [`9afde8c`](https://github.com/shaahink/conductor-site/commit/9afde8c) |
 
 </details>
 
-<details><summary>S7 —  (0/4)</summary>
+<details><summary>S7 —  (1/4)</summary>
 
 | # | Title | Status | Commit |
 |---|---|---|---|
-| S7.1 | SEO and social: canonicals, sitemap, robots, OG images per section, `astro.config` `site` pointing at the real production URL | ⬜ TODO | - |
+| S7.1 | SEO and social: canonicals, sitemap, robots, OG images per section, `astro.config` `site` pointing at the real production URL | ✅ DONE | - |
 | S7.2 | Accessibility and performance pass — keyboard reachable, landmarks, focus visible, reduced motion honoured, both themes legible, no layout shift on theme flip | ⬜ TODO | - |
 | S7.3 | Generated files regenerated and clean (`npm run headers`, `npm run content`, `npm run editor`), README written, and the repo's CI green on `main` | ⬜ TODO | - |
 | S7.4 | **ownerGated** — the Vercel project is linked and the site is live at its production URL, the owner has read the three reports for anonymisation, and the front page has been looked at in both themes | ⬜ TODO | - |
@@ -114,6 +114,7 @@ _Updated 2026-08-07 03:14 UTC · branch `main` · HEAD `cb44186`_
 | 13 | S5 | Deliver | 1 | 08-07 02:04 | 0:16 | Advanced | S5.4 | 2 | site-fast:OK · generated:OK · evidence:OK | $5.4673 | $0.0036 | 118,247/40,393 |
 | 14 | S6 | Deliver | 1 | 08-07 02:21 | 0:27 | Advanced | S6.1 S6.2 S6.3 | 4 | site-fast:OK · generated:OK · evidence:OK | $11.1692 | $0.0025 | 194,497/101,053 |
 | 15 | S6 | Deliver | 1 | 08-07 02:49 | 0:24 | Advanced | S6.4 | 3 | site-fast:OK · generated:OK · evidence:OK | $10.1932 | $0.0026 | 161,188/72,365 |
+| 16 | S7 | Deliver | 1 | 08-07 03:14 | 0:28 | Advanced | S7.1 | 2 | site-fast:OK · generated:OK · evidence:OK | $10.2041 | $0.0027 | 165,052/77,944 |
 
 ## Money
 
@@ -121,28 +122,22 @@ _What this run has cost, from its own `costs` rows. Same numbers as `conductor m
 
 | scope | sessions | tokens | cache reads | cost | checkpoints | tok/ckpt | $/ckpt |
 |---|---|---|---|---|---|---|---|
-| **run total** | 14 | 126.5M | 97.8% | $102.85 | 21 | 6.03M | $4.90 |
+| **run total** | 15 | 140.3M | 97.8% | $113.04 | 22 | 6.38M | $5.14 |
 | stage S1 | 2 | 19.7M | 98.0% | $15.40 | 4 | 4.92M | $3.85 |
 | stage S2 | 2 | 20.4M | 97.7% | $17.04 | 4 | 5.09M | $4.26 |
 | stage S3 | 4 | 17.1M | 97.4% | $14.31 | 2 | 8.55M | $7.15 |
 | stage S4 | 2 | 22.4M | 97.5% | $18.67 | 4 | 5.59M | $4.67 |
 | stage S5 | 3 | 33.3M | 97.9% | $26.25 | 4 | 8.33M | $6.56 |
-| stage S6 | 1 | 13.7M | 97.8% | $11.17 | 3 | 4.56M | $3.72 |
-| 2026-08 | 14 | 126.5M | 97.8% | $102.85 | 21 | 6.03M | $4.90 |
+| stage S6 | 2 | 27.5M | 98.1% | $21.37 | 4 | 6.87M | $5.34 |
+| 2026-08 | 15 | 140.3M | 97.8% | $113.04 | 22 | 6.38M | $5.14 |
 
-_Where the money goes: agent $102.82 (100%) · gate $0.02 (0%) · blended $0.81/M tokens._
+_Where the money goes: agent $113.02 (100%) · gate $0.02 (0%) · blended $0.81/M tokens._
 
 ## Timeline
 
 _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 
 ```
-08-07 01:22:20  ▪ gate site-fast pass [session]  (10.7s)
-08-07 01:22:20  ▪ gate generated pass [session]  (2.4s)
-08-07 01:22:24  • session #8 S3 → Advanced · done S3.3,S3.4 · 5 commit(s)  (12m01s)
-08-07 01:22:24  ▸ stage S4 entered
-08-07 01:22:24  • session #9 S4 Deliver started (attempt 1/4)
-08-07 01:46:51  ▪ gate site-fast pass [session]  (11.7s)
 08-07 01:46:51  ▪ gate generated pass [session]  (2.0s)
 08-07 01:46:51  ▪ gate evidence pass [session]  (1.4s)
 08-07 01:46:54  • session #9 S4 → Advanced · done S4.1,S4.2 · 4 commit(s)  (24m29s)
@@ -177,6 +172,12 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 08-07 04:14:40  ▪ gate site-fast pass [session]  (10.2s)
 08-07 04:14:40  ▪ gate generated pass [session]  (1.8s)
 08-07 04:14:40  ▪ gate evidence pass [session]  (14.0s)
+08-07 04:14:43  • session #15 S6 → Advanced · done S6.4 · 3 commit(s)  (24m55s)
+08-07 04:14:43  ▸ stage S7 entered
+08-07 04:14:43  • session #16 S7 Deliver started (attempt 1/4)
+08-07 04:43:26  ▪ gate site-fast pass [session]  (10.4s)
+08-07 04:43:26  ▪ gate generated pass [session]  (1.8s)
+08-07 04:43:26  ▪ gate evidence pass [session]  (15.1s)
 ```
 
 ## Health
@@ -184,7 +185,7 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 _Execution-health signals, folded from the event log (`.conductor/events.jsonl`)._
 
 ```
-sessions 15 · retries 0 (0 %) · overall Ok
+sessions 16 · retries 0 (0 %) · overall Ok
 ✓ no health concerns detected
 ```
 
@@ -200,12 +201,6 @@ vs upstream: up to date
 
 ### Commits by session
 
-- **s8 (S3 Resume)** — 5 commit(s):
-  - [`5612369`](https://github.com/shaahink/conductor-site/commit/5612369) docs(tracker): hand off with S3 complete
-  - [`3a97fd3`](https://github.com/shaahink/conductor-site/commit/3a97fd3) docs(evidence): the gate, red both ways, and the one it found by itself
-  - [`6ca4398`](https://github.com/shaahink/conductor-site/commit/6ca4398) feat(evidence): the gate goes red two ways, and caught one on its own
-  - [`ddebdf6`](https://github.com/shaahink/conductor-site/commit/ddebdf6) docs(evidence): what the strip prints, and the two ways it refuses to
-  - [`0f5f4c9`](https://github.com/shaahink/conductor-site/commit/0f5f4c9) feat(evidence): the strip, and a key with nothing behind it fails the build
 - **s9 (S4 Deliver)** — 4 commit(s):
   - [`6ec3467`](https://github.com/shaahink/conductor-site/commit/6ec3467) docs(tracker): hand off with the spine written through six
   - [`931a40f`](https://github.com/shaahink/conductor-site/commit/931a40f) feat(concepts): what a gate is, and why the checker cannot be the worker
@@ -235,6 +230,9 @@ vs upstream: up to date
   - [`cb44186`](https://github.com/shaahink/conductor-site/commit/cb44186) chore: drop the commit-message scratch file
   - [`f5c751d`](https://github.com/shaahink/conductor-site/commit/f5c751d) feat(runs): the corpus table, once a real page had had a look at it
   - [`9afde8c`](https://github.com/shaahink/conductor-site/commit/9afde8c) feat(runs): every run in the corpus, including the ones that stopped
+- **s16 (S7 Deliver)** — 2 commit(s):
+  - [`00f2e37`](https://github.com/shaahink/conductor-site/commit/00f2e37) chore(conductor): s16 S7.1 — handoff
+  - [`f7f7d6f`](https://github.com/shaahink/conductor-site/commit/f7f7d6f) feat(seo): the sitemap the template left behind, and a card per section
 
 ## Last gate run
 
@@ -242,46 +240,68 @@ site-fast:OK · generated:OK · evidence:OK
 
 ## Last session result
 
-> **S6.4 landed — /runs lists all eighteen runs, three named abandoned. Stage S6 complete.**
-> - QA of session 14: **PASS, no findings.** Battery re-run green from a clean tree before any edit (0 errors, 73 tests, build exit 0 / 474 annotations, evidence + anonymity green); all three evidence files on disk. Only nit: the database's com…
-> - **S6.4 delivered and claimed.** `/runs` now carries the whole corpus below the three reports, oldest first, wholly from `corpus.json`: 20 `<tr>` (head + 18 runs + totals footer), `>running<` zero times in `dist/`, `abandoned` three times in…
-> - **Two layout traps found only by looking at the built page**, both fixed and recorded in the ledger: Astro strips the whitespace between sibling elements, so `nowrap` inline spans left the row header with no break opportunity and a 343px mi…
+> **S7.1 landed — sitemap, canonicals, robots, four evidence-bearing social cards, gate proven red**
+> - QA of session 15: no findings. Battery re-run green from the inherited tree before any edit; all 18 runs render on `/runs`, `>running<` absent from `dist/`.
+> - S7.1 delivered (`f7f7d6f`). `site` **confirmed against the deployment** rather than copied: both candidate hosts answer 200, but only `conductor-site-virid.vercel.app` serves this site. Two real defects fixed — the sitemap listed 1 of 21 pa…
+> - S7.2 measured but deliberately not started — card returned to TODO with an amendment; the theme toggle's two layout shifts, the one Lighthouse contrast failure (bug #2 in the wild) and the missing skip link are all in the ledger with the fi…
 >
-> artefacts: `src/lib/corpus.ts`, `src/components/RunTable.astro`, `src/pages/runs/index.astro`, `src/layouts/SectionIndex.astro`, `src/content/schema.ts` (`corpusTable`), `src/content/sections/runs.yaml`, `src/lib/collections.ts`, `test/corpus.test.mjs`; commits `9afde8c`
+> artefacts: `src/lib/seo.ts`, `src/pages/og/[card].astro`, `scripts/seo.mjs`, `test/seo.test.mjs`, `src/data/og-cards.json`, `public/og/{home, concepts, articles
 >
-> evidence: `docs/evidence/S6.4-the-corpus-index.md`, `docs/evidence/S6.4-runs-mocha.png`, `docs/evidence/S6.4-runs-latte.png` — battery at head 0 errors, 86 tests, build exit 0 with 478 annotations on 21 pages, `npm run evidence` and `npm run anonymity` both exit 0.
+> evidence: `docs/evidence/S7.1-seo-and-social.md`, `docs/evidence/S7.1-seo-gate-red.txt` (eight breaks, gate's own exit codes), `docs/evidence/S7.1-battery.txt` (0 errors, 93 tests, 27 pages, evidence/anonymity/seo green)
 >
-> gaps: bug #5 (EvidenceStrip cells have no minimum width) left open; bugs #2–#4 unchanged; `anonymity` still cannot check the quoted-prose half of the rule on a machine with no field notes; next action is S7.1, which must re-confirm `astro.config`'s `site`.
+> gaps: S7.2 not started (measured, findings banked); S7.3 and S7.4 untouched; bug #6 means the `seo`, `evidence`, `anonymity` and `node --test` gates still run only locally
 
 ## Tracker handoff
 
 ```
-last: **session 15** delivered **S6.4 — stage S6 is complete.** QA of session 14: **no findings.**
-  Battery re-run green from a clean tree *before* any edit (0 errors, 73 tests, build exit 0 with
-  474 annotations on 21 pages, evidence green, anonymity exit 0); all three evidence files on
-  disk. One bookkeeping nit only: the database records commit `fcbbb72` for S6.1/S6.2/S6.3, but
-  reports A, B and C actually landed in `c70d83b`, `29817f8` and `bc021ae` — `fcbbb72` is the
-  anonymity-check commit. Nothing published depends on it.
-now on disk: `/runs` carries the three reports and then **all 18 runs**, oldest first, from
-  `corpus.json` alone. The three the store still marks `running` render **ABANDONED** in the
-  Face's peach role; `>running<` appears **zero** times in `dist/`. New: **`src/lib/corpus.ts`**
-  (pure — it takes the corpus as a **parameter**, not an import, because a module with a
-  top-level JSON import **cannot be loaded by `node --test` at all**), `RunTable.astro`, a `<slot />`
-  on `SectionIndex`, and **optional** `sectionPageSchema.corpusTable` (`checkAnnotations` does
-  resolve an optional field — verified). `sectionPage()` now calls `refuseTypedFigures`, which
-  `ordered()` never did for `sections`. Battery at head: **0 errors, 86 tests, build 23 pages /
-  478 annotations on 21, evidence green over 17 entries, anonymity exit 0.** Evidence:
-  `docs/evidence/S6.4-the-corpus-index.md` + two full-page screenshots.
-next: **S7.1** — canonicals, sitemap, robots, OG images per section, and `astro.config`'s `site`
-  pointing at the real production URL. **S7.1 must re-confirm `site`.**
-open: bugs #2, #3, #4 still open. **Bug #5 filed this session**: `EvidenceStrip.astro`'s
-  `.cell { min-inline-size: var(--mono-inline-size) }` misuses a token that is a *font-size*
-  step-down (`0.9em`), so the strip's figure cells have no minimum width and do not line up. One
-  token, cosmetic, untouched because it is outside S6.4. SPEC Part V article 3's `26 costed`/
-  `15.5M` are stale (now **30**/**16.8M**); article 4's `19 of 34`/`10 of 11` and the S5.4 git
-  ground truth are unpublished on purpose. Article 1's `$52.06`/`23.2%` correction, concept 2's
-  advisor split and concept 8's "push-only" still stand.
-tooling: **Astro strips the whitespace between sibling elements**, so inline spans carrying
+last: **session 16** delivered **S7.1** (commit `f7f7d6f`, pushed). QA of session 15: **no
+  findings** — battery re-run green from the tree as inherited, *before* any edit (0 errors, 86
+  tests, build 27→23 pages with 478 annotations on 21, evidence green, anonymity exit 0), all 18
+  runs render and `>running<` is absent from `dist/`. Handoff said "ABANDONED"; the markup is
+  lowercase `abandoned` in the peach role, which is what it claimed.
+now on disk: **`site` is CONFIRMED, not copied** — both candidate hosts answer 200, so what
+  settles it is that `conductor-site-virid.vercel.app` serves this site and the short alias
+  serves someone else's Next.js app. Two real defects fixed: the **sitemap listed 1 of 21
+  pages** (the template's file — worse than none, a crawler reads it as *this is the site*), and
+  **no page had an `og:image` at all**, so every shared link was a grey box. New: four 1200×630
+  cards in `public/og/`, screenshotted from **real pages** (`src/pages/og/[card].astro`) so
+  palette, type, words and figures all come from the site — the three figures per card go
+  through `resolveEvidence`. A card is a *picture of numbers taken once*, so
+  `src/data/og-cards.json` records the text at screenshot time and **`npm run seo`** re-renders
+  and compares. That gate (`scripts/seo.mjs`, after `build`) checks six things over `dist/` and
+  is **proven red eight ways** in `docs/evidence/S7.1-seo-gate-red.txt`. Battery at head: **0
+  errors, 93 tests, build 27 pages / 478 annotations on 21, evidence green, anonymity exit 0,
+  seo green.** Evidence: `docs/evidence/S7.1-seo-and-social.md` + `-battery.txt` + `-gate-red.txt`.
+next: **S7.2**, and it is **measured already — fix, do not re-measure** (full numbers in the
+  ledger note and on the card's amendment). Landmarks, `:focus-visible` and reduced motion are
+  **already done**. Three things are not: (a) the theme toggle shifts layout **twice** — on load
+  `Theme`(62px)→`Dark`(50px) drags the nav 12px, CLS 0.00007, and on flip `Dark`→`Light` is 3px;
+  fix by stacking every label the button can show in **one CSS grid cell** (extras
+  `visibility:hidden` + `aria-hidden`) so the browser sizes the box to the widest — **no JS
+  change, so no CSP hash change**. (b) Lighthouse desktop: a11y **96**, BP/SEO/agentic 100, one
+  failure — `color-contrast`, which is **bug #2 in the wild**: `--overlay` is **3.59:1** in mocha
+  on the nav links, the theme label, **`p.lead` on every concept page**, `.aka-label`,
+  `.aka-name`. The role is right (the Face holds overlay to the 3:1 *UI/large-text* bar and
+  `contrast.test.mjs` asserts that); the **usage** is wrong. Suggested: a derived quiet role,
+  `color-mix(in srgb, var(--text), var(--base))` — srgb mix is a plain per-channel lerp, so
+  `contrast.test.mjs` can recompute it and hold it to 4.5:1 — and keep `--overlay` for borders,
+  chrome and text ≥24px. (c) **no skip link on any page.**
+open: **new bug #6** — CI calls the fleet's shared `site-ci.yml`, which runs `astro check`, the
+  build and the three generated-file diffs and **nothing else**: `evidence`, `anonymity`, `seo`
+  and the 93 `node --test` cases are all local-only. A gate that runs on one machine rots. Fix in
+  a **second workflow in this repo**, not in the shared one — S7.3. Bugs #2, #3, #4, #5 still
+  open (#2 is S7.2's to close). SPEC Part V article 3's `26 costed`/`15.5M` are stale (now
+  **30**/**16.8M**); article 4's `19 of 34`/`10 of 11` and the S5.4 git ground truth are
+  unpublished on purpose. Article 1's `$52.06`/`23.2%` correction, concept 2's advisor split and
+  concept 8's "push-only" still stand.
+tooling: `npx` **cannot be launched under `conductor bg`** here (it resolves npx-cli.js against
+  the repo) — use `node node_modules/astro/bin/astro.mjs preview --port 4321`. `conductor bg
+  start` takes `--purpose`, not `--name`, and `bg stop` takes the **numeric pid**. A `cmd /c "a
+  && b"` under `bg` loses its quoting; the battery is ~90s so just run it in the foreground.
+  **Never put backticks in a `node -e` string from the Bash tool** — the shell substitutes them
+  and silently empties your text; use Edit for prose. Chrome DevTools MCP is how the cards get
+  taken: `resize_page` 1200×630, then `take_screenshot` with `filePath`. **Astro strips the
+  whitespace between sibling elements**, so inline spans carrying
   `white-space: nowrap` have **no break opportunity anywhere** — that made one table cell's
   min-content the whole line as a single 343px word. Use flex + `flex-wrap`, not inline +
   margin. **The 68ch measure is wrong for a table** read across; `RunTable` breaks out by
