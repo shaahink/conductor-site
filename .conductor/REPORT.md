@@ -1,10 +1,10 @@
 ﻿# Conductor — conductor-site - a field guide to agentic engineering run report
 
-_Updated 2026-08-07 02:21 UTC · branch `main` · HEAD `2359c5a`_
+_Updated 2026-08-07 02:49 UTC · branch `main` · HEAD `bc021ae`_
 
 **Status:** Idle
-**Stage:** S5 —  · attempts used 0
-**Checkpoints:** 20/28 done · **Sessions run:** 13 · **Cost:** $91.6739 (agent $91.6556 + gates $0.0183) · **Tokens:** 1,810,953 in / 738,661 out
+**Stage:** S6 —  · attempts used 0 · working ▸ S6.4
+**Checkpoints:** 23/28 done · **Sessions run:** 14 · **Cost:** $102.8457 (agent $102.8248 + gates $0.0208) · **Tokens:** 2,005,450 in / 839,714 out
 
 ## Stage progress
 
@@ -15,7 +15,7 @@ _Updated 2026-08-07 02:21 UTC · branch `main` · HEAD `2359c5a`_
 | S3 |  | ██████████ 4/4 | done |
 | S4 |  | ██████████ 4/4 | done |
 | S5 |  | ██████████ 4/4 | done |
-| S6 |  | ░░░░░░░░░░ 0/4 | todo |
+| S6 |  | ████████░░ 3/4 | **← active** |
 | S7 |  | ░░░░░░░░░░ 0/4 | todo |
 
 <details> ✅<summary>S1 —  (4/4)</summary>
@@ -69,17 +69,17 @@ _Updated 2026-08-07 02:21 UTC · branch `main` · HEAD `2359c5a`_
 | S5.1 | "What an autonomous run actually costs" — the corpus P&L including the waste, every figure keyed to `corpus.json` | ✅ DONE | [`1ef5db5`](https://github.com/shaahink/conductor-site/commit/1ef5db5) |
 | S5.2 | "Never believe the agent" — verification as a separate program, built around the 29 red gates rather than the 648 green ones | ✅ DONE | [`1ef5db5`](https://github.com/shaahink/conductor-site/commit/1ef5db5) |
 | S5.3 | "The nudge that sat below the median" — the measured-budget method, written so a reader can run it on their own store | ✅ DONE | [`3896cb8`](https://github.com/shaahink/conductor-site/commit/3896cb8) |
-| S5.4 | "The ledger that lied" — telemetry you cannot trust, and what it took to fix it | ✅ DONE | - |
+| S5.4 | "The ledger that lied" — telemetry you cannot trust, and what it took to fix it | ✅ DONE | [`239d249`](https://github.com/shaahink/conductor-site/commit/239d249) |
 
 </details>
 
-<details><summary>S6 —  (0/4)</summary>
+<details><summary>S6 —  (3/4)</summary>
 
 | # | Title | Status | Commit |
 |---|---|---|---|
-| S6.1 | Report A, the fleet round, published as a scenario with no client name, no private repo name and no field-note prose — and a check that greps the built output for the forbidden list | ⬜ TODO | - |
-| S6.2 | Report B, the long build that ended at 45 of 46, published with the shortfall as the subject rather than a footnote | ⬜ TODO | - |
-| S6.3 | Report C, the engine run with an evaluation suite as its release gate | ⬜ TODO | - |
+| S6.1 | Report A, the fleet round, published as a scenario with no client name, no private repo name and no field-note prose — and a check that greps the built output for the forbidden list | ✅ DONE | - |
+| S6.2 | Report B, the long build that ended at 45 of 46, published with the shortfall as the subject rather than a footnote | ✅ DONE | - |
+| S6.3 | Report C, the engine run with an evaluation suite as its release gate | ✅ DONE | - |
 | S6.4 | `/runs` lists all 18 runs from harvested data with generalised labels and real numbers, and names the three abandoned July runs as abandoned rather than in-flight | ⬜ TODO | - |
 
 </details>
@@ -112,6 +112,7 @@ _Updated 2026-08-07 02:21 UTC · branch `main` · HEAD `2359c5a`_
 | 11 | S5 | Deliver | 1 | 08-07 01:09 | 0:25 | Advanced | S5.1 S5.2 | 2 | site-fast:OK · generated:OK · evidence:OK | $10.3443 | $0.0024 | 180,290/76,483 |
 | 12 | S5 | Deliver | 1 | 08-07 01:36 | 0:27 | Advanced | S5.3 | 3 | site-fast:OK · generated:OK · evidence:OK | $10.4334 | $0.0033 | 190,206/83,979 |
 | 13 | S5 | Deliver | 1 | 08-07 02:04 | 0:16 | Advanced | S5.4 | 2 | site-fast:OK · generated:OK · evidence:OK | $5.4673 | $0.0036 | 118,247/40,393 |
+| 14 | S6 | Deliver | 1 | 08-07 02:21 | 0:27 | Advanced | S6.1 S6.2 S6.3 | 4 | site-fast:OK · generated:OK · evidence:OK | $11.1692 | $0.0025 | 194,497/101,053 |
 
 ## Money
 
@@ -119,27 +120,21 @@ _What this run has cost, from its own `costs` rows. Same numbers as `conductor m
 
 | scope | sessions | tokens | cache reads | cost | checkpoints | tok/ckpt | $/ckpt |
 |---|---|---|---|---|---|---|---|
-| **run total** | 12 | 106.2M | 97.7% | $86.20 | 17 | 6.24M | $5.07 |
+| **run total** | 13 | 112.9M | 97.7% | $91.67 | 18 | 6.27M | $5.09 |
 | stage S1 | 2 | 19.7M | 98.0% | $15.40 | 4 | 4.92M | $3.85 |
 | stage S2 | 2 | 20.4M | 97.7% | $17.04 | 4 | 5.09M | $4.26 |
 | stage S3 | 4 | 17.1M | 97.4% | $14.31 | 2 | 8.55M | $7.15 |
 | stage S4 | 2 | 22.4M | 97.5% | $18.67 | 4 | 5.59M | $4.67 |
-| stage S5 | 2 | 26.6M | 98.0% | $20.78 | 3 | 8.88M | $6.93 |
-| 2026-08 | 12 | 106.2M | 97.7% | $86.20 | 17 | 6.24M | $5.07 |
+| stage S5 | 3 | 33.3M | 97.9% | $26.25 | 4 | 8.33M | $6.56 |
+| 2026-08 | 13 | 112.9M | 97.7% | $91.67 | 18 | 6.27M | $5.09 |
 
-_Where the money goes: agent $86.19 (100%) · gate $0.01 (0%) · blended $0.81/M tokens._
+_Where the money goes: agent $91.66 (100%) · gate $0.02 (0%) · blended $0.81/M tokens._
 
 ## Timeline
 
 _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 
 ```
-08-06 23:20:33  ▪ gate site-fast pass [session]  (10.5s)
-08-06 23:20:33  ▪ gate generated pass [session]  (2.2s)
-08-06 23:20:36  • session #4 S2 → Advanced · done S2.3,S2.4 · 4 commit(s)  (23m24s)
-08-06 23:20:36  ▸ stage S3 entered
-08-06 23:20:36  • session #5 S3 Deliver started (attempt 1/4)
-08-06 23:40:13  • session #5 S3 → LimitBackoff  (19m36s)
 08-07 00:10:10  • session #6 S3 Resume started (attempt 1/4)
 08-07 00:10:19  • session #6 S3 → LimitBackoff  (8.7s)
 08-07 00:40:17  • session #7 S3 Resume started (attempt 1/4)
@@ -174,6 +169,12 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 08-07 03:21:20  ▪ gate site-fast pass [session]  (14.9s)
 08-07 03:21:20  ▪ gate generated pass [session]  (2.5s)
 08-07 03:21:20  ▪ gate evidence pass [session]  (18.4s)
+08-07 03:21:23  • session #13 S5 → Advanced · done S5.4 · 2 commit(s)  (17m16s)
+08-07 03:21:23  ▸ stage S6 entered
+08-07 03:21:23  • session #14 S6 Deliver started (attempt 1/4)
+08-07 03:49:45  ▪ gate site-fast pass [session]  (9.7s)
+08-07 03:49:45  ▪ gate generated pass [session]  (1.7s)
+08-07 03:49:45  ▪ gate evidence pass [session]  (13.7s)
 ```
 
 ## Health
@@ -181,7 +182,7 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 _Execution-health signals, folded from the event log (`.conductor/events.jsonl`)._
 
 ```
-sessions 13 · retries 0 (0 %) · overall Ok
+sessions 14 · retries 0 (0 %) · overall Ok
 ✓ no health concerns detected
 ```
 
@@ -197,11 +198,6 @@ vs upstream: up to date
 
 ### Commits by session
 
-- **s3 (S2 Deliver)** — 4 commit(s):
-  - [`6a3d334`](https://github.com/shaahink/conductor-site/commit/6a3d334) feat(pages): the three indexes, and a nav that cannot disagree with itself
-  - [`0f81a26`](https://github.com/shaahink/conductor-site/commit/0f81a26) chore(plan): carry the run's own budget tuning into the tree
-  - [`2ffa1bc`](https://github.com/shaahink/conductor-site/commit/2ffa1bc) feat(content): three collections, and evidence that cannot be typed
-  - [`a68c0f3`](https://github.com/shaahink/conductor-site/commit/a68c0f3) fix(seo): the canonical points at this site, not a stranger's
 - **s4 (S2 Deliver)** — 4 commit(s):
   - [`8ada555`](https://github.com/shaahink/conductor-site/commit/8ada555) docs(tracker): hand off with S2 complete
   - [`689854a`](https://github.com/shaahink/conductor-site/commit/689854a) docs(evidence): the three litmus tests, applied to the page that has to be right
@@ -233,6 +229,11 @@ vs upstream: up to date
 - **s13 (S5 Deliver)** — 2 commit(s):
   - [`2359c5a`](https://github.com/shaahink/conductor-site/commit/2359c5a) feat(articles): the ledger that lied
   - [`239d249`](https://github.com/shaahink/conductor-site/commit/239d249) feat(evidence): what a session wrote down about itself, split by outcome
+- **s14 (S6 Deliver)** — 4 commit(s):
+  - [`bc021ae`](https://github.com/shaahink/conductor-site/commit/bc021ae) feat(reports): the engine run, whose release gate could disagree with it
+  - [`29817f8`](https://github.com/shaahink/conductor-site/commit/29817f8) feat(reports): the long build, with the checkpoint that never closed as the subject
+  - [`c70d83b`](https://github.com/shaahink/conductor-site/commit/c70d83b) feat(reports): the fleet round, read against the fleet either side of it
+  - [`fcbbb72`](https://github.com/shaahink/conductor-site/commit/fcbbb72) feat(evidence): a forbidden list nobody is allowed to write down
 
 ## Last gate run
 
@@ -240,46 +241,48 @@ site-fast:OK · generated:OK · evidence:OK
 
 ## Last session result
 
-> **S5.4 landed — stage S5 complete, all four articles written, battery green**
-> - **S5.4** — "The ledger that lied", 1,823 words, figure-free, thirteen evidence keys and two run labels; all ten ledger figures verified *rendered* in the built page, not merely resolved. Engine cause and fix re-verified at `1632b9f` and cit…
-> - **Machinery** — a ledger block of twelve corpus keys off the `sessions` table, split on outcome and published in pairs so neither half is a bare count. Recomputes session 12's hand measurement to the digit. Per-run figure uniformity preserv…
-> - **The trap, proven red** — `commit_count` written with a zero rather than left null; the null test publishes `53/53`/`287/287`. Four new tests in `harvest.test.mjs`, including one asserting the figure must never read `3/3` on a fixture that…
+> **Three reports and the anonymisation check landed; S6.4 remains**
+> - Delivered S6.1, S6.2 and S6.3 — Reports A, B and C written figure-free (1,562 / 1,484 / ~1,600 words), chained A → B → C → A, plus `scripts/anonymity.mjs` and `npm run anonymity`, whose forbidden list is derived from the run store at check …
+> - QA of session 13: no findings. Battery re-run green from a clean tree before the first edit (0 errors, 61 tests, 380 annotations on 19 pages, evidence over 15 entries), both claimed commits present, evidence file on disk, `commit_count > 0`…
+> - Corrected my own work in flight: three comparative claims in Report C were checked against the corpus and narrowed before publishing, and the S6.2 evidence file was fixed to stop asserting a cause it had not measured — filed instead as bug …
 >
-> artefacts: `scripts/harvest.mjs`, `test/harvest.test.mjs`, `src/content/articles/the-ledger-that-lied.yaml`, `src/data/corpus.json` · commits `239d249`, `2359c5a`, pushed to `main`
+> artefacts: `scripts/anonymity.mjs`, `test/anonymity.test.mjs`, `src/content/reports/{the-fleet-round, the-long-build, the-engine-run}.yaml`, commits `fcbbb72`, `c70d83b`, `29817f8`
 >
-> evidence: `docs/evidence/S5.4-the-ledger-that-lied.md` — the red run, the reverted green, the battery (0 errors / 61 tests / build 21 pages / 380 annotations on 19 / evidence green over 15 entries), and the figures grepped out of `dist`
+> evidence: `docs/evidence/S6.1-anonymity.md`, `docs/evidence/S6.1-the-fleet-round.md`, `docs/evidence/S6.2-the-long-build.md`, `docs/evidence/S6.3-the-engine-run.md` — battery at head 0 errors, 73 tests, build exit 0 with 474 annotations on 21 pages, evidence green over 17 entries, anonymity exit 0
 >
-> gaps: the git ground truth behind the rollovers is unpublishable — private repositories, so it is described in words and the page says the evidence gate cannot recompute it. SPEC Part V article 4's `19 of 34` and `10 of 11` are deliberately not on the site. Bugs #2 and #3 still open; S7.1 still owes a re-confirmation of `site`.
+> gaps: S6.4 (`/runs` corpus table, three abandoned July runs to be named abandoned) not started; the quoted-prose half of the anonymity check cannot run without the untracked field notes and says so on every run; bug #4 open and unexplained, though nothing published depends on it
 
 ## Tracker handoff
 
 ```
-last: **session 13** delivered **S5.4** — machinery in `239d249`, article in the commit after it.
-  **Stage S5 is complete: all four articles are written.** QA of session 12: **no findings** —
-  battery re-run green from a clean tree before any edit (0 errors, 57 tests, build exit 0 with
-  341 annotations on 18 pages, evidence green over 14 entries), both claimed commits exist, the
-  evidence file is on disk, and article 3 measures 1,827 words against its claimed 1,818.
-now on disk: articles 1–4, all figure-free. Battery at head: **0 errors, 61 tests, build 21 pages
-  / 380 annotations on 19, evidence gate green over 15 cited entries.** New: a **ledger block** of
-  twelve corpus keys, all sourced `STORE`, published in pairs so neither half is a bare count —
-  `sessionsThatRolledOver` 53, `sessionsThatDidNot` 287, then `rolloversWith*` /`othersWith*` for
-  commit, gate summary, claim, result summary and digest. **The trap, proven red and kept in
-  `docs/evidence/S5.4-the-ledger-that-lied.md`: `commit_count` must be tested `> 0`, never
-  `is not null`** — the null test publishes `53/53` and `287/287`, the exact inverse, formatted as
-  a measurement. A test in `harvest.test.mjs` holds it.
-next: **S6.1–S6.3**, the three reports, then **S6.4** `/runs`. SPEC Part VI is the authority: read
-  **the rule** before the three report briefs, because a report is an article plus a `scenario`
-  label and the anonymisation rule is the checkpoint's acceptance, not a preamble. S6.1 also owes
-  a **check that greps the built output** for the forbidden list. The corpus already carries every
-  per-run figure the reports need, and `reportSchema` already exists — this is writing, not
-  machinery. Run labels come from `anonymise.json`; three July runs must be named **abandoned**.
-open: git ground truth for the S5.4 article lives in a private repo — it is **described in words
-  and published as no figure**, deliberately, and the page says so. SPEC Part V article 3's
-  `26 costed`/`15.5M` are stale (now **30**/**16.8M**) and its `25–54M`/`12.8–15.3M` were
-  stage-level, not windows — corrections are in `docs/evidence/S5.3-the-nudge-below-the-median.md`.
-  SPEC Part V article 4's `19 of 34`/`10 of 11` are likewise unpublished on purpose. Article 1's
-  `$52.06`/`23.2%` correction, concept 2's advisor split and concept 8's "push-only" still stand.
-  Bugs #2 and #3 still open. **S7.1 must re-confirm `site`.**
+last: **session 14** delivered **S6.1, S6.2 and S6.3** — all three reports, plus the
+  anonymisation check. QA of session 13: **no findings** — battery re-run green from a clean tree
+  before any edit (0 errors, 61 tests, build exit 0 with 380 annotations on 19 pages, evidence
+  green over 15 entries), both claimed commits exist, the evidence file is on disk, and the
+  `commit_count > 0` rule is held by a test in `harvest.test.mjs`.
+now on disk: reports A, B and C, chained A → B → C → A, all figure-free. Battery at head:
+  **0 errors, 73 tests, build 21 pages / 474 annotations on 21, evidence green over 17 entries,
+  `npm run anonymity` exit 0.** New machinery: **`scripts/anonymity.mjs` + `npm run anonymity`**,
+  which greps `dist/` after a build. **Its forbidden list is DERIVED at check time** from
+  `conductor history` and `docs/dev/FIELD-NOTES-*.md` and is never committed — committing it
+  would publish the names it protects. Findings are **redacted** (first char, last char, length)
+  because a CI log is published too; `--reveal` is for the owner's machine. Twelve pure tests in
+  `test/anonymity.test.mjs` hold it, with invented fixtures. Red proof in
+  `docs/evidence/S6.1-anonymity.md`.
+next: **S6.4** `/runs` — the corpus index: all 18 runs as a table, generalised labels, real
+  numbers, wholly from `corpus.json`. `src/pages/runs/index.astro` currently lists only the three
+  report entries via `SectionIndex`; the table is a **new** block on that page, not a new route.
+  Every run carries `status` in `corpus.json` — the **three abandoned July runs must be named
+  abandoned, not in-flight**; `EvidenceStrip.astro` already paints `status` in the Face's roles
+  (peach abandoned, yellow paused, skipped aborted) and that convention should be reused.
+open: **bug #4 filed this session** — `conductor budget` window checkpoints sum to 30 on the long
+  build against `conductor history`'s 45, while on the engine run they agree exactly (20+2=22).
+  Sessions partition correctly in both. Cause not established; nothing published depends on it
+  because no page ever adds a window count to a run count. Bugs #2 and #3 still open. SPEC Part V
+  article 3's `26 costed`/`15.5M` are stale (now **30**/**16.8M**); article 4's `19 of 34`/`10 of
+  11` and the S5.4 git ground truth are unpublished on purpose. Article 1's `$52.06`/`23.2%`
+  correction, concept 2's advisor split and concept 8's "push-only" still stand. **S7.1 must
+  re-confirm `site`.**
 tooling: prose refuses any number of two digits or more, and a currency/percent/decimal/ratio
   too — so a `file.cs:411` citation **cannot go in article prose**, and articles have no
   `citations` field; name it in words. **Never round-trip a content file through PowerShell
