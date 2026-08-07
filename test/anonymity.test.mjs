@@ -18,6 +18,7 @@ import {
   SHAPES,
   forbidden,
   isVendor,
+  lastSegment,
   phrasesOf,
   publishedVocabulary,
   redact,
@@ -55,6 +56,21 @@ const ANONYMISE = {
 
 const list = () => forbidden(HISTORY, { anonymise: ANONYMISE });
 const has = (entries, text) => entries.some((entry) => entry.text.toLowerCase() === text);
+
+test("a repository path is read the same way on every platform", () => {
+  /* The regression this exists for cost six red CI runs against a green local
+     battery. The store records Windows paths because the runs happened on a
+     Windows machine, but the check also runs on a Linux runner, where
+     `basename` treats a backslash as an ordinary character and hands back the
+     whole string. The three cases below were the difference between a rule
+     that works and a rule that silently stops recognising both this site's own
+     run and a private repository's name — on the machine nobody watches. */
+  assert.equal(lastSegment("C:\\code\\harrowgate-linens"), "harrowgate-linens");
+  assert.equal(lastSegment("/home/someone/code/harrowgate-linens"), "harrowgate-linens");
+  assert.equal(lastSegment("C:\\code\\conductor-site\\"), "conductor-site");
+  assert.equal(lastSegment(""), "");
+  assert.equal(lastSegment(undefined), "");
+});
 
 test("this site's own run is not treated as private", () => {
   const { paths, names } = list();

@@ -43,7 +43,7 @@
 
 import { execSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { basename, dirname, join } from "node:path";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -195,6 +195,22 @@ export function publishedVocabulary(anonymise) {
 
     `self` is dropped entirely. This site's own run is in the same store, and
     this site is allowed to be about itself. */
+/** The last segment of a path, read the same way on every platform.
+    ---------------------------------------------------------------------------
+    Not `basename`. The store records the paths of the machine each run happened
+    on, and those are Windows paths — but this check also runs on a Linux CI
+    runner, where a backslash is an ordinary character and
+    `basename("C:\\code\\conductor-site")` comes back whole. That is not a
+    cosmetic difference: the whole string never equals `self`, so this site's own
+    run stopped being recognised as its own and a private repository's name was
+    never extracted from its path. Three cases failed on Linux and passed on
+    Windows, which is the worst way for a privacy rule to be wrong. */
+export const lastSegment = (value) =>
+  String(value ?? "")
+    .replace(/[\\/]+$/, "")
+    .split(/[\\/]/)
+    .pop() ?? "";
+
 export function forbidden(runs, { anonymise, self = "conductor-site" } = {}) {
   const publicNames = new Set(PUBLIC_NAMES);
   const allowed = new Set([...PUBLIC_NAMES, ...GENERIC, ...publishedVocabulary(anonymise)]);
@@ -219,7 +235,7 @@ export function forbidden(runs, { anonymise, self = "conductor-site" } = {}) {
   };
 
   for (const run of runs) {
-    const repoName = basename(String(run.repo ?? "").replace(/[\\/]+$/, ""));
+    const repoName = lastSegment(run.repo);
     if (repoName.toLowerCase() === self.toLowerCase()) continue;
 
     keep(paths, run.runId, "a run id", 16);
