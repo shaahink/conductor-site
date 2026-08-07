@@ -4,34 +4,31 @@
 
 ## Handoff (overwrite this block, ≤12 lines, no history)
 
-last: **session 5** delivered all four of S3 — harvest (cb373bb), fail-closed (24bfb37,
-  4cfdc00), strip (0f5f4c9, ddebdf6), gate (6ca4398, 3a97fd3). **S3 is complete.** QA of
-  session 4: no findings. Its S2.4 page named `sessions`, `cacheRead`, `ledgerEntries` and all
-  three resolved against a corpus built afterwards from the store, with nothing adjusted to fit.
-now on disk: `npm run harvest` reads `conductor history --json --limit 0` plus each run.db
-  read-only into `src/data/corpus.json`, and reproduces Appendix A to the digit — 18 runs, 7
-  repos, 340 sessions, 287/300, $3,016.29, 47.5M/17.8M/3.8B, 648/677, 53 rollovers, 123 soft
-  breaks, 7 approvals, 167 bugs. `npm run evidence` is the gate: red on a stale corpus (naming
-  the field that moved) and red on a cited key or run label the corpus lacks. `EvidenceStrip`
-  renders keys at the foot of concepts and inline in long-form; `ordered()` fails the build on a
-  key that does not resolve. Battery: 0 errors, 42 tests, 10 pages, 63 annotations.
-next: **S4.1** — concepts 1–3. `context-engineering` is already written (S2.4); agentic
-  engineering and multi-agent orchestration are new. Corpus keys available to cite are printed by
-  any failing build, or read `corpus` and any run's `figures` in corpus.json. Per-run and
-  corpus-wide are **separate namespaces**: `sessions` is one run, `totalSessions` is the corpus,
-  and a per-run key on a page naming no runs is refused.
-open: **three published figures in SPEC do not reproduce and must never be retyped** — bug #3:
-  Appendix A's `$9.37` a session is `$8.87` (3016.29/340) and `~$10.85` a checkpoint is `$10.51`
-  (3016.29/287); its "315 costed sessions" is 314 under the definition the corpus states. The
-  totals are all exact; only the divisions are wrong. S5.1 names the keys and gets the right
-  ones. Bug #2 — `--overlay` prose ~3.3:1, S7.2's call. **S7.1 must re-confirm `site` against
-  the deployed URL.** The wordmark and the footer's owner name are owner calls.
-tooling: **never `git checkout --` a file whose new version is uncommitted** — commit first,
-  break-test second. Write commit messages to a file and use `-F`. `conductor bg` cannot exec
-  bare `npm` — use `npm.cmd`; the battery is ~15s, so foreground it. **A failed Astro build
-  exits 0xC0000409 after a libuv assertion, not 1** — which is why the evidence gate is plain
-  Node and not a build wrapper. `conductor history --json` emits a UTF-8 BOM on Windows; strip
-  it before `JSON.parse`. **One run.db holds several runs** — filter every query by `run_id`.
+last: **session 9** delivered **S4.1** (690304d, 2a0e93e) and **S4.2** (931a40f). Six concept
+  pages now exist and the spine reads in `order` from one to six. QA of session 8: no findings —
+  battery re-run green from a clean tree, and the evidence gate proven red again by hand
+  (`totalSessions` set to 999 → "committed 999 → store 340", exit 1; green on restore).
+now on disk: concepts 1, 2, 5, 6 written (3 and 4 were earlier). New: `scripts/citations.mjs`
+  opens every `inConductor.citations` entry against a conductor checkout and prints the line it
+  landed on — **all 37 resolve at engine `1632b9f`**. The engine path comes from `CONDUCTOR_REPO`
+  or the sibling directory, never from a file this public repo commits. The harvest now publishes
+  the cost lanes: `totalAgentCostUsd`, `totalGateCostUsd`, `totalAdvisorCostUsd`. Battery: 0
+  errors, 42 tests, 8 cited entries green, 14 pages, 154 annotations.
+next: **S4.3** — concepts 7 and 8. **Every citation for both is already researched and verified
+  in the knowledge ledger** (two notes, "S4.3 RESEARCH BANKED" and "concept 8"): do not re-derive
+  them, go straight to writing. Then S4.4, which owns closing the `readNext` chain — concept 6
+  currently points back at 2 as a placeholder, because a dangling slug fails the build.
+open: **two SPEC figures corrected by measurement, do not retype either.** Part IV concept 2 says
+  agent $3,015 vs advisor $0.09; the store has **three** categories and says agent $3,014.80,
+  gate $1.26, advisor $0.24 — and the advisor line is priced from elapsed seconds, not metered,
+  which the page labels. Part IV concept 8 calls the notification lane "push-only"; it long-polls
+  and handles callbacks that write `control.json`. Bug #3 (Appendix A's `$9.37` and `~$10.85`
+  divisions) and bug #2 (`--overlay` contrast) still stand. **S7.1 must re-confirm `site`.**
+tooling: prose refuses any number of two digits or more — spell small quantities as words, and
+  never write a decimal, a ratio or a currency amount into content. **Never `git checkout --` a
+  file whose new version is uncommitted.** Commit messages to a file, then `-F`. The battery is
+  ~20s, so foreground it. **A failed Astro build exits 0xC0000409, not 1.** `conductor history
+  --json` emits a UTF-8 BOM on Windows. **One run.db holds several runs** — filter by `run_id`.
 
 
 ## Baseline numbers (from run.db)
@@ -40,7 +37,7 @@ tooling: **never `git checkout --` a file whose new version is uncommitted** —
 |---|---|
 | Total checkpoints | 28 |
 | Done | 0 |
-| Claimed (unconfirmed) | 10 |
+| Claimed (unconfirmed) | 12 |
 
 ## Checkpoints
 
@@ -71,8 +68,8 @@ phase (a code path is not evidence). Agent claims are marked DONE; engine confir
 |---|-----------|--------|--------|----------|
 | S3.1 | `scripts/harvest.mjs` reads `conductor history --json --limit 0` for run-level truth and read-only SQLite for what that does not expose (costs by category, gate pass rates, bugs, scores, event counts, rollovers), and writes `src/data/corpus.json` | DONE | - | docs/evidence/S3.1-harvest.txt |
 | S3.2 | `anonymise.json` maps run id → published scenario label, and the harvest **fails closed**: a run with no entry is excluded from the corpus rather than published under its real name, proven by a test that adds an unmapped run | DONE | - | docs/evidence/S3.2-fails-closed.txt |
-| S3.3 | The evidence strip component renders figures from `corpus.json` by key, and a page that names a key absent from the corpus fails the build rather than rendering blank | IN PROGRESS | - | - |
-| S3.4 | The `evidence` gate re-runs the harvest and goes red when `corpus.json` is stale or a cited key is missing, proven by a deliberate staleness both ways | TODO | - | - |
+| S3.3 | The evidence strip component renders figures from `corpus.json` by key, and a page that names a key absent from the corpus fails the build rather than rendering blank | DONE | 0f5f4c9 | docs/evidence/S3.3-evidence-strip.txt |
+| S3.4 | The `evidence` gate re-runs the harvest and goes red when `corpus.json` is stale or a cited key is missing, proven by a deliberate staleness both ways | DONE | 0f5f4c9 | docs/evidence/S3.4-evidence-gate.txt |
 
 ### S4 — 
 
