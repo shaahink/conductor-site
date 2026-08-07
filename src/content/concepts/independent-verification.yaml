@@ -10,6 +10,13 @@ meta:
 slug: "independent-verification"
 order: 6
 title: "Independent verification"
+tags:
+  - "verification"
+  - "failure"
+linkAs:
+  - "verifier"
+  - "guardrail"
+  - "guardrails"
 alsoKnownAs:
   - "guardrails"
   - "AI safety rails"

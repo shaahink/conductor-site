@@ -9,6 +9,14 @@ meta:
 slug: "agent-observability"
 order: 9
 title: "Agent observability"
+tags:
+  - "measurement"
+  - "context"
+linkAs:
+  - "run store"
+  - "event log"
+  - "telemetry"
+  - "observability"
 alsoKnownAs:
   - "LLM observability"
   - "agent tracing"

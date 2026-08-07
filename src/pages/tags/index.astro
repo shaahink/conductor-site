@@ -1,0 +1,116 @@
+---
+/* /tags/ — the vocabulary, with what is under each one.
+   ---------------------------------------------------------------------------
+   Small on purpose. Eight tags is a page a reader can hold in their head, and
+   the count beside each is the part that makes it useful rather than
+   decorative: it says which of the eight is a subject this site has actually
+   worked on and which is a promise it has not kept yet.
+
+   Not in the top bar. The three sections are the site's shape and the tags are
+   a second way through it — reachable from every entry that carries one, and
+   from here, which is where a reader who has followed one tag goes looking for
+   the others. Four items in a bar would make the tags look like a fourth
+   section, which they are not. */
+import Base from "../../layouts/Base.astro";
+import { taggedEntries } from "../../lib/collections.js";
+import { TAG_INFO, allTags, tagHref } from "../../lib/tags.js";
+
+const entries = await taggedEntries();
+
+const rows = allTags().map((tag) => {
+  const count = entries.filter((entry) => entry.tags.includes(tag)).length;
+  return { tag, info: TAG_INFO[tag], count, href: tagHref(tag) };
+});
+---
+
+<Base
+  title="Tags"
+  description="Eight cross-cutting subjects, each gathering the concepts, articles and run reports on this site that share it — cost, failure, verification and five more."
+  ogDescription="Eight subjects gathering the concepts, articles and reports that share them."
+  canonical="/tags/"
+>
+  <main id="main" class="tags-index">
+    <h1>Tags</h1>
+    <p class="standfirst">
+      The three sections say what kind of page something is. These say what it
+      is about. Each one gathers concepts, articles and run reports together,
+      because a subject like cost is one thought spread across all three.
+    </p>
+
+    <ul class="list">
+      {
+        rows.map((row) => (
+          <li>
+            <a href={row.href}>
+              <span class="name">{row.info.label}</span>
+              <span class="count">
+                {row.count}
+                <span class="visually-hidden"> pages</span>
+              </span>
+            </a>
+            <p>{row.info.blurb}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </main>
+</Base>
+
+<style>
+  .tags-index {
+    inline-size: min(100%, var(--measure));
+    margin-inline: auto;
+    padding-block: var(--space-2xl) var(--space-3xl);
+    padding-inline: var(--space-m);
+  }
+
+  .standfirst {
+    font-size: var(--text-lead);
+    color: var(--muted);
+    margin-block-start: var(--space-s);
+  }
+
+  .list {
+    list-style: none;
+    padding: 0;
+    margin-block-start: var(--space-xl);
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  .list li {
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-s);
+  }
+
+  /* The count sits at the far end of the row rather than after the word, so
+     the eight of them make a column a reader can compare down. */
+  .list a {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-s);
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  .name {
+    font-size: var(--text-h3);
+    font-weight: var(--weight-bold);
+  }
+
+  .list a:hover .name {
+    color: var(--current);
+  }
+
+  .count {
+    font-family: var(--mono);
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+
+  .list p {
+    color: var(--muted);
+    margin-block-start: var(--space-3xs);
+  }
+</style>

@@ -15,9 +15,12 @@
    is two lines and belongs beside the mechanism it demonstrates. */
 import type { GetStaticPaths } from "astro";
 import EvidenceStrip from "../../components/EvidenceStrip.astro";
+import Prose from "../../components/Prose.astro";
 import ReadNext from "../../components/ReadNext.astro";
+import TagList from "../../components/TagList.astro";
 import Reading from "../../layouts/Reading.astro";
-import { ordered, readNextOf } from "../../lib/collections.js";
+import { hrefOf, ordered, readNextOf, termIndex } from "../../lib/collections.js";
+import { pageContext } from "../../lib/links.js";
 
 export const getStaticPaths = (async () => {
   const concepts = await ordered("concepts");
@@ -25,8 +28,14 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { entry } = Astro.props;
-const { meta, title, alsoKnownAs, oneLine, theIdea, theProblem, inConductor, tryIt, evidence } =
+const { meta, title, alsoKnownAs, oneLine, theIdea, theProblem, inConductor, tryIt, evidence, tags } =
   entry.data;
+
+/* One context across the page's three prose blocks, and `self` so a concept
+   never links its own title or its own other names — the phrases most likely
+   to appear in its own paragraphs. */
+const terms = await termIndex();
+const linking = pageContext(hrefOf("concepts", entry.id));
 
 const next = (await readNextOf("concepts", entry)).map((other) => ({
   href: `/concepts/${other.id}/`,
@@ -74,18 +83,22 @@ const headings = moves.map((move) => ({ depth: 2, slug: move.id, text: move.text
       )
     }
 
+    <TagList tags={tags} />
+
     <h2 id={moves[0]!.id}>{moves[0]!.text}</h2>
-    {theIdea.map((para, index) => <p data-sk-edit={`theIdea[${index}]`}>{para}</p>)}
+    <Prose body={theIdea} terms={terms} context={linking} path="theIdea" />
 
     <h2 id={moves[1]!.id}>{moves[1]!.text}</h2>
-    {theProblem.map((para, index) => <p data-sk-edit={`theProblem[${index}]`}>{para}</p>)}
+    <Prose body={theProblem} terms={terms} context={linking} path="theProblem" />
 
     <h2 id={moves[2]!.id}>{moves[2]!.text}</h2>
-    {
-      inConductor.mechanism.map((para, index) => (
-        <p data-sk-edit={`inConductor.mechanism[${index}]`}>{para}</p>
-      ))
-    }
+    <Prose
+      body={inConductor.mechanism}
+      terms={terms}
+      context={linking}
+      path="inConductor.mechanism"
+    />
+
 
     {/* The citations carry no annotation: `inConductor.citations` is on the
         collection's omit list, so there is no field in the editor's form model
@@ -149,6 +162,10 @@ const headings = moves.map((move) => ({ depth: 2, slug: move.id, text: move.text
 
   .aka-name + .aka-name::before {
     content: "· ";
+  }
+
+  .concept :global(.tags) {
+    margin-block-start: var(--space-m);
   }
 
   .concept h2 {

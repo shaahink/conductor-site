@@ -7,24 +7,25 @@ export default defineConfig({
   /* The one line canonical, og:url, og:image, every sitemap entry, robots.txt's
      Sitemap: line and the footer credit all derive from.
 
-     ⚠ The short alias `conductor-site.vercel.app` is NOT this project. That
-     name was already taken and serves a third party, so the planning session's
-     value was publishing every canonical and every sitemap entry under someone
-     else's domain. The `-sheevajans-projects` alias is team-login gated and
-     cannot serve as a public canonical either.
+     ⚠ A bare `.vercel.app` label is claimed globally, first come, and most
+     short words are gone. `conductor-site`, and later `karvan` and `rasad`,
+     were each already assigned to a stranger's project — which is why the
+     first value here was the `-virid` collision suffix Vercel generates when
+     the label it wants is taken. `payesh` was claimed for this project on
+     2026-08-07 and is the canonical from that day.
 
-     CONFIRMED AT S7.1 against the deployment rather than against this comment,
-     which is what the checkpoint asked for and is a different question from
-     "what does the plan file say". Both hosts answer 200, so reachability
-     proves nothing; what settles it is what they serve. The value below
-     returns this site — Astro, `<title>A field guide to agentic engineering`,
-     the hashed same-origin faces the Fonts API builds. The short alias returns
-     a Next.js application that is not ours. Re-confirm the same way if the
-     domain ever moves: fetch it and read the title, do not ping it.
+     The lesson survives the rename: reachability proves nothing, because a
+     squatted label answers 200 as happily as this one does. What settles
+     whether a host is ours is what it *serves* — Astro, this site's `<title>`,
+     the hashed same-origin faces the Fonts API builds. Re-confirm that way if
+     the domain ever moves. Fetch it and read the title; do not ping it.
+
+     `conductor-site-virid.vercel.app` is still attached to the project on
+     purpose, so every link published before the rename keeps resolving.
 
      `scripts/seo.mjs` holds the rest of the site to this string — every
      absolute URL in `dist/` has to be on it, or the gate is red. */
-  site: "https://conductor-site-virid.vercel.app",
+  site: "https://payesh.vercel.app",
 
   /* The owner's editor. The whole route is the kit's — this site owns no
      editor page, so a change to the editor's markup or its CSP arrives as a
@@ -56,7 +57,7 @@ export default defineConfig({
      paragraph says TODO would be a check that gets removed rather than a
      check that gets obeyed. */
   integrations: [
-    editorRoute({ title: "Edit — conductor-site" }), checkAnnotations({ collections: editable }),
+    editorRoute({ title: "Edit — Payesh" }), checkAnnotations({ collections: editable }),
     /* No `allow:` list, and the absence is the point (S1.4). The template
        shipped two escapes — `homePage:meta.description` and
        `homePage:meta.ogDescription` were `TODO:` on purpose, because they are

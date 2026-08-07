@@ -10,6 +10,14 @@ meta:
 slug: "evals-and-gates"
 order: 5
 title: "Evals, gates and acceptance"
+tags:
+  - "verification"
+  - "measurement"
+linkAs:
+  - "gate battery"
+  - "exit code"
+  - "exit codes"
+  - "acceptance criteria"
 alsoKnownAs:
   - "acceptance criteria"
   - "LLM evals"

@@ -10,6 +10,16 @@ meta:
 slug: "durable-execution"
 order: 7
 title: "Durable execution and resumability"
+tags:
+  - "autonomy"
+  - "failure"
+linkAs:
+  - "rollover"
+  - "rollovers"
+  - "rolled over"
+  - "resumability"
+  - "crash resume"
+  - "plan hot-swap"
 alsoKnownAs:
   - "workflow orchestration"
   - "checkpointing"

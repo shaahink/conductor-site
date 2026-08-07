@@ -1,8 +1,8 @@
 {
-  "name": "conductor-site",
+  "name": "payesh",
   "private": true,
   "type": "module",
-  "description": "A field guide to agentic engineering, worked end to end in Conductor: ten concepts, four articles, and anonymised reports from real autonomous runs. Astro 7, content in typed collections; the shared machinery comes from @shaahink/sitekit.",
+  "description": "Payesh — a field guide to agentic engineering, worked end to end in Conductor: ten concepts, four articles, and anonymised reports from real autonomous runs. Astro 7, content in typed collections; the shared machinery comes from @shaahink/sitekit.",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",

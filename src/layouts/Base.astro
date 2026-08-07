@@ -13,6 +13,19 @@ import Footer from "../components/Footer.astro";
 import TopBar from "../components/TopBar.astro";
 import "../styles/styles.css";
 
+/** The site's name, for the tab and the social card.
+    ---------------------------------------------------------------------------
+    پایش — Persian for monitoring: watching something over time and keeping the
+    record of it, which is what this site is made of. Chosen because the shorter
+    words that were wanted first were gone: a bare `.vercel.app` label is
+    claimed globally and first come, and `conductor-site`, `karvan` (caravan)
+    and `rasad` (observation) were each already a stranger's project.
+
+    Here rather than in content, because it is the site's identity rather than
+    its copy — renaming it is a decision about the whole thing, not a sentence
+    somebody edits in a form. */
+const SITE_NAME = "Payesh";
+
 interface Props {
   title: string;
   description: string;
@@ -87,7 +100,16 @@ const ogImageUrl = absolute(Astro.site!, ogImage ?? ogCardFor(canonical));
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title}</title>
+    {/* The site's name after the page's own, which is what a browser tab and a
+        search result both want: the page first, because that is what the reader
+        is looking for, and the site after it so a row of tabs is attributable.
+        Composed here rather than typed into every `meta.title` — that would be
+        the same six characters in twenty-one content files, wrong in one of
+        them within a month.
+
+        The home page is the exception and is left alone: "Payesh — a field
+        guide to agentic engineering · Payesh" is the site's name twice. */}
+    <title>{title === SITE_NAME || title.includes(SITE_NAME) ? title : `${title} · ${SITE_NAME}`}</title>
 
     {/* The two faces, built same-origin. Both preload: the sans carries the
         body from the first paint and the mono carries the wordmark and the

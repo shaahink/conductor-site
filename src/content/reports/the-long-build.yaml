@@ -10,6 +10,11 @@ meta:
 slug: "the-long-build"
 order: 2
 title: "The long build"
+tags:
+  - "failure"
+  - "cost"
+  - "autonomy"
+  - "people"
 scenario: "A large interactive feature built inside an existing site, and the
   checkpoint that never closed"
 standfirst: "This is the run that did not finish. It is here on purpose and it

@@ -10,6 +10,10 @@ meta:
 slug: "the-engine-run"
 order: 3
 title: "The engine run"
+tags:
+  - "verification"
+  - "failure"
+  - "cost"
 scenario: "A static-analysis engine for a compiled language, with an evaluation
   suite as the release gate"
 standfirst: "Every checkpoint closed, and this is still the reddest run in the

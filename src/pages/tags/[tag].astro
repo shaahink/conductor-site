@@ -1,0 +1,127 @@
+---
+/* One tag: everything on the site that carries it, whatever collection it is in.
+   ---------------------------------------------------------------------------
+   This is the page that makes the tags worth having. The three section indexes
+   answer "what concepts are there", "what articles are there" — questions about
+   the shape of the site. A tag page answers a question about the subject: show
+   me everything here about cost, and do not make me care that one of them is a
+   concept, one is an article and one is a run report.
+
+   Generated from the vocabulary rather than from what happens to be tagged, so
+   a tag in the enum with nothing on it yet builds a page that says so. The
+   alternative — deriving the routes from usage — silently 404s a link that a
+   page is already rendering, which is the wrong way round: the vocabulary is
+   the promise and the content is what fills it. */
+import type { GetStaticPaths } from "astro";
+import EntryList from "../../components/EntryList.astro";
+import TagList from "../../components/TagList.astro";
+import Base from "../../layouts/Base.astro";
+import { taggedEntries } from "../../lib/collections.js";
+import { TAG_INFO, allTags, tagHref, type Tag } from "../../lib/tags.js";
+
+export const getStaticPaths = (async () => {
+  const entries = await taggedEntries();
+  return allTags().map((tag) => ({
+    params: { tag },
+    props: { tag, entries: entries.filter((entry) => entry.tags.includes(tag)) }
+  }));
+}) satisfies GetStaticPaths;
+
+const { tag, entries } = Astro.props as {
+  tag: Tag;
+  entries: Awaited<ReturnType<typeof taggedEntries>>;
+};
+const info = TAG_INFO[tag];
+
+/* The section a reader is being sent to, spelled out beside each title. On a
+   page that deliberately mixes the three, "concept" and "run report" are the
+   orienting fact — without them the list reads as one undifferentiated pile. */
+const KIND: Record<string, string> = {
+  concepts: "Concept",
+  articles: "Article",
+  reports: "Run report"
+};
+
+const items = entries.map((entry) => ({
+  href: entry.href,
+  title: entry.title,
+  summary: entry.summary,
+  kind: KIND[entry.collection]
+}));
+
+const others = allTags().filter((other) => other !== tag);
+
+/* Bounded by the schema at both ends: `description` is 60–160 characters and
+   `ogDescription` 45–120, and these are generated rather than written, so they
+   are built to fit rather than trimmed after the fact. The blurbs are the long
+   half; the count sentence is what makes each one different from the others. */
+const count = `${entries.length} ${entries.length === 1 ? "page" : "pages"}`;
+const description = `${count} on this site tagged ${info.label} — concepts, articles and reports from real autonomous runs, gathered by subject rather than by section.`;
+---
+
+<Base
+  title={`Tagged ${info.label}`}
+  description={description}
+  ogDescription={`${count} tagged ${info.label}, gathered by subject rather than by section.`}
+  canonical={tagHref(tag)}
+>
+  <main id="main" class="tag">
+    <p class="eyebrow">Tag</p>
+    <h1>{info.label}</h1>
+    <p class="blurb">{info.blurb}</p>
+
+    {
+      items.length > 0 ? (
+        <EntryList items={items} />
+      ) : (
+        <p class="empty">
+          Nothing carries this tag yet. It is in the vocabulary because the
+          subject belongs on this site, not because a page has been written.
+        </p>
+      )
+    }
+
+    <section class="others">
+      <h2>Every tag</h2>
+      <TagList tags={others} label="" />
+    </section>
+  </main>
+</Base>
+
+<style>
+  .tag {
+    inline-size: min(100%, var(--measure));
+    margin-inline: auto;
+    padding-block: var(--space-2xl) var(--space-3xl);
+    padding-inline: var(--space-m);
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .blurb {
+    font-size: var(--text-lead);
+    color: var(--muted);
+    margin-block: var(--space-s) var(--space-xl);
+  }
+
+  .empty {
+    color: var(--muted);
+    margin-block-start: var(--space-m);
+  }
+
+  .others {
+    margin-block-start: var(--space-2xl);
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-l);
+  }
+
+  .others h2 {
+    margin-block-end: var(--space-s);
+  }
+</style>

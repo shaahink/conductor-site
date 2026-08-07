@@ -1,0 +1,199 @@
+---
+/* The runs that have a report, summarised: when, how long, what it cost.
+   ---------------------------------------------------------------------------
+   The front page's answer to "what actually ran". `/runs` carries the whole
+   corpus in a table a reader studies; this is the version a reader *scans*, and
+   the difference is what is on it — a date, a duration and a price rather than
+   six columns of figures.
+
+   Everything here comes from `corpus.json` through `corpusIndex`, including
+   which runs these are: a run appears because the harvest published it and a
+   report was written about it, never because a title was typed onto the front
+   page. Add a fourth report and it appears here.
+
+   `elapsed` and `engineTime` are both shown, and they are the two different
+   answers to "how long" the harvest publishes side by side — one is the
+   calendar, one is the machine. See `readStore`'s note. The pair is the fact
+   worth putting on a front page: a run that took four days of calendar and
+   fifteen hours of engine is not a four-day project and is not a fifteen-hour
+   one either. */
+import corpus from "../data/corpus.json";
+import { corpusIndex, type CorpusData } from "../lib/corpus.js";
+import { corpusFigure } from "../lib/evidence.js";
+
+interface Props {
+  /** Run label → the report about it. Only these runs are shown. */
+  reports: Record<string, { href: string; title: string }>;
+}
+
+const { reports } = Astro.props;
+const { rows } = corpusIndex(corpus as CorpusData);
+
+/* The figures each card prints, named by key so the labels under them are the
+   corpus's own words. `cells` from `corpusIndex` is the table's six columns and
+   is the wrong list here — a card is not a narrow table. */
+const shown = ["engineTime", "costUsd", "sessions", "tokens"] as const;
+
+const cards = rows
+  .filter((row) => reports[row.label])
+  .map((row) => ({
+    ...reports[row.label]!,
+    scenario: row.scenario,
+    started: row.started,
+    ended: row.ended,
+    elapsed: row.elapsed,
+    status: row.status,
+    figures: shown.map((key) => {
+      const figure = row.cells.find((cell) => cell.label === corpusKeyLabel(key));
+      return figure;
+    })
+  }));
+
+/* The label a key prints under, read off the corpus rather than written here —
+   the same rule the table's headings follow. Corpus-wide and per-run figures
+   share their labels, so the corpus copy is the safe one to ask. */
+function corpusKeyLabel(key: string): string {
+  const total: Record<string, string> = {
+    engineTime: "totalEngineTime",
+    costUsd: "totalCostUsd",
+    sessions: "totalSessions",
+    tokens: "totalTokens"
+  };
+  return corpusFigure("components/RunCards.astro", total[key]!).label;
+}
+---
+
+<ul class="cards">
+  {
+    cards.map((card) => (
+      <li>
+        <p class="when">
+          <time datetime={new Date(card.started.value).toISOString()}>
+            {card.started.display}
+          </time>
+          <span class="elapsed" title={card.elapsed.note}>
+            {card.elapsed.display}
+          </span>
+          {card.status !== "completed" && (
+            <span class:list={["status", card.status]}>{card.status}</span>
+          )}
+        </p>
+
+        <h3>
+          <a href={card.href}>{card.title}</a>
+        </h3>
+        <p class="scenario">{card.scenario}</p>
+
+        <dl class="figures">
+          {card.figures.map(
+            (figure) =>
+              figure && (
+                <div>
+                  <dt>{figure.label}</dt>
+                  <dd>{figure.display}</dd>
+                </div>
+              )
+          )}
+        </dl>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .cards {
+    list-style: none;
+    padding: 0;
+    margin-block-start: var(--space-xl);
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  @media (min-width: 64rem) {
+    .cards {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-l);
+    }
+  }
+
+  .cards li {
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-s);
+  }
+
+  /* The date line: when it ran and how long it took, before the title. That
+     order is deliberate — a run report is a record of something that happened
+     on a day, and the day is the first thing that tells a reader whether this
+     is current. */
+  .when {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-xs);
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    color: var(--muted);
+  }
+
+  .elapsed {
+    color: var(--text);
+  }
+
+  .status {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .status.abandoned {
+    color: var(--peach);
+  }
+
+  .status.paused {
+    color: var(--yellow);
+  }
+
+  .status.aborted {
+    color: var(--muted);
+  }
+
+  .cards h3 {
+    margin-block-start: var(--space-2xs);
+    font-size: var(--text-h3);
+  }
+
+  .cards h3 a {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .cards h3 a:hover,
+  .cards h3 a:focus-visible {
+    color: var(--current);
+  }
+
+  .scenario {
+    color: var(--muted);
+    font-size: var(--text-small);
+    margin-block-start: var(--space-3xs);
+  }
+
+  /* Two by two rather than a row of four: at a third of the width a row of
+     four figures wraps into a ragged column, and the pairs read as pairs —
+     time beside money, size beside size. */
+  .figures {
+    margin-block-start: var(--space-s);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xs);
+  }
+
+  .figures dt {
+    font-size: var(--text-micro);
+    color: var(--muted);
+  }
+
+  .figures dd {
+    margin-inline-start: 0;
+    font-family: var(--mono);
+    color: var(--text);
+  }
+</style>

@@ -43,7 +43,16 @@ export interface RunEntry {
   scenario: string;
   repoKey: string;
   status: string;
+  /** The run row's own start. **Not** what a page should print: resuming a run
+      rewrites this column and leaves the sessions alone, so for the three runs
+      resumed across a gap it names the resume rather than the beginning. The
+      `startedOn` figure is the first session and is what the pages show. */
   startedUtc: string;
+  /** The run row's end where it has one, and the last session's end where the
+      engine exited without closing the record. `runClosed` says which. */
+  endedUtc: string;
+  /** Whether the store recorded a finish, or the ending had to be inferred. */
+  runClosed: boolean;
   figures: Record<string, Figure>;
 }
 
@@ -91,6 +100,33 @@ const known = {
   runs: Object.keys(runs).sort(),
   windows: Object.keys(windows).sort()
 };
+
+/** One corpus-wide figure by key, for a page that wants a number on its own.
+    ---------------------------------------------------------------------------
+    `resolveEvidence` is built for the strip: it takes a whole `evidence` block
+    and returns it grouped for rendering. The front page's findings each need a
+    single figure, in a sentence, and going through the strip's shape to get one
+    would mean building a group of one and reading it back out.
+
+    Corpus-wide keys only, and the refusal is the point. A per-run figure has no
+    meaning without saying which run — `costUsd` is eighteen different numbers —
+    and a finding is a claim about the corpus. A page that wants to say
+    something about one run cites it in a strip, where the run is named beside
+    the number. */
+export function corpusFigure(where: string, key: string): Figure {
+  const figure = corpusFigures[key];
+  if (!figure) {
+    const perRun = known.run.includes(key);
+    throw new Error(
+      `${where}: names the figure "${key}", which the corpus does not carry` +
+        (perRun
+          ? ` as a corpus-wide key — it is a PER-RUN figure, and a finding is a claim about the ` +
+            `whole corpus. Cite it in an evidence strip that names the run.`
+          : `. Corpus-wide keys: ${known.corpus.join(", ")}.`)
+    );
+  }
+  return figure;
+}
 
 /** The corpus behind a key, or a build failure naming what is actually there.
     ---------------------------------------------------------------------------

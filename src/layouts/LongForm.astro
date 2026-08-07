@@ -9,7 +9,11 @@
    renders, so the two cannot disagree about what is on the page. */
 import type { CollectionEntry } from "astro:content";
 import EvidenceStrip from "../components/EvidenceStrip.astro";
+import Prose from "../components/Prose.astro";
 import ReadNext, { type Destination } from "../components/ReadNext.astro";
+import TagList from "../components/TagList.astro";
+import { hrefOf, termIndex } from "../lib/collections.js";
+import { pageContext } from "../lib/links.js";
 import { slugify } from "../lib/text.js";
 import Reading from "./Reading.astro";
 
@@ -20,11 +24,17 @@ interface Props {
 }
 
 const { entry, collection, next } = Astro.props;
-const { meta, title, standfirst, sections, evidence } = entry.data;
+const { meta, title, standfirst, sections, evidence, tags } = entry.data;
 const scenario = "scenario" in entry.data ? entry.data.scenario : undefined;
 
 const headed = sections.map((section) => ({ ...section, id: slugify(section.heading) }));
 const headings = headed.map((section) => ({ depth: 2, slug: section.id, text: section.heading }));
+
+/* One context for the whole page, threaded through every section, so a term
+   mentioned in section one and again in section five is linked once — where
+   the reader met it. See src/lib/links.ts, rule 2. */
+const terms = await termIndex();
+const linking = pageContext(hrefOf(collection, entry.id));
 ---
 
 <Reading
@@ -44,6 +54,8 @@ const headings = headed.map((section) => ({ depth: 2, slug: section.id, text: se
     <h1 data-sk-edit="title">{title}</h1>
     <p class="standfirst" data-sk-edit="standfirst">{standfirst}</p>
 
+    <TagList tags={tags} />
+
     {/* Inline rather than at the foot, which is what SPEC Part II asks of an
         article: a long-form piece argues from the numbers, so the reader meets
         them before the argument rather than after it. A concept page is the
@@ -56,9 +68,12 @@ const headings = headed.map((section) => ({ depth: 2, slug: section.id, text: se
           <h2 id={section.id} data-sk-edit={`sections[${index}].heading`}>
             {section.heading}
           </h2>
-          {section.body.map((para, line) => (
-            <p data-sk-edit={`sections[${index}].body[${line}]`}>{para}</p>
-          ))}
+          <Prose
+            body={section.body}
+            terms={terms}
+            context={linking}
+            path={`sections[${index}].body`}
+          />
         </Fragment>
       ))
     }
@@ -77,6 +92,10 @@ const headings = headed.map((section) => ({ depth: 2, slug: section.id, text: se
     text-transform: uppercase;
     letter-spacing: 0.06em;
     margin-block-end: var(--space-2xs);
+  }
+
+  .longform :global(.tags) {
+    margin-block-start: var(--space-m);
   }
 
   .standfirst {

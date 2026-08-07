@@ -43,6 +43,8 @@ const fixture = () => ({
     totalRepos: figure(1, "1", "repositories"),
     totalCheckpointsDone: figure(7, "7/9", "checkpoints closed"),
     totalSessions: figure(11, "11", "sessions"),
+    totalEngineTime: figure(9_000_000, "2h 30m", "of engine time"),
+    totalTokens: figure(4400, "4.4K", "tokens"),
     totalCostUsd: figure(1.5, "$1.50", "spent across the corpus"),
     totalGatesGreen: figure(13, "13/14", "gates green")
   },
@@ -53,7 +55,14 @@ const fixture = () => ({
       repoKey: "a-repo",
       status: "completed",
       startedUtc: "2019-02-02T00:00:00.000Z",
+      endedUtc: "2019-02-02T02:00:00.000Z",
+      runClosed: true,
       figures: {
+        startedOn: figure(Date.parse("2019-02-02T00:00:00.000Z"), "2 Feb 2019", "started"),
+        endedOn: figure(Date.parse("2019-02-02T02:00:00.000Z"), "2 Feb 2019", "ended"),
+        elapsed: figure(7_200_000, "2h", "start to finish"),
+        engineTime: figure(6_000_000, "1h 40m", "of engine time"),
+        tokens: figure(3000, "3K", "tokens"),
         checkpointsDone: figure(4, "4/4", "checkpoints closed"),
         sessions: figure(6, "6", "sessions"),
         costUsd: figure(1, "$1.00", "spent"),
@@ -65,8 +74,20 @@ const fixture = () => ({
       scenario: "A run the store never closed the record on",
       repoKey: "a-repo",
       status: "abandoned",
-      startedUtc: "2019-01-01T00:00:00.000Z",
+      /* Deliberately LATER than `the-later-one`'s, while `startedOn` below is
+         earlier. That is the resumed-run shape in miniature: resuming rewrites
+         the run row's start and leaves the sessions alone, so the row and the
+         printed date name different days. The sort test asserts the table
+         follows the date it prints. */
+      startedUtc: "2019-02-03T00:00:00.000Z",
+      endedUtc: "2019-01-01T04:00:00.000Z",
+      runClosed: false,
       figures: {
+        startedOn: figure(Date.parse("2019-01-01T00:00:00.000Z"), "1 Jan 2019", "started"),
+        endedOn: figure(Date.parse("2019-01-01T04:00:00.000Z"), "1 Jan 2019", "last active"),
+        elapsed: figure(14_400_000, "4h", "start to finish"),
+        engineTime: figure(3_000_000, "50m", "of engine time"),
+        tokens: figure(1400, "1.4K", "tokens"),
         checkpointsDone: figure(3, "3/5", "checkpoints closed"),
         sessions: figure(5, "5", "sessions"),
         costUsd: figure(0.5, "$0.50", "spent"),
@@ -84,6 +105,35 @@ test("the table is every run in the corpus, oldest first", () => {
     ["the-earlier-one", "the-later-one"],
     "newest-first would open the table with the runs that went well and bury the dead " +
       "starts at the bottom; the order is the order the work happened in"
+  );
+});
+
+test("the order follows the date the row prints, not the run row's own start", () => {
+  const { rows } = corpusIndex(fixture());
+
+  /* The fixture's `the-earlier-one` carries a `startedUtc` a day LATER than
+     `the-later-one`'s and a `startedOn` a month earlier — the shape a run gets
+     when it is resumed across a gap, because resuming rewrites the run row and
+     leaves the sessions alone. Three runs in the real corpus have it. Sorting
+     on `startedUtc` files such a run under a date the same row is printing,
+     which is a table disagreeing with itself in the one column a reader uses
+     to orient. */
+  assert.deepEqual(
+    rows.map((row) => row.started.display),
+    ["1 Jan 2019", "2 Feb 2019"],
+    "the column a reader reads the order from has to be the column the order was made from"
+  );
+});
+
+test("a run whose ending was inferred still carries the note that says so", () => {
+  const { rows } = corpusIndex(fixture());
+  const inferred = rows.find((row) => row.label === "the-earlier-one");
+
+  assert.equal(inferred.ended.label, "last active");
+  assert.equal(
+    inferred.elapsed.display,
+    "4h",
+    "elapsed is on the row beside the dates, because it is what those two dates mean"
   );
 });
 
@@ -128,7 +178,14 @@ test("an empty corpus is a stale harvest, not an empty table", () => {
 test("the column headings are the figures' own labels, not a list kept beside them", () => {
   const { headings, rows, totals } = corpusIndex(fixture());
 
-  assert.deepEqual(headings, ["checkpoints closed", "sessions", "spent", "gates green"]);
+  assert.deepEqual(headings, [
+    "checkpoints closed",
+    "sessions",
+    "of engine time",
+    "tokens",
+    "spent",
+    "gates green"
+  ]);
   assert.equal(headings.length, rows[0].cells.length);
   assert.equal(
     headings.length,
@@ -143,11 +200,11 @@ test("every cell is a display string from the corpus, never a value formatted he
 
   assert.deepEqual(
     rows[0].cells.map((cell) => cell.display),
-    ["3/5", "5", "$0.50", "5/6"]
+    ["3/5", "5", "50m", "1.4K", "$0.50", "5/6"]
   );
   assert.deepEqual(
     totals.cells.map((cell) => cell.display),
-    ["7/9", "11", "$1.50", "13/14"]
+    ["7/9", "11", "2h 30m", "4.4K", "$1.50", "13/14"]
   );
 });
 

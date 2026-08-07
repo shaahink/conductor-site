@@ -1,16 +1,28 @@
 meta:
-  title: "A field guide to agentic engineering"
-  description: "Ten concepts in agentic engineering, each worked end to end in a
-    real orchestrator, with what it cost. Every figure here is recomputed from a
-    run store."
-  ogDescription: "Ten concepts, each worked end to end in a real orchestrator,
-    with what it cost."
+  title: "Payesh — a field guide to agentic engineering"
+  description: "A month of running an orchestrator against real repositories, and
+    the record it kept: what worked, what was wasted, and every figure
+    recomputed from the store."
+  ogDescription: "A month of autonomous runs against real repositories, and the
+    record they kept — recomputed, not estimated."
   canonical: "/"
 
 hero:
   title: "A field guide to agentic engineering"
-  tagline: "Ten concepts the market is hiring for, each one worked end to end in a
-    real orchestrator, with what it cost."
+  tagline: "Ten concepts, worked end to end in a real orchestrator, with what they
+    cost."
+  # The answer to "what am I looking at", before any number. First person on
+  # purpose: the corpus is one person's month, and a page that hides that reads
+  # like a vendor's benchmark.
+  standfirst:
+    - "For a month I pointed an orchestrator at my own repositories and let it
+      work unattended — planning, spawning agents, running gates, recording what
+      happened. Some of it went well. A good deal of it did not, and the runs
+      that were abandoned are published here beside the ones that finished."
+    - "This is what the record says. Every figure below is recomputed from that
+      run store rather than typed into a sentence, which is the only reason any
+      of it is worth reading: a number nobody can check is an opinion with a
+      decimal point."
 
 # The corpus, above the fold. Keys, never values — these are recomputed from the
 # run store by `npm run harvest`, and naming one the corpus does not have fails
@@ -23,13 +35,78 @@ evidence:
     - "totalSessions"
     - "totalCheckpointsDone"
     - "totalCostUsd"
-    - "totalGatesGreen"
+    - "totalEngineTime"
+    - "corpusSpan"
+
+findings:
+  title: "What the record shows"
+  intro: "Six things a month of this turned up that I had not expected, each one
+    measured rather than felt, and each linked to the page where it is worked
+    out properly."
+  items:
+    - figure: "totalCacheReadShare"
+      claim: "of every token the corpus moved was a cache read, not a fresh one. The
+        bill for an agent is mostly the cost of it re-reading what it already
+        knew, which is why session length dominates every other variable."
+      where: "articles/what-a-run-costs"
+
+    - figure: "killedAfterANudge"
+      claim: "of the sessions killed at a token ceiling had already been asked to wrap
+        up, in time, and carried on anyway. The cooperative rail converted none
+        of them — delivery is not conversion, and nobody was measuring the
+        difference."
+      where: "articles/the-nudge-below-the-median"
+
+    - figure: "rolloversWithACommit"
+      claim: "rolled-over sessions recorded a commit, and the column holds a zero
+        rather than nothing at all — so it reads as a measurement instead of a
+        gap. A population whose history was never written looks identical to one
+        that did nothing."
+      where: "articles/the-ledger-that-lied"
+
+    - figure: "totalGatesCrashed"
+      claim: "of the red gates never ran at all: an exit status the command did not
+        choose, dying on the way up in tens of milliseconds. An agent reporting
+        that its tests pass would have sailed straight past every one of them."
+      where: "articles/never-believe-the-agent"
+
+    - figure: "totalCheckpointsDone"
+      claim: "checkpoints closed across the corpus. The most useful run here is the
+        one that stopped one short, because the store recorded exactly why the
+        last one stayed open."
+      where: "reports/the-long-build"
+
+    - figure: "totalAdvisorCostUsd"
+      claim: "went on the advisor lane, against three thousand on the agent doing the
+        work. An orchestrator is not many expensive models in a trench coat; it
+        is one expensive model and a great deal of arithmetic."
+      where: "concepts/multi-agent-orchestration"
 
 spine:
   title: "The ten concepts"
   intro: "In order, but there is no wrong door — each page states the idea in
     plain language first, and only then shows how one orchestrator implements
     it."
+
+reading:
+  title: "Four longer pieces"
+  intro: "Each one carries at least one number nobody else publishes, and each is
+    written from the same store the figures above come from."
+
+runs:
+  title: "Three runs in depth"
+  intro: "Published as the shape of the work rather than as whose work it was, so
+    you can map your own situation onto one. The dates and durations are the
+    sessions' own."
+  corpus: "They are three out of eighteen, and the other fifteen are on the runs
+    page with the same figures beside them — including the false starts and the
+    prototype that was abandoned where it stood. A corpus that shows only the
+    runs worth writing up is a portfolio."
+
+ways:
+  title: "Or start from a subject"
+  intro: "The three sections say what kind of page something is. These say what it
+    is about, and each one gathers concepts, articles and run reports together."
 
 # A section the owner can turn off from the editor. `visible` is absent here on
 # purpose: absent means shown, and that is the point of the default — the

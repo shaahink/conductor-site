@@ -10,6 +10,9 @@ meta:
 slug: "never-believe-the-agent"
 order: 2
 title: "Never believe the agent"
+tags:
+  - "verification"
+  - "failure"
 standfirst: "Verification has to be a separate program with real exit codes. The
   argument for that is not in the gates that passed. It is in the ones that did
   not, and in the few that never ran at all."

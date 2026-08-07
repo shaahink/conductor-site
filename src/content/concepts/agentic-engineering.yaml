@@ -10,6 +10,12 @@ meta:
 slug: "agentic-engineering"
 order: 1
 title: "Agentic engineering"
+tags:
+  - "autonomy"
+  - "orchestration"
+linkAs:
+  - "autonomous run"
+  - "autonomous runs"
 alsoKnownAs:
   - "AI-native development"
   - "autonomous software engineering"

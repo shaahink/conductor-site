@@ -73,8 +73,29 @@ const measured = generatedAtUtc.slice(0, 10);
               <span class:list={["status", row.status]}>{row.status}</span>
             )}
 
+            {/* When it ran and how long it took on a calendar, which is the
+                one thing the columns cannot say. The dates are the run's first
+                and last session rather than the run row's own — see the
+                harvest's note; three of these rows would otherwise be dated
+                from the day somebody resumed them.
+
+                `title` carries the figure's note where it has one, so the two
+                rows whose start was inferred, and the three whose end was, say
+                so on hover and in the accessible name rather than needing a
+                footnote nobody reads. */}
             <span class="meta">
-              <time datetime={row.started}>{row.started}</time>
+              <time datetime={new Date(row.started.value).toISOString()} title={row.started.note}>
+                {row.started.display}
+              </time>
+              {row.ended.display !== row.started.display && (
+                <>
+                  <span class="to" aria-hidden="true">→</span>
+                  <time datetime={new Date(row.ended.value).toISOString()} title={row.ended.note}>
+                    {row.ended.display}
+                  </time>
+                </>
+              )}
+              <span class="elapsed" title={row.elapsed.note}>{row.elapsed.display}</span>
               <span class="repo">{row.repoKey}</span>
             </span>
           </th>
@@ -111,15 +132,31 @@ const measured = generatedAtUtc.slice(0, 10);
   /* The one block on this site allowed past the reading measure, and the
      exception is the measure's own reasoning rather than an escape from it:
      62–72ch is how far an eye tracks a *line*, and this is read across. Left
-     inside the column, five columns of figures overflow a desktop window and
+     inside the column, six columns of figures overflow a desktop window and
      every reader gets the scrollbar, which is the affordance for the phone.
+
+     It breaks out to `--page-wide` — the front page's own width — rather than
+     to a fixed negative margin, which is what it used to do and what stopped
+     working the moment the table grew from four columns to six: `-3xl` a side
+     bought 12rem, the two new columns wanted more, and the gates column went
+     off the edge with the scenario squeezed into a four-line ribbon beside it.
+     Naming the same token the front page uses means the widest thing on the
+     site has one width rather than two that drift.
+
+     The arithmetic centres a page-wide box on the measure column's own centre,
+     which is the viewport's — so it stays centred without needing to know what
+     the column's width resolved to. `100vw` minus a gutter keeps it off the
+     window edge on a viewport between the two.
 
      64rem is the breakpoint the sticky table of contents already uses — the
      site has one, and a second one chosen to fit this table would be a number
      nobody could explain later. Below it the scroll container does the work. */
   @media (min-width: 64rem) {
     .scroll {
-      margin-inline: calc(-1 * var(--space-3xl));
+      --bleed: min(var(--page-wide), calc(100vw - 2 * var(--space-l)));
+
+      inline-size: var(--bleed);
+      margin-inline: calc(50% - var(--bleed) / 2);
     }
   }
 
@@ -230,6 +267,20 @@ const measured = generatedAtUtc.slice(0, 10);
 
   .repo {
     color: var(--muted);
+  }
+
+  /* The arrow between two dates is punctuation, not a word, so it is hidden
+     from the accessible name — a screen reader announcing "16 Jul 2026 right
+     arrow 17 Jul 2026" in the middle of every row header is worse than the
+     two dates read plainly. */
+  .to {
+    color: var(--muted);
+  }
+
+  /* The duration is the fact the dates are there to produce, so it is the one
+     part of the meta line set in the text colour rather than the quiet one. */
+  .elapsed {
+    color: var(--text);
   }
 
   /* Same three roles the evidence strip paints a run's status in, and for the

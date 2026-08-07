@@ -142,15 +142,25 @@ const measured = generatedAtUtc.slice(0, 10);
     color: var(--muted);
   }
 
+  /* A grid rather than a wrapping flex row, and the reason is the notes.
+     ---------------------------------------------------------------------
+     Flex sizes each cell to its own content, so one figure carrying a
+     denominator two lines long became several times the width of the four
+     beside it and dragged the wrap points with it — four numbers on one line,
+     one enormous cell, then a ragged second row. The figures are a set of the
+     same kind of thing and should read as a set.
+
+     `auto-fit` with a floor means the column count follows the width it is
+     given rather than a breakpoint: five across on the front page, two or
+     three inside a reading column, one on a phone. The floor is wide enough
+     for a label like "checkpoints closed" to sit on one or two lines rather
+     than breaking every word. */
   .figures {
     margin-block-start: var(--space-s);
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
     gap: var(--space-m);
-  }
-
-  .cell {
-    min-inline-size: var(--mono-inline-size);
+    align-items: start;
   }
 
   .value {
@@ -171,7 +181,10 @@ const measured = generatedAtUtc.slice(0, 10);
   .note {
     display: block;
     color: var(--muted);
-    max-inline-size: var(--measure-narrow);
+    /* Its own column, now that the cells are a grid. It used to be capped at
+       the narrow measure, which is what let one note set the width of the
+       whole row. */
+    max-inline-size: 100%;
     margin-block-start: var(--space-3xs);
   }
 

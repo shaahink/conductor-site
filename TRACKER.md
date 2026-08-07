@@ -49,7 +49,7 @@ tooling: an Astro comment is a JSX expression: it may not sit between </head> an
 |---|---|
 | Total checkpoints | 28 |
 | Done | 0 |
-| Claimed (unconfirmed) | 26 |
+| Claimed (unconfirmed) | 27 |
 
 ## Checkpoints
 
@@ -116,7 +116,7 @@ phase (a code path is not evidence). Agent claims are marked DONE; engine confir
 |---|-----------|--------|--------|----------|
 | S7.1 | SEO and social: canonicals, sitemap, robots, OG images per section, `astro.config` `site` pointing at the real production URL | DONE | f7f7d6f | docs/evidence/S7.1-seo-and-social.md |
 | S7.2 | Accessibility and performance pass — keyboard reachable, landmarks, focus visible, reduced motion honoured, both themes legible, no layout shift on theme flip | DONE | 9309485 | docs/evidence/S7.2-accessibility-and-performance.md |
-| S7.3 | Generated files regenerated and clean (`npm run headers`, `npm run content`, `npm run editor`), README written, and the repo's CI green on `main` | TODO | - | - |
+| S7.3 | Generated files regenerated and clean (`npm run headers`, `npm run content`, `npm run editor`), README written, and the repo's CI green on `main` | DONE | d95f457 | docs/evidence/S7.3-generated-readme-ci.md |
 | S7.4 | **ownerGated** — the Vercel project is linked and the site is live at its production URL, the owner has read the three reports for anonymisation, and the front page has been looked at in both themes | TODO | - | - |
 
 ## Dependencies

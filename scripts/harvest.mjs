@@ -205,9 +205,49 @@ function readStore(db, runId) {
     };
   }
 
+  /* When the run happened, and the two different answers to "how long".
+     ---------------------------------------------------------------------------
+     `runs.ended_utc` is NULL for every run whose engine exited without closing
+     the record — three of this corpus's eighteen — so the run row cannot be
+     asked how long a run took. The sessions can: every session in the store has
+     both a start and an end, all 340 of them, which is what makes both numbers
+     below computable for every published run rather than for the finished ones
+     only.
+
+     They are two genuinely different claims and the site publishes both,
+     because publishing either one alone is misleading in a way a reader cannot
+     detect:
+
+     - **engine time** is the sum of the session durations — how long the
+       machine was actually working. It is the honest answer to "what did this
+       cost in time", and it is the one that pairs with the money.
+     - **elapsed** is first session start to last session end, gaps included.
+       It is how long the run took on a calendar, and it is almost always the
+       larger of the two because runs sit overnight waiting for a human.
+
+     One run in this corpus spent 14.8 hours of engine time inside a 107.8-hour
+     elapsed span. A site that published only the second would be describing a
+     four-day project; only the first, a two-day one. Neither on its own is what
+     happened.
+
+     `max(ended_utc)` rather than the last row's end: sessions are ordered by
+     start and a long session can finish after a short one that began later. */
+  const timing = one(
+    `select min(started_utc) as firstStart,
+            max(ended_utc) as lastEnd,
+            coalesce(sum(
+              (julianday(ended_utc) - julianday(started_utc)) * 86400000
+            ), 0) as engineMs
+       from sessions
+      where run_id = ? and started_utc is not null and ended_utc is not null`
+  );
+
   return {
     byCategory,
     records,
+    firstStart: timing.firstStart,
+    lastEnd: timing.lastEnd,
+    engineMs: Math.round(timing.engineMs ?? 0),
     tokensIn: sumOver(byCategory, "tokensIn"),
     tokensOut: sumOver(byCategory, "tokensOut"),
     cacheRead: sumOver(byCategory, "cacheRead"),
@@ -400,7 +440,11 @@ export function collect({ history = readHistory(), published } = {}) {
       db.close();
     }
   }
-  return collected.sort((a, b) => a.startedUtc.localeCompare(b.startedUtc));
+  /* By the first session rather than by `runs.started_utc`, for the reason
+     `runEntry` spells out: resuming a run rewrites that column, so sorting on
+     it files a run that began on 29 July between two that began on 2 August —
+     directly under the date the row itself publishes. */
+  return collected.sort((a, b) => a.store.firstStart.localeCompare(b.store.firstStart));
 }
 
 /* ---------------------------------------------------------------------------
@@ -438,6 +482,59 @@ function big(n) {
 }
 const round1 = (n) => (Math.round(n * 10) / 10).toString();
 
+/** A span of time, in the two units a reader actually holds it in.
+    ---------------------------------------------------------------------------
+    Two units and never three: "4d 12h" is a duration, "4d 12h 37m 12s" is a
+    stopwatch reading, and nothing on this site is decided by the seconds. The
+    unit pair steps down with the magnitude so the second one always carries
+    information — days and hours, then hours and minutes, then minutes alone.
+
+    A zero second unit is dropped rather than printed, because "6h 0m" reads as
+    a measurement that came out suspiciously round when it is simply six hours.
+    Under a minute prints as "<1m": the corpus has sessions that lasted seconds,
+    and rounding those to "0m" would publish a run that took no time at all. */
+function duration(ms) {
+  if (ms < 60_000) return "<1m";
+  const minutes = Math.round(ms / 60_000);
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) {
+    const rest = minutes % 60;
+    return rest ? `${hours}h ${rest}m` : `${hours}h`;
+  }
+  const days = Math.floor(hours / 24);
+  const rest = hours % 24;
+  return rest ? `${days}d ${rest}h` : `${days}d`;
+}
+
+/** A date the way a reader says one, from an ISO instant.
+    ---------------------------------------------------------------------------
+    `en-GB` in UTC, so "31 Jul 2026" rather than "7/31/2026" — the corpus is
+    published to readers in more than one country and the ambiguous ordering is
+    the one format that can be read as two different days. UTC because the store
+    records UTC and rendering it in the harvest machine's zone would make the
+    published date depend on who ran the harvest. */
+const dayOf = (iso) =>
+  new Date(iso).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC"
+  });
+
+/** The span a pair of instants covers, gaps and all. */
+const spanMs = (from, to) => Date.parse(to) - Date.parse(from);
+
+/** Whether the run row's start lands on a different DAY from the first session.
+    ---------------------------------------------------------------------------
+    Resuming a run rewrites `runs.started_utc` and leaves the sessions alone, so
+    the two disagree on nearly every run that ran for more than one sitting. The
+    published date is what a reader sees, so the note is worth printing only
+    when the disagreement would change it — comparing days rather than instants
+    keeps it off the fourteen runs where the row is merely a few hours late and
+    on the four where the row names a different date entirely. */
+const resumeGap = (run, store) => dayOf(run.startedUtc) !== dayOf(store.firstStart);
+
 /** One run, published under the name `anonymise.json` gave it. */
 function runEntry(run, mapped) {
   const s = run.store;
@@ -459,7 +556,63 @@ function runEntry(run, mapped) {
     repoKey: mapped.repoKey,
     status: disposition(run, mapped),
     startedUtc: run.startedUtc,
+    /* The store's own answer where it has one, and the sessions' where it does
+       not. A run whose engine exited without closing the record has a NULL
+       `ended_utc`, so `endedUtc` here is the last session's end — which is the
+       true last moment the run did anything, and is what the abandoned runs are
+       published with. `runClosed` says which of the two a reader is looking at,
+       so the page can mark an ending that was inferred rather than recorded. */
+    endedUtc: run.endedUtc ?? s.lastEnd,
+    runClosed: Boolean(run.endedUtc),
     figures: {
+      /* Both ends come from the sessions, not from the run row, and that is a
+         departure from rule 1 at the top of this file with a measured reason.
+         Rule 1 is about *checkpoints*, which the engine folds out of its event
+         log and SQL undercounts. Timestamps are the opposite case: the run row
+         is rewritten when a run is resumed, and the sessions are not.
+
+         `the-engine-run` is the proof. `conductor history` gives its start as
+         2 Aug 10:38; its first session ran on 29 Jul 00:28, twenty-six sessions
+         before the four-day gap it was resumed across. Published from the run
+         row it is a two-hour run, which is what this site said about it until
+         the duration figures went in and the two numbers had to agree. The
+         sessions are what actually happened, so the sessions are what ships —
+         and where the run row disagrees, the note says so rather than leaving a
+         reader to wonder why the date moved. */
+      startedOn: figure(
+        Date.parse(s.firstStart),
+        dayOf(s.firstStart),
+        "started",
+        STORE,
+        resumeGap(run, s)
+          ? `the run record says ${dayOf(run.startedUtc)} — that is when it was resumed, not when it began`
+          : undefined
+      ),
+      endedOn: figure(
+        Date.parse(s.lastEnd),
+        dayOf(s.lastEnd),
+        run.endedUtc ? "ended" : "last active",
+        STORE,
+        run.endedUtc
+          ? undefined
+          : "the engine exited without closing the record, so this is the last session's end rather than a recorded finish"
+      ),
+      /* See `readStore`'s note: two different claims, both published, because
+         either one alone describes a project that did not happen. */
+      engineTime: figure(
+        s.engineMs,
+        duration(s.engineMs),
+        "of engine time",
+        STORE,
+        "the session durations added up — how long the machine was actually working, gaps excluded"
+      ),
+      elapsed: figure(
+        spanMs(s.firstStart, s.lastEnd),
+        duration(spanMs(s.firstStart, s.lastEnd)),
+        "start to finish",
+        STORE,
+        "first session to last on a calendar, including every hour the run sat waiting for a human"
+      ),
       sessions: figure(run.sessions, plain(run.sessions), "sessions", HISTORY),
       checkpointsDone: figure(
         run.checkpointsDone,
@@ -477,6 +630,18 @@ function runEntry(run, mapped) {
       tokensIn: figure(s.tokensIn, big(s.tokensIn), "tokens in", STORE),
       tokensOut: figure(s.tokensOut, big(s.tokensOut), "tokens out", STORE),
       cacheRead: figure(s.cacheRead, big(s.cacheRead), "cache read", STORE),
+      /* The three above, added. It exists because the corpus table needs one
+         token column and picking any one of the three would be a choice the
+         heading could not explain — `tokensIn` alone understates a run by two
+         orders of magnitude, since the cache reads are 98% of what moved. The
+         split stays published beside it for anyone who needs it. */
+      tokens: figure(
+        s.tokensIn + s.tokensOut + s.cacheRead,
+        big(s.tokensIn + s.tokensOut + s.cacheRead),
+        "tokens",
+        STORE,
+        "in, out and cache read together — the cache reads are most of any run's total"
+      ),
       gatesGreen: figure(s.gatesGreen, `${s.gatesGreen}/${s.gatesTotal}`, "gates green", STORE),
       gatesTotal: figure(s.gatesTotal, plain(s.gatesTotal), "gates run", STORE),
       gatesRed: figure(
@@ -757,6 +922,14 @@ function corpusFigures(runs, repoKeys) {
   const perSession = round2(cost / sessions);
   const perCheckpoint = round2(cost / done);
 
+  /* See the two time figures below. `engineMs` sums the runs; `corpusMs` is the
+     outer envelope of all of them, which is a min/max rather than a sum because
+     runs in this corpus overlap — two were in flight on the same afternoon. */
+  const engineMs = sum((r) => r.store.engineMs);
+  const firstStart = runs.map((r) => r.store.firstStart).sort()[0];
+  const lastEnd = runs.map((r) => r.store.lastEnd).sort().at(-1);
+  const corpusMs = spanMs(firstStart, lastEnd);
+
   const tokensIn = sum((r) => r.store.tokensIn);
   const tokensOut = sum((r) => r.store.tokensOut);
   const cacheRead = sum((r) => r.store.cacheRead);
@@ -808,6 +981,46 @@ function corpusFigures(runs, repoKeys) {
     ),
     totalCheckpointsDone: figure(done, `${done}/${planned}`, "checkpoints closed", HISTORY),
     totalCheckpointsPlanned: figure(planned, plain(planned), "checkpoints planned", HISTORY),
+
+    /* Time, corpus-wide, and the same two claims the runs make one at a time.
+       ---------------------------------------------------------------------
+       `totalEngineTime` sums the runs, so overlapping runs are counted twice
+       over — which is correct for the question it answers ("how many machine
+       hours are behind this site") and wrong for any question about a clock on
+       a wall. The note says so on the page rather than here, because a reader
+       who sees 130 hours inside a 27-day window will otherwise do the division
+       and conclude the machine was idle 80% of the time.
+
+       `corpusSpan` is the calendar the whole thing happened in: the earliest
+       session in the corpus to the latest. It is the figure that makes the rest
+       of them legible — $3,016 and 340 sessions mean one thing over three years
+       and quite another over one month. */
+    totalEngineTime: figure(
+      engineMs,
+      duration(engineMs),
+      "of engine time",
+      STORE,
+      `every session's duration added up, across all ${runs.length} runs; runs that overlapped are counted in both`
+    ),
+    corpusSpan: figure(
+      corpusMs,
+      duration(corpusMs),
+      "from the first session to the last",
+      STORE,
+      "the calendar the whole corpus happened in, not the time anything was working"
+    ),
+    corpusFirstDay: figure(
+      Date.parse(firstStart),
+      dayOf(firstStart),
+      "first session in the corpus",
+      STORE
+    ),
+    corpusLastDay: figure(
+      Date.parse(lastEnd),
+      dayOf(lastEnd),
+      "last session in the corpus",
+      STORE
+    ),
     totalCostUsd: figure(cost, usd(cost), "spent across the corpus", HISTORY),
     totalAgentCostUsd: figure(
       inCategory("agent"),
@@ -833,6 +1046,15 @@ function corpusFigures(runs, repoKeys) {
     totalTokensIn: figure(tokensIn, big(tokensIn), "tokens in", STORE),
     totalTokensOut: figure(tokensOut, big(tokensOut), "tokens out", STORE),
     totalCacheRead: figure(cacheRead, big(cacheRead), "cache read", STORE),
+    /* The corpus-wide partner of the per-run `tokens`, and the footer of that
+       column in the table on `/runs`. */
+    totalTokens: figure(
+      allTokens,
+      big(allTokens),
+      "tokens",
+      STORE,
+      "in, out and cache read together across the whole corpus"
+    ),
     /* The shape of the bill rather than its size, and the one figure that
        explains why a corpus of billions of tokens cost thousands of dollars
        rather than tens of thousands. Numerator and denominator are both

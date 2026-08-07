@@ -11,40 +11,70 @@
    they belong to. */
 export interface Item {
   href: string;
-  /** Its place in the reading order, shown so the spine is visible. */
-  order: number;
+  /** Its place in the reading order, shown so the spine is visible. Absent on
+      a list that is not a sequence — see `kind`. */
+  order?: number;
   title: string;
   /** One line: a concept's `oneLine`, a piece's `standfirst`, a report's
       `scenario`. Different fields, the same job. */
   summary: string;
+  /** Which section this entry lives in — "Concept", "Run report".
+      ---------------------------------------------------------------------
+      For lists that deliberately mix the three collections: a tag page, and
+      the front page's spread. There, a position number would be a lie (third
+      of what?) and the orienting fact is the *kind* instead. A list is one or
+      the other, never both, which is why they are separate optional fields
+      rather than one labelled slot. */
+  kind?: string;
 }
 
 interface Props {
   items: Item[];
   /** How the numbers read aloud, for a screen reader that would otherwise get
-      a bare digit before every title. */
-  ordinalLabel: string;
+      a bare digit before every title. Only meaningful on a numbered list. */
+  ordinalLabel?: string;
 }
 
 const { items, ordinalLabel } = Astro.props;
+
+/* An ordered list only where the order is a fact about the content. A tag page
+   is a set — its entries have no first and no third — and `<ol>` would tell a
+   screen reader otherwise in the one place a sighted reader gets no such
+   impression. Astro cannot switch the tag name on an expression, so the two
+   branches are written out. */
+const numbered = items.some((item) => item.order !== undefined);
 ---
 
-<ol class="entries">
-  {
-    items.map((item) => (
-      <li>
-        <a href={item.href}>
-          <span class="ordinal">
-            <span class="visually-hidden">{ordinalLabel} </span>
-            {item.order}
-          </span>
-          <span class="entry-title">{item.title}</span>
-        </a>
-        <p>{item.summary}</p>
-      </li>
-    ))
-  }
-</ol>
+{
+  numbered ? (
+    <ol class="entries">
+      {items.map((item) => (
+        <li>
+          <a href={item.href}>
+            <span class="ordinal">
+              <span class="visually-hidden">{ordinalLabel} </span>
+              {item.order}
+            </span>
+            <span class="entry-title">{item.title}</span>
+          </a>
+          <p>{item.summary}</p>
+        </li>
+      ))}
+    </ol>
+  ) : (
+    <ul class="entries">
+      {items.map((item) => (
+        <li>
+          {item.kind && <span class="kind">{item.kind}</span>}
+          <a href={item.href}>
+            <span class="entry-title">{item.title}</span>
+          </a>
+          <p>{item.summary}</p>
+        </li>
+      ))}
+    </ul>
+  )
+}
 
 <style>
   .entries {
@@ -74,6 +104,20 @@ const { items, ordinalLabel } = Astro.props;
     font-family: var(--mono);
     font-size: var(--text-small);
     color: var(--muted);
+  }
+
+  /* The section label on a mixed list, set like every other eyebrow on the
+     site: mono, small, lettered out, above the thing it describes rather than
+     beside it — so the titles still line up down the left edge and the list
+     scans as a list. */
+  .kind {
+    display: block;
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-block-end: var(--space-3xs);
   }
 
   .entry-title {

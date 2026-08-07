@@ -10,6 +10,13 @@ meta:
 slug: "human-in-the-loop"
 order: 8
 title: "Human in the loop"
+tags:
+  - "people"
+  - "autonomy"
+linkAs:
+  - "owner queue"
+  - "owner approval"
+  - "owner approvals"
 alsoKnownAs:
   - "HITL"
   - "human oversight"

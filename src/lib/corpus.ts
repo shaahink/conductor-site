@@ -52,14 +52,23 @@ export interface CorpusData {
 /** A column of the table: the per-run key it prints, and the corpus-wide key
     that totals it in the footer. Both named here so they cannot drift apart.
 
-    Four, not sixteen. The per-run namespace carries far more than this and a
-    table with all of it would be a spreadsheet nobody reads — these are the
-    four a stranger sizing up their own situation actually asks: how much did
-    it close, how long did it take, what did it cost, and did the checks pass.
-    Everything else is in the report, one click along the row. */
+    Six, not sixteen. The per-run namespace carries far more than this and a
+    table with all of it would be a spreadsheet nobody reads — these are the six
+    a stranger sizing up their own situation actually asks: how much did it
+    close, how many sittings did it take, how long was the machine working, how
+    many tokens moved, what did it cost, and did the checks pass. Everything
+    else is in the report, one click along the row.
+
+    `engineTime` rather than `elapsed`, and the choice is the honest one rather
+    than the flattering one: engine time is what the machine actually spent and
+    it is the number that pairs with the money in the column beside it. Elapsed
+    is on the row header with the dates, where a reader reads it as calendar
+    rather than as effort. See the harvest's note on the two. */
 const columns = [
   { run: "checkpointsDone", total: "totalCheckpointsDone" },
   { run: "sessions", total: "totalSessions" },
+  { run: "engineTime", total: "totalEngineTime" },
+  { run: "tokens", total: "totalTokens" },
   { run: "costUsd", total: "totalCostUsd" },
   { run: "gatesGreen", total: "totalGatesGreen" }
 ] as const;
@@ -74,8 +83,15 @@ export interface RunRow {
   repoKey: string;
   /** `completed`, or the word `anonymise.json`'s disposition says instead. */
   status: string;
-  /** The date the run started, which is what puts the false starts first. */
-  started: string;
+  /** The day the run's first session began, which is what puts the false
+      starts first. Printed the way a reader says a date, from the figure. */
+  started: Figure;
+  /** The day its last session ended — a recorded finish, or for a run whose
+      engine exited without closing the record, the last thing it did. */
+  ended: Figure;
+  /** First session to last on a calendar, gaps included. Beside the dates
+      rather than in a column, because it is what those two dates *mean*. */
+  elapsed: Figure;
   cells: Figure[];
 }
 
@@ -114,8 +130,16 @@ function figureOf(where: string, figures: Record<string, Figure>, key: string): 
     order. */
 export function corpusIndex(data: CorpusData): CorpusIndex {
   const corpusFigures = data.corpus;
-  const entries = Object.values(data.runs).sort((a, b) =>
-    a.startedUtc.localeCompare(b.startedUtc)
+  /* By the printed date, not by `startedUtc`. They are different instants for
+     the three runs that were resumed across a gap: resuming rewrites the run
+     row's start and leaves the sessions alone, so sorting on the row filed a
+     run that began on 29 July between two that began on 2 August — directly
+     under the 29 July the same row was printing. Sorting on the figure the
+     table shows is the only arrangement that cannot disagree with itself. */
+  const entries = Object.values(data.runs).sort(
+    (a, b) =>
+      figureOf(a.label, a.figures, "startedOn").value -
+      figureOf(b.label, b.figures, "startedOn").value
   );
 
   const totalRuns = figureOf("the corpus", corpusFigures, "totalRuns");
@@ -136,7 +160,9 @@ export function corpusIndex(data: CorpusData): CorpusIndex {
     scenario: run.scenario,
     repoKey: run.repoKey,
     status: run.status,
-    started: run.startedUtc.slice(0, 10),
+    started: figureOf(run.label, run.figures, "startedOn"),
+    ended: figureOf(run.label, run.figures, "endedOn"),
+    elapsed: figureOf(run.label, run.figures, "elapsed"),
     cells: columns.map((column) => figureOf(run.label, run.figures, column.run))
   }));
 

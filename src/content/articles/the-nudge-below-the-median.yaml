@@ -9,6 +9,17 @@ meta:
 slug: "the-nudge-below-the-median"
 order: 3
 title: "The nudge that sat below the median"
+tags:
+  - "cost"
+  - "measurement"
+  - "failure"
+linkAs:
+  - "the nudge"
+  - "nudge"
+  - "nudges"
+  - "wrap-up"
+  - "soft break"
+  - "soft breaks"
 standfirst: "Every autonomous run puts a ceiling on what one session may spend,
   and almost every ceiling was picked by feel. The ledger can settle it. The
   awkward part is that the number you most need is the one a ceiling deletes."

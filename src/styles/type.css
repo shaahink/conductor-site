@@ -75,6 +75,20 @@
   --measure-narrow: 62ch;
   --measure-wide: 72ch;
 
+  /* The page, which is a different quantity from the measure and is why it is
+     named separately rather than being a fourth `--measure-`. A measure is how
+     far an eye tracks a *line* of prose, in `ch`, and it is a typographic fact.
+     This is how wide the *page* is allowed to be so that a grid of three cards
+     is three cards rather than three columns of two words, and it is in `rem`
+     because it is about layout rather than about characters.
+
+     Only the front page uses it, and only for the two blocks that are grids —
+     its prose still sits at `--measure`, centred inside this. A reading page
+     never gets it: a wall of full-width text is exactly what the measure
+     exists to prevent, and the corpus table's own `-3xl` bleed is the other,
+     narrower exception. */
+  --page-wide: 68rem;
+
   /* ── the space scale ──────────────────────────────────────────────────
      A 4px rhythm. "Panels breathe" is the Face's own discipline and it is
      the reason there is a --space-3xl at all. */

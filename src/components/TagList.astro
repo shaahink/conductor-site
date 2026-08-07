@@ -1,0 +1,84 @@
+---
+/* The tags on one entry, each a link to what else carries it.
+   ---------------------------------------------------------------------------
+   No `data-sk-edit`: a tag is chosen from a closed vocabulary the build
+   enforces (`TAGS` in schema.ts), so the editor draws it as a set of choices in
+   the panel rather than as text on the page. Typing over one in place could
+   only ever produce a word the enum refuses.
+
+   Rendered as a list rather than a row of spans, because that is what it is —
+   and a screen reader announcing "list, 3 items" before reading them is the
+   difference between three tags and three words that happen to follow the
+   paragraph. */
+import { TAG_INFO, tagHref, type Tag } from "../lib/tags.js";
+
+interface Props {
+  tags: readonly Tag[];
+  /** The label before the list. "Tagged" on an entry; a tag page uses its own
+      wording, and the front page wants none at all. */
+  label?: string;
+}
+
+const { tags, label = "Tagged" } = Astro.props;
+---
+
+{
+  tags.length > 0 && (
+    <nav class="tags" aria-label="Tags">
+      {label && <span class="label">{label}</span>}
+      <ul>
+        {tags.map((tag) => (
+          <li>
+            <a href={tagHref(tag)}>{TAG_INFO[tag].label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<style>
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2xs) var(--space-xs);
+    font-size: var(--text-small);
+  }
+
+  .label {
+    color: var(--muted);
+  }
+
+  .label::after {
+    content: ":";
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-xs);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* A pill would be a rounded card, and SPEC Part II rules those out. The mark
+     is the accent on a hairline — the same visual language as the rest of the
+     site's chrome, at the size the surrounding small text is set in. */
+  a {
+    display: inline-block;
+    color: var(--muted);
+    text-decoration: none;
+    border: var(--rule);
+    padding: var(--space-3xs) var(--space-2xs);
+    font-family: var(--mono);
+    font-size: var(--mono-inline-size);
+  }
+
+  a:hover,
+  a:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+</style>

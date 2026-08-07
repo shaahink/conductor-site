@@ -10,6 +10,13 @@ meta:
 slug: "the-ledger-that-lied"
 order: 4
 title: "The ledger that lied"
+tags:
+  - "measurement"
+  - "failure"
+  - "context"
+linkAs:
+  - "result summary"
+  - "gate summary"
 standfirst: "An autonomous run keeps a record of itself, and that record is what
   every later decision gets made from. This corpus holds a population of
   sessions whose record is empty in four places and full in the fifth. The shape

@@ -30,7 +30,19 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
 ---
 
 <header class="topbar">
-  <a class="wordmark" href="/">field guide</a>
+  {/* The name, and then what the name means — because "Payesh" tells an
+      English reader nothing on its own, and a wordmark that has to be looked up
+      is a wordmark that gets ignored. پایش is Persian for monitoring: watching
+      something over time and keeping the record. It is what this site is.
+
+      The gloss is hidden below the phone breakpoint, where the bar has room
+      for a name and a theme button and nothing else. It stays in the accessible
+      name at every width, so it is the screen-reader label rather than a
+      decoration that disappears. */}
+  <a class="wordmark" href="/">
+    <span class="name">Payesh</span>
+    <span class="gloss">watching the work</span>
+  </a>
 
   <nav aria-label="Sections">
     <ul>
@@ -89,14 +101,40 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
   }
 
   .wordmark {
-    font-weight: var(--weight-bold);
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2xs);
     letter-spacing: -0.01em;
     color: var(--text);
     text-decoration: none;
     margin-inline-end: auto;
   }
 
-  .wordmark:hover {
+  .name {
+    font-weight: var(--weight-bold);
+  }
+
+  /* Quiet, and set in the small size the rest of the site's captions use: it is
+     a translation, not a tagline, and it should read as one. */
+  .gloss {
+    font-size: var(--text-small);
+    font-weight: var(--weight-body);
+    color: var(--muted);
+    letter-spacing: 0;
+  }
+
+  /* Below the phone breakpoint the bar carries a name, three sections and a
+     button. The gloss is the one thing there that a reader can do without, so
+     it is what goes — and it goes with `display: none` rather than by being
+     dropped from the markup, because the accessible name should not change
+     with the viewport. */
+  @media (max-width: 30rem) {
+    .gloss {
+      display: none;
+    }
+  }
+
+  .wordmark:hover .name {
     color: var(--current);
   }
 

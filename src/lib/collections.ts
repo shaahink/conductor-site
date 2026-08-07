@@ -12,6 +12,8 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import { assertEvidenceResolves } from "./evidence.js";
 import { refuseTypedFigures } from "./figures.js";
+import { buildIndex, type Term } from "./links.js";
+import type { Tag } from "./tags.js";
 
 /** The collections a reader browses. `homePage` and `sectionPages` are the
     site's own furniture and are not listed anywhere. */
@@ -173,6 +175,129 @@ export async function ordered<C extends Listed>(collection: C): Promise<Collecti
   }
 
   return entries.sort((a, b) => a.data.order - b.data.order);
+}
+
+/** Where each section's entries live, so a URL is built in one place.
+    ---------------------------------------------------------------------------
+    `reports` is at `/runs/` rather than `/reports/`, which is the one case that
+    stops this being derivable from the collection name — a reader looking for
+    what a run cost is not looking for a report. Every other function here
+    routes through this rather than spelling a path. */
+export const sectionRoute: Record<Listed, string> = {
+  concepts: "/concepts/",
+  articles: "/articles/",
+  reports: "/runs/"
+};
+
+export const hrefOf = (collection: Listed, id: string): string =>
+  `${sectionRoute[collection]}${id}/`;
+
+/** The term index the prose linker matches against.
+    ---------------------------------------------------------------------------
+    Every concept offers its title and each of its other names; articles and
+    reports offer their titles. That asymmetry is deliberate: a concept is a
+    *thing the site defines*, so a reader meeting the phrase anywhere should be
+    able to reach the definition, and the market's other names for it are
+    exactly the phrases somebody will have written. An article is a piece of
+    writing rather than a term, so only its own title points at it.
+
+    A report contributes its title too, not its scenario sentence — the scenario
+    is a paragraph, and a paragraph matched inside other prose would be a
+    coincidence rather than a mention.
+
+    Titles under four characters are dropped. There are none today; the guard is
+    for the day somebody adds a concept called "RAG" or "MCP" and every page
+    that happens to contain those letters inside a longer word starts sprouting
+    links. Whole-word matching handles most of it and a floor handles the rest. */
+export async function termIndex(): Promise<Term[]> {
+  const terms: Term[] = [];
+
+  for (const entry of await getCollection("concepts")) {
+    const href = hrefOf("concepts", entry.id);
+    terms.push({ text: entry.data.title, href });
+    for (const name of entry.data.alsoKnownAs) terms.push({ text: name, href });
+    for (const name of entry.data.linkAs) terms.push({ text: name, href });
+  }
+
+  for (const collection of ["articles", "reports"] as const) {
+    for (const entry of await getCollection(collection)) {
+      const href = hrefOf(collection, entry.id);
+      terms.push({ text: entry.data.title, href });
+      for (const name of entry.data.linkAs) terms.push({ text: name, href });
+    }
+  }
+
+  return buildIndex(terms.filter((term) => term.text.trim().length >= 4));
+}
+
+/** A finding's destination, resolved — or a build failure naming it.
+    ---------------------------------------------------------------------------
+    The front page's findings each point at the page that works them out, as
+    `articles/what-a-run-costs`. The schema checks the *shape* of that string;
+    only the collections know whether it names anything. Without this, renaming
+    an article leaves the front page — the page nobody re-reads — linking into a
+    hole, and every gate on this site stays green while it does.
+
+    Returns the title as well as the href, so the link text is the destination's
+    own name rather than a second copy of it kept in `home.yaml`. */
+export async function findingTarget(
+  where: string
+): Promise<{ href: string; title: string; kind: string }> {
+  const [collection, id] = where.split("/") as [Listed, string];
+  const entries = await getCollection(collection);
+  const entry = entries.find((candidate) => candidate.id === id);
+
+  if (!entry) {
+    throw new Error(
+      `pages/home.yaml: a finding points at "${where}", which is not an entry in ` +
+        `${collection}. A finding with nowhere to go is a boast — the whole reason the front ` +
+        `page is not marketing is that every line on it can be followed. Known entries: ` +
+        `${entries.map((candidate) => candidate.id).sort().join(", ")}.`
+    );
+  }
+
+  const KIND: Record<Listed, string> = {
+    concepts: "Concept",
+    articles: "Article",
+    reports: "Run report"
+  };
+
+  return { href: hrefOf(collection, id), title: entry.data.title, kind: KIND[collection] };
+}
+
+/** Everything carrying one tag, across all three collections.
+    ---------------------------------------------------------------------------
+    Whole entries rather than links, so a caller can show the summary sentence
+    too — a tag page listing bare titles asks the reader to guess. Ordered by
+    collection first and reading order second, so the concepts come before the
+    long-form pieces that assume them. */
+export interface TaggedEntry {
+  collection: Listed;
+  id: string;
+  href: string;
+  title: string;
+  summary: string;
+  tags: Tag[];
+}
+
+export async function taggedEntries(): Promise<TaggedEntry[]> {
+  const out: TaggedEntry[] = [];
+  for (const collection of ["concepts", "articles", "reports"] as const) {
+    for (const entry of await ordered(collection)) {
+      out.push({
+        collection,
+        id: entry.id,
+        href: hrefOf(collection, entry.id),
+        title: entry.data.title,
+        /* A concept's one-liner, or the standfirst the two long-form shapes
+           both carry. One field per shape, named where the shape is known,
+           rather than a chain of optional lookups at every call site. */
+        summary: "oneLine" in entry.data ? entry.data.oneLine : entry.data.standfirst,
+        tags: [...entry.data.tags]
+      });
+    }
+  }
+  return out;
 }
 
 /** The entries one page's `readNext` points at, in the order it named them.

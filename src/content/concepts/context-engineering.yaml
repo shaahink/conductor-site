@@ -9,6 +9,12 @@ meta:
 slug: "context-engineering"
 order: 3
 title: "Context engineering"
+tags:
+  - "context"
+  - "cost"
+linkAs:
+  - "context window"
+  - "context windows"
 alsoKnownAs:
   - "context management"
   - "prompt engineering at scale"

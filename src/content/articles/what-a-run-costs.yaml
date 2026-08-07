@@ -10,6 +10,12 @@ meta:
 slug: "what-a-run-costs"
 order: 1
 title: "What an autonomous run actually costs"
+tags:
+  - "cost"
+  - "measurement"
+linkAs:
+  - "cache read"
+  - "cache reads"
 standfirst: "Nobody publishes the bill. This is the whole of one, across every
   run in the corpus, with the money that bought nothing left in."
 

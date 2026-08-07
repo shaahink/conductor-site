@@ -135,6 +135,37 @@ export const picture = z.object({
   h: z.number().int().positive()
 });
 
+/** The phrases in this site's own prose that should reach this page.
+    ---------------------------------------------------------------------------
+    A third naming field, and the reason it is not `alsoKnownAs` is that the two
+    are aimed at different readers. `alsoKnownAs` is the market's words — "LLM
+    observability", "agent swarms" — and it is *printed*, so a stranger arriving
+    on the word from a job ad recognises the page. `linkAs` is never printed. It
+    is the words this site actually writes in its paragraphs, and its only job
+    is to make the first mention of one a link.
+
+    They had to be separated because filling `alsoKnownAs` with both makes the
+    published line wrong: "Also known as: ceiling, wrap-up, soft break" says a
+    concept has a synonym when what it has is a mechanism.
+
+    Measured rather than guessed. The ten lists were chosen by counting which
+    phrases occur in the 17 entries' prose and how widely — "ceiling" is in 9
+    pages, "rollover" in 5, "gate battery" in 3. Two rules came out of doing it:
+
+    - **Plurals are their own entry.** The matcher is exact and whole-word on
+      purpose, because stemming turns "gates" into "gate" and then a sentence
+      about a garden gate links to an evals page. Where the prose uses both, both
+      are listed.
+    - **A word used everywhere belongs to nobody.** "Checkpoint" occurs 69 times
+      across 13 of the 17 entries and is deliberately absent from every list. A
+      term that would link on almost every page is not a cross-reference, it is
+      a decoration, and it is how auto-linking gets switched off six months
+      later. */
+export const linkAs = z
+  .array(z.string().min(4))
+  .default([])
+  .meta({ title: "Phrases that link here" });
+
 /** An evidence KEY. Never a value.
     ---------------------------------------------------------------------------
     This regex is the mechanism behind the site's first litmus test. Content
@@ -175,11 +206,116 @@ export const evidence = z.object({
   figures: z.array(evidenceKey).default([])
 });
 
+/** The tag vocabulary: closed, small, and the same words on all three
+    collections.
+    ---------------------------------------------------------------------------
+    A `z.enum` rather than a free string array, and that is the whole design.
+    Open tags are how a taxonomy dies: the second writer types `costs`, the
+    third `cost-control`, and within a season the tag pages are three near-empty
+    lists that each look like a mistake. A closed set fails the build on an
+    unknown word, which is the only moment anybody is in a position to decide
+    whether the vocabulary genuinely needs a ninth entry.
+
+    Eight, and they are deliberately *cross-cutting* rather than a second copy
+    of the ten concepts. A tag earns its place by joining pages that are not
+    already joined: `cost` gathers the token-economics concept, the article
+    about what a run costs and the report on the run that overspent, which are
+    one thought spread across three collections and three URLs. A tag that only
+    ever lands on one page is a page, not a tag.
+
+    Adding one is a real decision and the enum is where it gets made. Label and
+    blurb live in `src/lib/tags.ts`, which is where the reader-facing words are;
+    this list is only the vocabulary. The two are held together by a unit test,
+    so a slug added here without a description fails rather than publishing a
+    tag page with no sentence on it. */
+export const TAGS = [
+  "cost",
+  "measurement",
+  "failure",
+  "verification",
+  "autonomy",
+  "context",
+  "orchestration",
+  "people"
+] as const;
+
+export const tags = z
+  .array(z.enum(TAGS))
+  .default([])
+  .meta({ title: "Tags" });
+
+/** A run of prose.
+    ---------------------------------------------------------------------------
+    An array rather than one string with blank lines in it, and the reason is
+    the editor: the panel draws one box per element, so a writer moves a
+    paragraph by moving a row instead of hunting for the right newline in a
+    textarea the height of a phone. It is also what makes `data-sk-edit` able
+    to name a single paragraph — `theIdea[1]` — rather than the whole block.
+
+    The bounds are the shape of the page, not a style opinion. SPEC Part III
+    says the idea is three to six paragraphs; a two-paragraph idea has not been
+    explained and a nine-paragraph one is the article that concept should have
+    been.
+
+    It sits up here with the other shared pieces rather than down with the three
+    content collections for the same reason `evidence` does, and the same reason
+    is a real failure this file has already had: the home page uses it too, and
+    a `const` used above the line that declares it fails as "Cannot access
+    'paragraphs' before initialization" — reported against `astro.config.mjs`,
+    which reads as a broken config rather than an ordering problem. */
+const paragraphs = (min: number, max: number) =>
+  z.array(z.string().min(1)).min(min).max(max);
+
+/** One thing the corpus turned out to say, and where it is worked out.
+    ---------------------------------------------------------------------------
+    The front page's own shape, and the one piece of this schema that exists
+    because of what a cold reader needs rather than because of what the content
+    is. A stranger arriving here does not want to be sold an orchestrator and
+    does not want a list of ten headings either. What they can use is the
+    findings: the handful of things a month of running one against real
+    repositories actually showed, each with the number behind it and a route to
+    the page where it is argued properly.
+
+    Three fields, and the discipline is in the split:
+
+    - `figure` is a corpus KEY. The number is never in the sentence — same rule
+      as everywhere else on this site, and it bites hardest here, because a
+      front page is exactly where somebody would type "98%" to save a step.
+    - `claim` is the sentence, written to *follow* the number rather than
+      contain it: the page renders the figure and then this, so it reads as one
+      line. Write it starting lower-case and without the digits.
+    - `where` is `<collection>/<entry>` — the page that works it out.
+      `src/lib/collections.ts` resolves it against the real collections and
+      fails the build on a finding that points nowhere, so a renamed article
+      cannot leave the front page linking into a hole.
+
+    A finding with no `where` is refused by the shape rather than allowed as an
+    optional field. An insight with nowhere to go is a boast; the whole reason
+    this page is not marketing is that every line on it can be checked. */
+export const finding = z.object({
+  figure: evidenceKey,
+  claim: z.string().min(20).meta({ title: "The sentence after the number" }),
+  where: z
+    .string()
+    .regex(
+      /^(concepts|articles|reports)\/[a-z0-9-]+$/,
+      'where names the page that works it out, as "articles/what-a-run-costs"'
+    )
+    .meta({ title: "The page it is worked out on" })
+});
+
 export const homePageSchema = z.object({
   meta,
   hero: z.object({
     title: z.string(),
-    tagline: z.string().meta({ title: "Tagline under the title" })
+    tagline: z.string().meta({ title: "Tagline under the title" }),
+    /* The paragraph that says what a stranger is actually looking at, in the
+       first person, before any number. It is separate from `tagline` because
+       the two do different jobs and one of them is new: the tagline is the
+       site's subtitle, and this is the answer to "why does this exist and who
+       ran it". A cold reader needs the second one within a screen or they
+       leave. */
+    standfirst: paragraphs(1, 3).meta({ title: "What this is" })
   }),
   /* The front page cites the corpus like any other page, which is the whole
      argument of SPEC Part VII requirement 2: what makes this site different
@@ -189,6 +325,19 @@ export const homePageSchema = z.object({
      concept page does. Declared after `hero` because that is the reading
      order: the claim, then what is behind it. */
   evidence,
+  /* What the month actually showed, which is the reason to read on.
+     ---------------------------------------------------------------------
+     This is the section that decides whether the front page is a contents page
+     or a piece of writing. Ten headings tell a reader what subjects exist; a
+     finding tells them something they did not know and hands them the page
+     where it is argued. Five or six is the range: fewer and the page has no
+     shape, more and it becomes the list it was replacing. */
+  findings: z.object({
+    visible,
+    title: z.string(),
+    intro: z.string().meta({ title: "The line above the findings" }),
+    items: z.array(finding).min(3).max(8)
+  }),
   /* The way in. Ten concepts is too many for a paragraph and exactly right for
      a list, and a reader who already knows what context engineering is should
      be able to enter at the one they do not. The headings are content; the
@@ -196,6 +345,25 @@ export const homePageSchema = z.object({
   spine: z.object({
     title: z.string(),
     intro: z.string().meta({ title: "The line above the list" })
+  }),
+  /* The two sections that were on the site but not on its front page: the
+     long-form pieces, and the runs they are drawn from. A front page listing
+     only the concepts published a site with one third of itself hidden. */
+  reading: z.object({
+    title: z.string(),
+    intro: z.string().meta({ title: "The line above the articles" })
+  }),
+  runs: z.object({
+    title: z.string(),
+    intro: z.string().meta({ title: "The line above the runs" }),
+    /* The sentence under the three reports, pointing at the whole corpus. It
+       is content rather than markup because it is the one place the front page
+       says *why* eighteen runs are published when three are written up. */
+    corpus: z.string().meta({ title: "The line pointing at all the runs" })
+  }),
+  ways: z.object({
+    title: z.string(),
+    intro: z.string().meta({ title: "The line above the tags" })
   }),
   /* A section that can be turned off — the working example of the pattern.
      index.astro renders it through `isVisible`, and a site that grows a nav
@@ -216,20 +384,6 @@ export const homePageSchema = z.object({
    generalised scenario label on the front of it.
    --------------------------------------------------------------------------- */
 
-/** A run of prose.
-    ---------------------------------------------------------------------------
-    An array rather than one string with blank lines in it, and the reason is
-    the editor: the panel draws one box per element, so a writer moves a
-    paragraph by moving a row instead of hunting for the right newline in a
-    textarea the height of a phone. It is also what makes `data-sk-edit` able
-    to name a single paragraph — `theIdea[1]` — rather than the whole block.
-
-    The bounds are the shape of the page, not a style opinion. SPEC Part III
-    says the idea is three to six paragraphs; a two-paragraph idea has not been
-    explained and a nine-paragraph one is the article that concept should have
-    been. */
-const paragraphs = (min: number, max: number) =>
-  z.array(z.string().min(1)).min(min).max(max);
 
 /** A pointer into `shaahink/conductor`, which is public and therefore citable.
     ---------------------------------------------------------------------------
@@ -269,6 +423,14 @@ export const conceptSchema = z.object({
       A reader who searched for "prompt engineering at scale" should find the
       page that answers it under a different heading. */
   alsoKnownAs: z.array(z.string()).default([]).meta({ title: "Also known as" }),
+  /* `alsoKnownAs` does a second job beyond being printed under the title, and
+     it is the one that makes the site link itself: `src/lib/links.ts` builds a
+     term index out of every concept's title and its other names, then links the
+     first mention of any of them in the prose of every *other* page. So "prompt
+     engineering at scale" written in an article reaches this concept without
+     anybody maintaining a link. Adding a name here wires it site-wide. */
+  linkAs,
+  tags,
   oneLine: z.string().meta({ title: "The one-line summary" }),
   theIdea: paragraphs(3, 6).meta({ title: "The idea, with no Conductor in it" }),
   theProblem: paragraphs(1, 4).meta({ title: "What goes wrong without it" }),
@@ -296,6 +458,11 @@ export const articleSchema = z.object({
   slug: z.string(),
   order: z.number().int().positive(),
   title: z.string(),
+  /* Long-form pieces claim phrases too, and one of them has to: "the nudge" is
+     written on four pages and the article about it is where a reader should
+     land, not the concept that merely mentions the mechanism. */
+  linkAs,
+  tags,
   standfirst: z.string().meta({ title: "The standfirst under the title" }),
   evidence,
   sections: z.array(section).min(1),

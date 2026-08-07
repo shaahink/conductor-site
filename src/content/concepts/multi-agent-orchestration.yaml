@@ -10,6 +10,14 @@ meta:
 slug: "multi-agent-orchestration"
 order: 2
 title: "Multi-agent orchestration"
+tags:
+  - "orchestration"
+  - "cost"
+linkAs:
+  - "advisor lane"
+  - "session kind"
+  - "session kinds"
+  - "orchestrator"
 alsoKnownAs:
   - "agent workflows"
   - "agent swarms"

@@ -28,6 +28,7 @@ import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import { absolute, sitemap } from "@shaahink/sitekit/seo";
 import { ordered } from "../lib/collections.js";
+import { allTags, tagHref } from "../lib/tags.js";
 
 export const GET: APIRoute = async ({ site }) => {
   /* Reading order, top down: the front page, then each section index followed
@@ -46,6 +47,16 @@ export const GET: APIRoute = async ({ site }) => {
       paths.push(entry.data.meta.canonical);
     }
   }
+
+  /* The tags last, because they are a second way through the site rather than
+     part of its shape — a reader reads the sections in order and arrives at the
+     tags from an entry.
+
+     Built from the vocabulary rather than from what is tagged, which is the
+     same source `/tags/[tag].astro` generates its routes from. Deriving either
+     one from usage instead would let the two disagree, and the way they would
+     disagree is a page that exists and is never crawled. */
+  paths.push("/tags/", ...allTags().map(tagHref));
 
   const xml = sitemap(paths.map((path) => ({ loc: absolute(site!, path) })));
   return new Response(xml, { headers: { "Content-Type": "application/xml; charset=utf-8" } });

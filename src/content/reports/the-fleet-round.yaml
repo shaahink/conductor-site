@@ -10,6 +10,10 @@ meta:
 slug: "the-fleet-round"
 order: 1
 title: "The fleet round"
+tags:
+  - "orchestration"
+  - "cost"
+  - "people"
 scenario: "A four-site web fleet, one shared component library, one round of
   coordinated changes"
 standfirst: "The shape of the work, not the client. A change that has to land

@@ -1,0 +1,91 @@
+---
+/* A run of paragraphs, with the site's own terms linked on first mention.
+   ---------------------------------------------------------------------------
+   Every long-form block on the site goes through here rather than mapping over
+   an array of strings inline, and that is what makes the linking a property of
+   the site instead of something each page remembers to do. `src/lib/links.ts`
+   holds the rules and the reasoning; this is the part that renders.
+
+   `set:html` is safe here for a reason worth stating rather than assuming: the
+   only HTML in the output is the anchors this component's own linker produced,
+   and every piece of the original text passed through `escapeHtml` on its way.
+   Content is plain text — the schema takes strings, the editor writes strings,
+   and `linkTerms` is the single boundary where text becomes markup. Nothing
+   from a form or a URL reaches it.
+
+   `data-sk-edit` is emitted per paragraph exactly as the pages did before, so
+   the editor still names one paragraph rather than the block. A paragraph that
+   came back with a link in it has element children and the kit's inline editor
+   moves it to the side panel — its documented `formatting` branch. See the
+   linker's note on that trade. */
+import { linkTerms, pageContext, type LinkContext, type Term } from "../lib/links.js";
+
+interface Props {
+  /** The paragraphs, as content stores them. */
+  body: readonly string[];
+  /** The term index for this build. */
+  terms: Term[];
+  /** The page's own `data-sk-edit` path prefix — `theIdea`, `sections[2].body`.
+      Absent for prose that is not an editable field. */
+  path?: string;
+  /** One context per PAGE, not per block: the "first mention" rule is a fact
+      about the page a reader is on, so a page rendering four blocks passes the
+      same context to all four. Absent means this block is on its own. */
+  context?: LinkContext;
+}
+
+const { body, terms, path, context } = Astro.props;
+const ctx = context ?? pageContext();
+
+const linked = body.map((paragraph) => linkTerms(paragraph, terms, ctx));
+---
+
+{
+  linked.map((html, index) => (
+    <p set:html={html} data-sk-edit={path ? `${path}[${index}]` : undefined} />
+  ))
+}
+
+<style>
+  /* The space between paragraphs lives here now, and it has to.
+     ---------------------------------------------------------------------
+     It used to be a `.concept p` / `.longform p` rule on each page, which
+     worked while those pages emitted the `<p>` themselves. Astro scopes a
+     style to the component that *renders* the element, so the moment the
+     paragraphs moved into this component every one of those rules stopped
+     matching and the prose ran together into a single block — correct markup,
+     unreadable page, and nothing in the build with an opinion about it.
+
+     Putting it beside the element it spaces is also the version that cannot
+     come apart again: a page that renders prose gets the spacing by using this
+     component, rather than by remembering to. */
+  p {
+    margin-block-start: var(--space-s);
+  }
+</style>
+
+<style is:global>
+  /* A term link is a different offer from a link somebody wrote into a
+     sentence, so it is marked differently: no colour change, just an underline
+     in the accent at a distance that keeps the descenders legible. It should
+     read as "there is a page about this word" rather than as an interruption —
+     a paragraph with three of these in full link colour is unreadable, which is
+     the failure mode that kills auto-linking on most sites that try it.
+
+     `is:global` because the anchors are produced inside `set:html` and never
+     pass through Astro's scoping, so a scoped rule would not reach them. The
+     selector is specific enough not to leak: `a.term` exists nowhere else. */
+  a.term {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+  }
+
+  a.term:hover,
+  a.term:focus-visible {
+    color: var(--accent);
+    text-decoration-thickness: 2px;
+  }
+</style>

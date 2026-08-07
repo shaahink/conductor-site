@@ -1,9 +1,14 @@
-# conductor-site
+# Payesh
 
 **A field guide to agentic engineering** — ten concepts the market is hiring for, each one worked
 end to end in a real orchestrator, with what it cost.
 
-Live at **<https://conductor-site-virid.vercel.app>**.
+Live at **<https://payesh.vercel.app>**.
+
+*پایش* is Persian for **monitoring**: watching something over time and keeping the record of it,
+which is what this site is made of. The repo was `conductor-site` until 2026-08-07; GitHub
+redirects the old path and the old `conductor-site-virid.vercel.app` is still attached to the
+Vercel project, so nothing published before the rename has broken.
 
 The site explains concepts, not a product. Each concept page states the idea in plain language
 you can use anywhere, then shows how [Conductor](https://github.com/shaahink/conductor)
@@ -19,9 +24,17 @@ design it was given.
 
 | Section | What |
 | --- | --- |
+| `/` | The findings — what a month of this actually showed, each with the figure behind it and a route to where it is argued |
 | `/concepts` | Ten concepts — agentic engineering, multi-agent orchestration, context engineering, token economics, evals and gates, independent verification, durable execution, human-in-the-loop, agent observability, agent memory |
 | `/articles` | Four longer pieces, each carrying at least one number nobody else publishes |
-| `/runs` | Anonymised reports from real autonomous runs, and the corpus they come from |
+| `/runs` | Anonymised reports from real autonomous runs, and the corpus they come from — with each run's dates, how long the machine actually worked, and how long it took on a calendar |
+| `/tags` | Eight cross-cutting subjects, each gathering concepts, articles and reports that share it |
+
+The prose links itself. Every concept contributes its title, the market's other names for it and
+the phrases this site's own paragraphs use (`linkAs`) to a term index; the first mention of any of
+them on any other page becomes a link. Adding a name to a concept wires that phrase site-wide,
+including into pages written before the concept existed. See `src/lib/links.ts` for the five rules
+that keep it from becoming a sea of blue.
 
 ## The rule that shapes everything
 
