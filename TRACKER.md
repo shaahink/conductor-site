@@ -4,32 +4,54 @@
 
 ## Handoff (overwrite this block, ≤12 lines, no history)
 
-last: **session 15** delivered **S6.4 — stage S6 is complete.** QA of session 14: **no findings.**
-  Battery re-run green from a clean tree *before* any edit (0 errors, 73 tests, build exit 0 with
-  474 annotations on 21 pages, evidence green, anonymity exit 0); all three evidence files on
-  disk. One bookkeeping nit only: the database records commit `fcbbb72` for S6.1/S6.2/S6.3, but
-  reports A, B and C actually landed in `c70d83b`, `29817f8` and `bc021ae` — `fcbbb72` is the
-  anonymity-check commit. Nothing published depends on it.
-now on disk: `/runs` carries the three reports and then **all 18 runs**, oldest first, from
-  `corpus.json` alone. The three the store still marks `running` render **ABANDONED** in the
-  Face's peach role; `>running<` appears **zero** times in `dist/`. New: **`src/lib/corpus.ts`**
-  (pure — it takes the corpus as a **parameter**, not an import, because a module with a
-  top-level JSON import **cannot be loaded by `node --test` at all**), `RunTable.astro`, a `<slot />`
-  on `SectionIndex`, and **optional** `sectionPageSchema.corpusTable` (`checkAnnotations` does
-  resolve an optional field — verified). `sectionPage()` now calls `refuseTypedFigures`, which
-  `ordered()` never did for `sections`. Battery at head: **0 errors, 86 tests, build 23 pages /
-  478 annotations on 21, evidence green over 17 entries, anonymity exit 0.** Evidence:
-  `docs/evidence/S6.4-the-corpus-index.md` + two full-page screenshots.
-next: **S7.1** — canonicals, sitemap, robots, OG images per section, and `astro.config`'s `site`
-  pointing at the real production URL. **S7.1 must re-confirm `site`.**
-open: bugs #2, #3, #4 still open. **Bug #5 filed this session**: `EvidenceStrip.astro`'s
-  `.cell { min-inline-size: var(--mono-inline-size) }` misuses a token that is a *font-size*
-  step-down (`0.9em`), so the strip's figure cells have no minimum width and do not line up. One
-  token, cosmetic, untouched because it is outside S6.4. SPEC Part V article 3's `26 costed`/
-  `15.5M` are stale (now **30**/**16.8M**); article 4's `19 of 34`/`10 of 11` and the S5.4 git
-  ground truth are unpublished on purpose. Article 1's `$52.06`/`23.2%` correction, concept 2's
-  advisor split and concept 8's "push-only" still stand.
-tooling: **Astro strips the whitespace between sibling elements**, so inline spans carrying
+last: **session 16** delivered **S7.1** (commit `f7f7d6f`, pushed). QA of session 15: **no
+  findings** — battery re-run green from the tree as inherited, *before* any edit (0 errors, 86
+  tests, build 27→23 pages with 478 annotations on 21, evidence green, anonymity exit 0), all 18
+  runs render and `>running<` is absent from `dist/`. Handoff said "ABANDONED"; the markup is
+  lowercase `abandoned` in the peach role, which is what it claimed.
+now on disk: **`site` is CONFIRMED, not copied** — both candidate hosts answer 200, so what
+  settles it is that `conductor-site-virid.vercel.app` serves this site and the short alias
+  serves someone else's Next.js app. Two real defects fixed: the **sitemap listed 1 of 21
+  pages** (the template's file — worse than none, a crawler reads it as *this is the site*), and
+  **no page had an `og:image` at all**, so every shared link was a grey box. New: four 1200×630
+  cards in `public/og/`, screenshotted from **real pages** (`src/pages/og/[card].astro`) so
+  palette, type, words and figures all come from the site — the three figures per card go
+  through `resolveEvidence`. A card is a *picture of numbers taken once*, so
+  `src/data/og-cards.json` records the text at screenshot time and **`npm run seo`** re-renders
+  and compares. That gate (`scripts/seo.mjs`, after `build`) checks six things over `dist/` and
+  is **proven red eight ways** in `docs/evidence/S7.1-seo-gate-red.txt`. Battery at head: **0
+  errors, 93 tests, build 27 pages / 478 annotations on 21, evidence green, anonymity exit 0,
+  seo green.** Evidence: `docs/evidence/S7.1-seo-and-social.md` + `-battery.txt` + `-gate-red.txt`.
+next: **S7.2**, and it is **measured already — fix, do not re-measure** (full numbers in the
+  ledger note and on the card's amendment). Landmarks, `:focus-visible` and reduced motion are
+  **already done**. Three things are not: (a) the theme toggle shifts layout **twice** — on load
+  `Theme`(62px)→`Dark`(50px) drags the nav 12px, CLS 0.00007, and on flip `Dark`→`Light` is 3px;
+  fix by stacking every label the button can show in **one CSS grid cell** (extras
+  `visibility:hidden` + `aria-hidden`) so the browser sizes the box to the widest — **no JS
+  change, so no CSP hash change**. (b) Lighthouse desktop: a11y **96**, BP/SEO/agentic 100, one
+  failure — `color-contrast`, which is **bug #2 in the wild**: `--overlay` is **3.59:1** in mocha
+  on the nav links, the theme label, **`p.lead` on every concept page**, `.aka-label`,
+  `.aka-name`. The role is right (the Face holds overlay to the 3:1 *UI/large-text* bar and
+  `contrast.test.mjs` asserts that); the **usage** is wrong. Suggested: a derived quiet role,
+  `color-mix(in srgb, var(--text), var(--base))` — srgb mix is a plain per-channel lerp, so
+  `contrast.test.mjs` can recompute it and hold it to 4.5:1 — and keep `--overlay` for borders,
+  chrome and text ≥24px. (c) **no skip link on any page.**
+open: **new bug #6** — CI calls the fleet's shared `site-ci.yml`, which runs `astro check`, the
+  build and the three generated-file diffs and **nothing else**: `evidence`, `anonymity`, `seo`
+  and the 93 `node --test` cases are all local-only. A gate that runs on one machine rots. Fix in
+  a **second workflow in this repo**, not in the shared one — S7.3. Bugs #2, #3, #4, #5 still
+  open (#2 is S7.2's to close). SPEC Part V article 3's `26 costed`/`15.5M` are stale (now
+  **30**/**16.8M**); article 4's `19 of 34`/`10 of 11` and the S5.4 git ground truth are
+  unpublished on purpose. Article 1's `$52.06`/`23.2%` correction, concept 2's advisor split and
+  concept 8's "push-only" still stand.
+tooling: `npx` **cannot be launched under `conductor bg`** here (it resolves npx-cli.js against
+  the repo) — use `node node_modules/astro/bin/astro.mjs preview --port 4321`. `conductor bg
+  start` takes `--purpose`, not `--name`, and `bg stop` takes the **numeric pid**. A `cmd /c "a
+  && b"` under `bg` loses its quoting; the battery is ~90s so just run it in the foreground.
+  **Never put backticks in a `node -e` string from the Bash tool** — the shell substitutes them
+  and silently empties your text; use Edit for prose. Chrome DevTools MCP is how the cards get
+  taken: `resize_page` 1200×630, then `take_screenshot` with `filePath`. **Astro strips the
+  whitespace between sibling elements**, so inline spans carrying
   `white-space: nowrap` have **no break opportunity anywhere** — that made one table cell's
   min-content the whole line as a single 343px word. Use flex + `flex-wrap`, not inline +
   margin. **The 68ch measure is wrong for a table** read across; `RunTable` breaks out by
@@ -53,7 +75,7 @@ tooling: **Astro strips the whitespace between sibling elements**, so inline spa
 |---|---|
 | Total checkpoints | 28 |
 | Done | 0 |
-| Claimed (unconfirmed) | 23 |
+| Claimed (unconfirmed) | 24 |
 
 ## Checkpoints
 
@@ -112,13 +134,13 @@ phase (a code path is not evidence). Agent claims are marked DONE; engine confir
 | S6.1 | Report A, the fleet round, published as a scenario with no client name, no private repo name and no field-note prose — and a check that greps the built output for the forbidden list | DONE | fcbbb72 | docs/evidence/S6.1-the-fleet-round.md |
 | S6.2 | Report B, the long build that ended at 45 of 46, published with the shortfall as the subject rather than a footnote | DONE | fcbbb72 | docs/evidence/S6.2-the-long-build.md |
 | S6.3 | Report C, the engine run with an evaluation suite as its release gate | DONE | fcbbb72 | docs/evidence/S6.3-the-engine-run.md |
-| S6.4 | `/runs` lists all 18 runs from harvested data with generalised labels and real numbers, and names the three abandoned July runs as abandoned rather than in-flight | TODO | - | - |
+| S6.4 | `/runs` lists all 18 runs from harvested data with generalised labels and real numbers, and names the three abandoned July runs as abandoned rather than in-flight | DONE | 9afde8c | docs/evidence/S6.4-the-corpus-index.md |
 
 ### S7 — 
 
 | # | Checkpoint | Status | Commit | Evidence |
 |---|-----------|--------|--------|----------|
-| S7.1 | SEO and social: canonicals, sitemap, robots, OG images per section, `astro.config` `site` pointing at the real production URL | TODO | - | - |
+| S7.1 | SEO and social: canonicals, sitemap, robots, OG images per section, `astro.config` `site` pointing at the real production URL | DONE | f7f7d6f | docs/evidence/S7.1-seo-and-social.md |
 | S7.2 | Accessibility and performance pass — keyboard reachable, landmarks, focus visible, reduced motion honoured, both themes legible, no layout shift on theme flip | TODO | - | - |
 | S7.3 | Generated files regenerated and clean (`npm run headers`, `npm run content`, `npm run editor`), README written, and the repo's CI green on `main` | TODO | - | - |
 | S7.4 | **ownerGated** — the Vercel project is linked and the site is live at its production URL, the owner has read the three reports for anonymisation, and the front page has been looked at in both themes | TODO | - | - |
