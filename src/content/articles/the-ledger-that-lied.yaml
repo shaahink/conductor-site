@@ -1,0 +1,221 @@
+meta:
+  title: "The ledger that lied"
+  description: "One population of sessions in this corpus has a record that is
+    empty in four places and full in the fifth. The shape of the hole turned out
+    to be a code path."
+  ogDescription: "How a telemetry defect produced a complete, consistent,
+    confident table that was wrong about one population of sessions."
+  canonical: "/articles/the-ledger-that-lied/"
+
+slug: "the-ledger-that-lied"
+order: 4
+title: "The ledger that lied"
+standfirst: "An autonomous run keeps a record of itself, and that record is what
+  every later decision gets made from. This corpus holds a population of
+  sessions whose record is empty in four places and full in the fifth. The shape
+  of the hole turned out to be a code path, and the number it produced was the
+  reassuring one."
+
+evidence:
+  runs:
+    - "the-long-build"
+    - "the-terminal-face"
+  windows: []
+  figures:
+    - "totalSessions"
+    - "sessionsThatRolledOver"
+    - "sessionsThatDidNot"
+    - "rolloversWithACommit"
+    - "rolloversWithAGateSummary"
+    - "rolloversWithAClaim"
+    - "rolloversWithAResultSummary"
+    - "rolloversWithADigest"
+    - "othersWithACommit"
+    - "othersWithAGateSummary"
+    - "othersWithAClaim"
+    - "othersWithAResultSummary"
+    - "othersWithADigest"
+
+sections:
+  - heading: "A number too clean to be true"
+    body:
+      - "Every session in this corpus wrote a row about itself when it ended.
+        How many commits it left. Which gates it ran and what they said. Which
+        checkpoints it claimed to have closed. A summary of what it had done,
+        and a digest for whoever picked the work up next. Five fields, and they
+        are the entire basis on which a run gets judged once it is over."
+      - "Group those rows by how the session ended and one population separates
+        itself immediately. The sessions the engine killed at a token ceiling —
+        the first figure in the strip below — recorded no commits. Not few.
+        None. The same for the gates they ran, and the same again for the
+        checkpoints they claimed: three columns, three zeros, across every
+        rolled-over session in every run on this site."
+      - "A zero that clean is not a finding. Real work does not distribute
+        itself that evenly, and nothing that varies between sessions produces
+        exactly nothing across hundreds of them in three separate columns. A
+        result like that is describing the recorder rather than the work. The
+        only useful next move is to find out which."
+
+  - heading: "The two halves, side by side"
+    body:
+      - "The strip publishes the same five columns twice: once over the sessions
+        that rolled over, once over every session that ended some other way.
+        Both denominators are printed, because a count of zero says nothing at
+        all until you know what the same column holds for the sessions beside
+        it."
+      - "Read down the ordinary half and the record looks like a record. Most of
+        those sessions left commits. Most recorded which gates had run. Most
+        named a checkpoint they had closed. Almost all of them wrote a result
+        summary. That is a system whose sessions describe themselves, roughly as
+        often as sessions have something to describe."
+      - "Read down the other half and four of the five columns are empty or near
+        it. Then the fifth one inverts. The digest — the note a session leaves
+        for the session that follows it — is present for very nearly every
+        rolled-over session, and present for only about half of everything
+        else."
+      - "That inversion is the diagnosis, and it needed no further investigation
+        to reach. A population that reliably records what the next session will
+        need, and reliably records nothing about what it did itself, has not
+        failed to do work. It has failed to be written down, in one place, by
+        one path. The fields that survived and the fields that vanished were
+        written at different moments, and the boundary between them is where to
+        look."
+
+  - heading: "The zero that somebody wrote"
+    body:
+      - "There is a trap in the middle of this worth stopping on, because the
+        evidence pipeline behind this very page fell into it first and published
+        the comfortable answer."
+      - "The commit column is not empty for a rolled-over session. It holds a
+        zero. That difference is larger than it sounds. An empty field is
+        visibly missing and invites a question; a zero is an assertion, and
+        every tool that reads the table downstream gets a confident answer
+        instead of an obvious gap."
+      - "Written the natural way — count the rows where the field has something
+        in it — the harvest for this page reported that every rolled-over
+        session in the corpus had duly recorded its commits, and had happened to
+        make none. Both halves of that sentence are false. Neither half looked
+        false. It arrived formatted as a measurement, with a denominator, from a
+        database, and it would have gone onto the page."
+      - "The figure only came out right once the count asked whether the number
+        was above zero rather than whether the field had been filled in. What
+        holds it there now is a test rather than a comment: a fixture whose
+        rolled-over sessions carry that zero, and an assertion that the
+        published figure must not read as though all of them had recorded
+        something. A comment explaining a trap protects the next person only if
+        they happen to read it."
+
+  - heading: "Where the record stopped"
+    body:
+      - "The cause is in Conductor, and it is a few lines long. When a session
+        crosses its token ceiling, the branch that handles it marks the outcome
+        as rolled over, pulls a result summary out of what the agent last said,
+        and returns."
+      - "Everything that records what a session actually did lives past that
+        return. Walking the repository history from the session's own starting
+        commit. Reading the tracker before and after to work out which
+        checkpoints changed hands. Separating the agent's commits from the
+        engine's own. All of it sits in the verdict pass, and a rolled-over
+        session by definition never reaches the verdict pass. That is what
+        rolling over means."
+      - "Nothing was broken. There was no exception, no swallowed error, no
+        race, nothing that would show up in a log as a problem. A branch
+        returned early, which is precisely what that branch existed to do, and
+        it took the accounting out with it. The one field that survived is the
+        digest, and it survived because it is written on the way out for the
+        next session's benefit rather than on the way through the verdict."
+      - "This is the ordinary shape of a telemetry defect and the reason they
+        are so hard to notice. A crash announces itself. A branch that returns
+        before the recorder leaves behind a table that is complete, well-formed,
+        internally consistent, and wrong about one population."
+
+  - heading: "What it would have made you believe"
+    body:
+      - "Now the expensive part, which is not the missing data. It is the
+        decision the missing data supports."
+      - "Suppose you had this ledger, no particular reason to doubt it, and the
+        job a run's owner actually has: working out whether the token ceiling is
+        set correctly. Another article on this site is about exactly that
+        exercise, and it leans on rollover counts throughout."
+      - "The ledger's answer here is unambiguous and it is a catastrophe. Every
+        session the ceiling killed left nothing behind — no commit, no claim, no
+        record of a gate having run. On that evidence a ceiling is not a budget
+        control at all. It is a shredder, and the only sensible responses are to
+        raise it until it stops firing or to abandon capping altogether."
+      - "The repository says otherwise. Line up each rolled-over session's own
+        start and end times against the git history — commits stay on disk
+        whatever the ledger says about them — and most of the killed sessions in
+        the two runs that account for most of this corpus's rollovers had left
+        at least one commit behind. The work was there. Only the record of it
+        was missing."
+      - "That comparison is described here rather than published as a figure,
+        and the reason is the site's own rule. Those repositories are private,
+        so the number cannot be recomputed by the build the way every figure in
+        the strip can. It is the one claim on this page the evidence gate cannot
+        check, and it is labelled as such instead of being dressed up to match
+        the ones beside it."
+      - "The gap between the two readings sits on the only question anybody was
+        asking. A cap that costs you an entire session and a cap that costs you
+        the closing minutes of a session plus the record of all of it are
+        different problems with different fixes, different ceilings and
+        different bills. The first one is what a clean, complete, confident
+        table said."
+
+  - heading: "Recording is not enough"
+    body:
+      - "The fix records the facts on the rollover path as well, and the parts
+        worth copying are the ones that are more than moving a call earlier."
+      - "The recording happens before the resume hint is built, not after, and
+        the code says why in a comment. The hint reads the tracker in order to
+        tell the next session where the work stands. Build it first and it
+        describes a session that appears to have achieved nothing, which is then
+        the first thing the next agent reads. Where one piece of telemetry is an
+        input to another, the order they are written in is part of the
+        contract."
+      - "Then the part that is easy to miss. Recording a claim is not the same
+        as making it confirmable. A checkpoint an agent says it closed is not
+        closed until the engine's verdict pass confirms it independently, which
+        is the subject of another article here. A rolled-over session never
+        reaches that pass, so its claims have to be explicitly queued for
+        confirmation at the moment they are recorded. Without that step the
+        claim would sit in the record, accurate and permanently unconfirmable:
+        visible from both ends and reachable from neither."
+      - "The recorder also keeps the agent's commits apart from the ones the
+        engine makes for its own bookkeeping. Counting the raw total would have
+        swapped one wrong number for another, in the flattering direction, and
+        nobody would have gone back to check a figure that had just been fixed."
+      - "What the fix deliberately does not do is as pointed as what it does. It
+        burns no attempt, runs no gate battery, advances no workflow step. A
+        rollover is still a rollover — a session that ran out of room, not a
+        session that failed — and the point was to record what happened without
+        changing the verdict on it. Any version that also moved the verdict
+        would have replaced the first lie with a more flattering one."
+
+  - heading: "Checking your own"
+    body:
+      - "The method transfers to anything that logs what its agents did, and it
+        costs one query."
+      - "Group your session records by how they ended and count every field
+        twice, once per outcome. Then go looking for columns that are uniformly
+        full for one outcome and uniformly empty for another. A field that
+        varies is measuring the work. A field that is constant within an outcome
+        is measuring your code, and the constant is whatever value the path that
+        never wrote it left behind."
+      - "Plan for the failing direction, because it is not the obvious one. A
+        telemetry hole almost never appears as a gap on a dashboard: the row is
+        present, the field has a value, the value is a number, and the chart
+        renders. It appears as a population that looks unusually consistent.
+        Consistency is close to the last thing anybody thinks to investigate,
+        which is how a hole like this survives long enough to be used."
+      - "And then the harder discipline, which this site tries to hold itself
+        to. When the record and the ground truth disagree, publish which one you
+        checked. Every figure in the strip on this page is recomputed from the
+        run store each time the site is built, and the build fails if one of
+        them stops resolving. The single comparison that is not — the git
+        history sitting behind those rolled-over sessions — is written out in
+        words instead. An unverifiable number standing in a row of verified ones
+        does more damage than the sentence it saves."
+
+readNext:
+  - "never-believe-the-agent"
+  - "the-nudge-below-the-median"

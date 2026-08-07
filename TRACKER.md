@@ -4,40 +4,42 @@
 
 ## Handoff (overwrite this block, ≤12 lines, no history)
 
-last: **session 12** delivered **S5.3** — machinery in `3896cb8`, article in `c33d05b`. QA of
-  session 11: **no findings** — battery re-run green before any edit (0 errors, 45→49 tests, build
-  exit 0, 306 annotations on 17 pages, evidence green over 13 entries); both articles on disk
-  match their claimed shape.
-now on disk: articles 1–3, all figure-free. Battery at head: **0 errors, 57 tests, build 20 pages
-  / 341 annotations, evidence gate green over 14 cited entries.** New: a **third evidence
-  namespace, `windows`** — `conductor budget <run> --json` once per published run, 22 windows, 8
-  under a measured ceiling. Content names them in **`evidence.windows`**. Window keys are
-  `<run-label>-uncapped` / `<run-label>-capped-<N>m`. **A window need not carry every key** (an
-  uncapped one has no nudge/headroom/wrap-up); the build fails only when *no named window* has a
-  cited key. New corpus keys: `cappedWindows` 8/22, `sessionsUnderACeiling` 168, `nudgesDelivered`
-  122, `nudgesHonoured` 72/122, `killedAtACeiling` 50, `killedAfterANudge` **50/50**.
-next: **S5.4** ("The ledger that lied"), the last of stage S5. **It is fully measured — the ledger
-  note has every figure, do not re-derive.** Corpus-wide: 53 rolled-over sessions, **0** with a
-  commit, **0** with a gate summary, **0** with a claim, 4 with a result summary, **52 with a
-  digest**; against 287 other sessions with 246 commits, 264 gate summaries, 203 claims, 273
-  result summaries and only **139** digests. That inversion is the article. Cause and fix are both
-  in the engine at `1632b9f`: the rollover branch in `SessionRunner.cs` (~424) now records the
-  facts before the resume hint, via `RecordRolloverFacts` in `VerdictEngine.Claims.cs`. The corpus
-  predates that fix. Needs ~7 new corpus keys off the `sessions` table (`commit_count`,
-  `gate_summary`, `newly_done`, `result_summary`, `digest`) — source `STORE`, none budget-shaped.
-open: git ground truth for S5.4 lives in a private repo — **describe it in words, publish no ratio
-  for it**. SPEC Part V article 3's `26 costed`/`15.5M` are stale (now **30**/**16.8M**) and its
-  `25–54M`/`12.8–15.3M` were stage-level, not windows — corrections are in
-  `docs/evidence/S5.3-the-nudge-below-the-median.md`. Article 1's `$52.06`/`23.2%` correction,
-  concept 2's advisor split and concept 8's "push-only" still stand. Bugs #2 and #3 still open.
-  **S7.1 must re-confirm `site`.**
+last: **session 13** delivered **S5.4** — machinery in `239d249`, article in the commit after it.
+  **Stage S5 is complete: all four articles are written.** QA of session 12: **no findings** —
+  battery re-run green from a clean tree before any edit (0 errors, 57 tests, build exit 0 with
+  341 annotations on 18 pages, evidence green over 14 entries), both claimed commits exist, the
+  evidence file is on disk, and article 3 measures 1,827 words against its claimed 1,818.
+now on disk: articles 1–4, all figure-free. Battery at head: **0 errors, 61 tests, build 21 pages
+  / 380 annotations on 19, evidence gate green over 15 cited entries.** New: a **ledger block** of
+  twelve corpus keys, all sourced `STORE`, published in pairs so neither half is a bare count —
+  `sessionsThatRolledOver` 53, `sessionsThatDidNot` 287, then `rolloversWith*` /`othersWith*` for
+  commit, gate summary, claim, result summary and digest. **The trap, proven red and kept in
+  `docs/evidence/S5.4-the-ledger-that-lied.md`: `commit_count` must be tested `> 0`, never
+  `is not null`** — the null test publishes `53/53` and `287/287`, the exact inverse, formatted as
+  a measurement. A test in `harvest.test.mjs` holds it.
+next: **S6.1–S6.3**, the three reports, then **S6.4** `/runs`. SPEC Part VI is the authority: read
+  **the rule** before the three report briefs, because a report is an article plus a `scenario`
+  label and the anonymisation rule is the checkpoint's acceptance, not a preamble. S6.1 also owes
+  a **check that greps the built output** for the forbidden list. The corpus already carries every
+  per-run figure the reports need, and `reportSchema` already exists — this is writing, not
+  machinery. Run labels come from `anonymise.json`; three July runs must be named **abandoned**.
+open: git ground truth for the S5.4 article lives in a private repo — it is **described in words
+  and published as no figure**, deliberately, and the page says so. SPEC Part V article 3's
+  `26 costed`/`15.5M` are stale (now **30**/**16.8M**) and its `25–54M`/`12.8–15.3M` were
+  stage-level, not windows — corrections are in `docs/evidence/S5.3-the-nudge-below-the-median.md`.
+  SPEC Part V article 4's `19 of 34`/`10 of 11` are likewise unpublished on purpose. Article 1's
+  `$52.06`/`23.2%` correction, concept 2's advisor split and concept 8's "push-only" still stand.
+  Bugs #2 and #3 still open. **S7.1 must re-confirm `site`.**
 tooling: prose refuses any number of two digits or more, and a currency/percent/decimal/ratio
   too — so a `file.cs:411` citation **cannot go in article prose**, and articles have no
   `citations` field; name it in words. **Never round-trip a content file through PowerShell
   `Get-Content`/`Set-Content`** (mojibake + BOM); mutate with node. `npm run content` rewraps
   YAML, so run it before quoting your own lines back. Commit messages to a file, then `-F`.
   Battery is ~60s now (the harvest makes two verb calls per run). **A failed Astro build exits
-  0xC0000409, not 1.** `conductor history --json` emits a UTF-8 BOM on Windows. **One run.db holds
+  0xC0000409, not 1.** `meta.description` caps at 160 chars and Astro reports it only as
+  "does not match collection schema" until you re-run `npx astro check` for the detail.
+  **Do not `select *` from `sessions` through `run_query`** — one row carries a whole digest and
+  three of them cost more context than the rest of the orientation put together. `conductor history --json` emits a UTF-8 BOM on Windows. **One run.db holds
   several runs** — filter by `run_id`; `conductor money` needs `--run`, `conductor budget` takes
   the run id positionally.
 
