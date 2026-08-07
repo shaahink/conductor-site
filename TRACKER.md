@@ -4,20 +4,18 @@
 
 ## Handoff (overwrite this block, ≤12 lines, no history)
 
-last: **session 9** delivered **S4.1** (690304d, 2a0e93e) and **S4.2** (931a40f). Six concept
-  pages now exist and the spine reads in `order` from one to six. QA of session 8: no findings —
-  battery re-run green from a clean tree, and the evidence gate proven red again by hand
-  (`totalSessions` set to 999 → "committed 999 → store 340", exit 1; green on restore).
-now on disk: concepts 1, 2, 5, 6 written (3 and 4 were earlier). New: `scripts/citations.mjs`
-  opens every `inConductor.citations` entry against a conductor checkout and prints the line it
-  landed on — **all 37 resolve at engine `1632b9f`**. The engine path comes from `CONDUCTOR_REPO`
-  or the sibling directory, never from a file this public repo commits. The harvest now publishes
-  the cost lanes: `totalAgentCostUsd`, `totalGateCostUsd`, `totalAdvisorCostUsd`. Battery: 0
-  errors, 42 tests, 8 cited entries green, 14 pages, 154 annotations.
-next: **S4.3** — concepts 7 and 8. **Every citation for both is already researched and verified
-  in the knowledge ledger** (two notes, "S4.3 RESEARCH BANKED" and "concept 8"): do not re-derive
-  them, go straight to writing. Then S4.4, which owns closing the `readNext` chain — concept 6
-  currently points back at 2 as a placeholder, because a dangling slug fails the build.
+last: **session 10** delivered **S4.3** (adbe41f) — concepts 7 and 8, durable execution and
+  human-in-the-loop. QA of session 9: **no findings**; battery re-run green from a clean tree
+  before any edit (0 errors, 42 tests, 14 pages, 154 annotations, 8 cited entries, 37 citations).
+now on disk: eight concept pages, the spine reading in `order` from one to eight. **All 54
+  citations resolve at engine `1632b9f`** via `scripts/citations.mjs` (engine path from
+  `CONDUCTOR_REPO` or the sibling directory — never a path this public repo commits). Battery:
+  0 errors, 42 tests, 16 pages, 205 annotations, evidence gate green over 10 cited entries, and
+  proven red by hand again (a bogus `totalOwnerApprovalsX` on concept 8 → exit 1, green on
+  restore).
+next: **S4.4** — concepts 9 and 10, agent observability and agent memory. It also owns closing
+  the chain: `human-in-the-loop.readNext` points at `agentic-engineering` as a placeholder and
+  must become `agent-observability`. A dangling slug fails the build, so it cannot be left empty.
 open: **two SPEC figures corrected by measurement, do not retype either.** Part IV concept 2 says
   agent $3,015 vs advisor $0.09; the store has **three** categories and says agent $3,014.80,
   gate $1.26, advisor $0.24 — and the advisor line is priced from elapsed seconds, not metered,
