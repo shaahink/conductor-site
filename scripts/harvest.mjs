@@ -33,13 +33,15 @@
 
    And one rule this script enforces on its successors: anything budget-shaped —
    floors, median closers, wrap-up, rollover *rates*, tokens per checkpoint,
-   blended $/M, cap values — does not come from here. It comes from `conductor
-   budget` and `conductor money`, which read the ledger properly. In August 2026
-   those verbs were run against a hand-derived analysis of exactly these numbers
-   and contradicted four of it: a cap benefit published as 4.0x measured 1.6x,
-   because one window's cost had been divided by another window's checkpoints.
-   `refuseBudgetShaped()` at the bottom of this file makes that a build failure
-   rather than a comment somebody skims. */
+   blended $/M, cap values — is never computed from SQL here. It is *asked of*
+   `conductor money` and `conductor budget`, which read the ledger properly, and
+   what they answer is recorded with the command itself as the figure's source.
+   In August 2026 those verbs were run against a hand-derived analysis of exactly
+   these numbers and contradicted four of it: a cap benefit published as 4.0x
+   measured 1.6x, because one window's cost had been divided by another window's
+   checkpoints. `refuseBudgetShaped()` at the bottom of this file makes that a
+   build failure rather than a comment somebody skims — a budget-shaped key whose
+   source is not one of those two commands does not ship. */
 
 import { DatabaseSync } from "node:sqlite";
 import { execSync } from "node:child_process";
@@ -56,6 +58,17 @@ export const anonymisePath = join(repoRoot, "anonymise.json");
 /** Where a figure came from, spelled the way a reader could repeat it. */
 const HISTORY = "conductor history --json --limit 0";
 const STORE = "run.db, opened read-only";
+/* The third source, and the one the rule at the top of this file points at.
+   Anything money-shaped — a run's blended dollars per million tokens, its
+   tokens per checkpoint, the split across its stages — is asked of the verb
+   that reads the ledger properly rather than recomputed from SQL here.
+
+   The placeholder is not laziness. The real command carries the run's id, and a
+   run id is precisely what this site does not publish: runs appear under the
+   label `anonymise.json` gave them, and a test refuses any id that reaches
+   corpus.json — which is how the first draft of this line was caught. A reader
+   repeating this runs it against their own run anyway. */
+const MONEY = "conductor money --run <run> --json";
 
 /* ---------------------------------------------------------------------------
    Collecting
@@ -155,6 +168,62 @@ function readStore(db, runId) {
 const sumOver = (byCategory, field) =>
   Object.values(byCategory).reduce((total, row) => total + row[field], 0);
 
+/** What `conductor money` says about one run, which SQL here may not answer.
+    ---------------------------------------------------------------------------
+    The rule at the top of this file says money-shaped figures come from the
+    verb. This is that rule wired up rather than merely written down: one call
+    per published run, scoped with `--run` because a run.db holds several runs
+    and the bare positional argument prices the whole file — the web fleet's
+    three rounds share one database, so an unscoped call answers for all three.
+
+    Two fields of the verb's own output are deliberately dropped on the floor
+    and never reach the returned object: `plan` and `repo`. They are a plan's
+    real name and a path on somebody's machine, and this site publishes neither
+    (SPEC Part VI). What comes back is numbers and a stage count.
+
+    Stage labels are dropped for the same reason. A stage id is usually opaque —
+    `S4`, `A1` — but "usually" is not a rule, and a plan is free to name a stage
+    after the client it is for. The dearest stage is published as *a* stage of
+    this run, which is all the argument needs. */
+export function readMoney(runId) {
+  const raw = execSync(`conductor money --run ${runId} --json`, {
+    encoding: "utf8",
+    maxBuffer: 64 * 1024 * 1024
+  });
+  const priced = JSON.parse(raw.replace(/^﻿/, "")).runs?.find((run) => run.runId === runId);
+  if (!priced) {
+    throw new Error(
+      `conductor money --run ${short(runId)} priced no run with that id. The verb is the only ` +
+        `source this site allows for money-shaped figures, so a silent zero here would be a ` +
+        `published claim with nothing behind it.`
+    );
+  }
+
+  const total = priced.total ?? {};
+  const stages = priced.stages ?? [];
+  /* Ties go to the first stage, which is arbitrary and harmless: two stages
+     that cost the same amount make the same point about the same run. */
+  const dearest = stages.reduce((worst, stage) => (worst && worst.costUsd >= stage.costUsd ? worst : stage), null);
+
+  return {
+    stages: stages.length,
+    costUsd: total.costUsd ?? 0,
+    tokensPerCheckpoint: total.tokensPerCheckpoint ?? 0,
+    costPerMillionTokens: total.costPerMillionTokens ?? 0,
+    cacheReadShare: total.cacheReadShare ?? 0,
+    dearestStage: dearest
+      ? {
+          costUsd: dearest.costUsd ?? 0,
+          sessions: dearest.sessions ?? 0,
+          checkpoints: dearest.checkpoints ?? 0,
+          /* A run that cost nothing has no dearest stage worth a share, and
+             dividing by its zero would publish NaN. */
+          share: total.costUsd > 0 ? (dearest.costUsd ?? 0) / total.costUsd : 0
+        }
+      : { costUsd: 0, sessions: 0, checkpoints: 0, share: 0 }
+  };
+}
+
 /** Every run the engine knows about, with its store read alongside it.
     ---------------------------------------------------------------------------
     Runs are grouped by database so each file is opened once, and only the runs
@@ -183,7 +252,8 @@ export function collect({ history = readHistory(), published } = {}) {
           checkpointsDone: run.checkpointsDone ?? 0,
           checkpointsTotal: run.checkpointsTotal ?? 0,
           costUsd: run.costUsd ?? 0,
-          store: readStore(db, run.runId)
+          store: readStore(db, run.runId),
+          money: readMoney(run.runId)
         });
       }
     } finally {
@@ -215,6 +285,8 @@ const figure = (value, display, label, source, note) => ({
 const usd = (n) => `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const plain = (n) => n.toLocaleString("en-US");
 const round2 = (n) => Math.round(n * 100) / 100;
+/** A share of something, printed the way a reader reads one. */
+const pct = (n) => `${round1(n * 100)}%`;
 
 /** Token counts in the unit a reader can hold. 3,880,400,466 is unreadable;
     3.8B is the fact. The full number stays in `value` for recomputation. */
@@ -229,6 +301,18 @@ const round1 = (n) => (Math.round(n * 10) / 10).toString();
 /** One run, published under the name `anonymise.json` gave it. */
 function runEntry(run, mapped) {
   const s = run.store;
+  /* Required rather than defaulted. A missing money block means the verb was
+     not asked, and the honest outcome of that is a failure here — a zeroed
+     default would publish "$0.00 in the run's dearest stage" and look like a
+     measurement. */
+  if (!run.money) {
+    throw new Error(
+      `${mapped.label}: no money block. Money-shaped figures come from \`conductor money\`, so a ` +
+        `run collected without it cannot be published.`
+    );
+  }
+  const m = run.money;
+  const money = MONEY;
   return {
     label: mapped.label,
     scenario: mapped.scenario,
@@ -259,7 +343,55 @@ function runEntry(run, mapped) {
       softBreaks: figure(s.softBreaks, plain(s.softBreaks), "soft breaks", STORE),
       ownerApprovals: figure(s.ownerApprovals, plain(s.ownerApprovals), "owner approvals", STORE),
       bugsFiled: figure(s.bugsFiled, plain(s.bugsFiled), "bugs filed", STORE),
-      ledgerEntries: figure(s.ledgerEntries, plain(s.ledgerEntries), "ledger entries", STORE)
+      ledgerEntries: figure(s.ledgerEntries, plain(s.ledgerEntries), "ledger entries", STORE),
+
+      /* From the verb, not from here. See `MONEY` and `refuseBudgetShaped`. */
+      tokensPerCheckpoint: figure(
+        m.tokensPerCheckpoint,
+        big(m.tokensPerCheckpoint),
+        "tokens per checkpoint closed",
+        money,
+        `every token the run spent, over the ${run.checkpointsDone} checkpoints it closed`
+      ),
+      costPerMillionTokens: figure(
+        m.costPerMillionTokens,
+        usd(m.costPerMillionTokens),
+        "per million tokens, blended",
+        money,
+        "what the run paid for a million tokens of any kind — the cache reads are most of them, and they are the cheap ones"
+      ),
+      cacheReadShare: figure(
+        m.cacheReadShare,
+        pct(m.cacheReadShare),
+        "of the run's tokens were cache reads",
+        money
+      ),
+      dearestStageCostUsd: figure(
+        round2(m.dearestStage.costUsd),
+        usd(round2(m.dearestStage.costUsd)),
+        "in the run's dearest single stage",
+        money,
+        `the dearest of the ${m.stages} stages this run ran`
+      ),
+      dearestStageShare: figure(
+        m.dearestStage.share,
+        pct(m.dearestStage.share),
+        "of the run, spent in that one stage",
+        money
+      ),
+      dearestStageSessions: figure(
+        m.dearestStage.sessions,
+        plain(m.dearestStage.sessions),
+        "sessions in that stage",
+        money,
+        `of the ${run.sessions} the whole run took`
+      ),
+      dearestStageCheckpoints: figure(
+        m.dearestStage.checkpoints,
+        plain(m.dearestStage.checkpoints),
+        "checkpoints closed in it",
+        money
+      )
     }
   };
 }
@@ -307,6 +439,12 @@ function corpusFigures(runs, repoKeys) {
   const perSession = round2(cost / sessions);
   const perCheckpoint = round2(cost / done);
 
+  const tokensIn = sum((r) => r.store.tokensIn);
+  const tokensOut = sum((r) => r.store.tokensOut);
+  const cacheRead = sum((r) => r.store.cacheRead);
+  const allTokens = tokensIn + tokensOut + cacheRead;
+  const cacheShare = allTokens > 0 ? cacheRead / allTokens : 0;
+
   /* The lanes. `costs.category` is how the store separates the delivering agent
      from the two cheap things beside it, and the split is the whole of what
      concept 2 has to say — an orchestrator is not many expensive models, it is
@@ -351,9 +489,21 @@ function corpusFigures(runs, repoKeys) {
       STORE,
       "priced by the engine at a flat rate per second of advisor wall-clock, not metered from the model — an estimate of a lane whose real cost is too small for the ledger to have measured"
     ),
-    totalTokensIn: figure(sum((r) => r.store.tokensIn), big(sum((r) => r.store.tokensIn)), "tokens in", STORE),
-    totalTokensOut: figure(sum((r) => r.store.tokensOut), big(sum((r) => r.store.tokensOut)), "tokens out", STORE),
-    totalCacheRead: figure(sum((r) => r.store.cacheRead), big(sum((r) => r.store.cacheRead)), "cache read", STORE),
+    totalTokensIn: figure(tokensIn, big(tokensIn), "tokens in", STORE),
+    totalTokensOut: figure(tokensOut, big(tokensOut), "tokens out", STORE),
+    totalCacheRead: figure(cacheRead, big(cacheRead), "cache read", STORE),
+    /* The shape of the bill rather than its size, and the one figure that
+       explains why a corpus of billions of tokens cost thousands of dollars
+       rather than tens of thousands. Numerator and denominator are both
+       published above it, so a reader can do the division themselves — which
+       is the only reason a derived share belongs on this site at all. */
+    totalCacheReadShare: figure(
+      cacheShare,
+      pct(cacheShare),
+      "of the corpus's tokens were cache reads",
+      STORE,
+      "cache read over cache read plus in plus out; the three counts are published beside it"
+    ),
     totalGatesGreen: figure(green, `${green}/${gates}`, "gates green", STORE),
     totalGatesRun: figure(gates, plain(gates), "gates run", STORE),
     totalGatesRed: figure(gates - green, plain(gates - green), "gates red", STORE),
@@ -462,8 +612,9 @@ export function buildCorpus(collected, anonymise) {
         store: `${STORE}; every query filtered by run_id`,
         labels: "anonymise.json — a run with no entry is excluded, never renamed",
         budgetShaped:
-          "not here: floors, median closers, wrap-up, rollover rates, tokens per checkpoint, " +
-          "blended $/M and cap values come from `conductor budget` and `conductor money`"
+          "asked of the verbs, never computed here: tokens per checkpoint, blended $/M and the " +
+          "stage split come from `conductor money --run <id> --json`; floors, median closers, " +
+          "wrap-up and cap values come from `conductor budget`"
       }
     }
   };
@@ -488,8 +639,10 @@ function assertDisjoint(corpus, runs) {
     a cap even if it wanted to; and the derived budget figures — floors, median
     closers, wrap-up, rollover rates, tokens per checkpoint, blended $/M — were
     measured wrong by hand once already. They belong to `conductor budget` and
-    `conductor money`. If a later session reaches for one of these names here,
-    it finds this instead of a plausible number. */
+    `conductor money`. A key matching one of these names may still be published,
+    but only carrying one of those commands as its source: the test is where the
+    number came from, not what it is called. A later session that reaches for one
+    of these names over a SQL query finds this instead of a plausible number. */
 const BUDGET_SHAPED = [
   /^floor/i,
   /median/i,
@@ -504,12 +657,26 @@ const BUDGET_SHAPED = [
   /headroom/i
 ];
 
-function refuseBudgetShaped(corpus, runs) {
-  const keys = [
-    ...Object.keys(corpus),
-    ...Object.values(runs).flatMap((run) => Object.keys(run.figures))
+/** Whether a figure was measured by a verb or computed here.
+    ---------------------------------------------------------------------------
+    `source` is the check because `source` is also the claim: it is the string
+    the evidence strip prints under the number, so a figure that says it came
+    from the verb and did not is already lying to a reader on the page. */
+const fromAVerb = (figure) => /^conductor (money|budget)\b/.test(figure.source);
+
+export function refuseBudgetShaped(corpus, runs) {
+  const entries = [
+    ...Object.entries(corpus),
+    ...Object.values(runs).flatMap((run) => Object.entries(run.figures))
   ];
-  const offenders = [...new Set(keys)].filter((key) => BUDGET_SHAPED.some((re) => re.test(key)));
+  const offenders = [
+    ...new Set(
+      entries
+        .filter(([, figure]) => !fromAVerb(figure))
+        .filter(([key]) => BUDGET_SHAPED.some((re) => re.test(key)))
+        .map(([key]) => key)
+    )
+  ];
   if (offenders.length > 0) {
     throw new Error(
       `The harvest tried to mint budget-shaped keys from SQL: ${offenders.join(", ")}. ` +

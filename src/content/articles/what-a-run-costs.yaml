@@ -1,8 +1,10 @@
 meta:
   title: "What an autonomous run actually costs"
-  description: "The profit and loss of a corpus of autonomous runs, including the
-    waste. Every figure is recomputed from the run store rather than typed."
-  ogDescription: "The profit and loss of a corpus of autonomous runs, including the waste."
+  description: "The whole bill for a corpus of autonomous runs, including the
+    money that bought nothing: the lanes, the cache reads, and the two stages
+    where the waste sat."
+  ogDescription: "The whole bill for a corpus of autonomous runs, including the
+    money that bought nothing."
   canonical: "/articles/what-a-run-costs/"
 
 slug: "what-a-run-costs"
@@ -13,27 +15,176 @@ standfirst: "Nobody publishes the bill. This is the whole of one, across every
 
 evidence:
   runs:
-    - "the-fleet-round"
-    - "the-long-build"
-    - "the-engine-run"
+    - "the-fleet-backlog"
+    - "the-abandoned-prototype"
   figures:
     - "totalCostUsd"
     - "totalSessions"
+    - "totalCheckpointsDone"
     - "costPerSession"
     - "costPerCheckpoint"
+    - "totalCacheReadShare"
+    - "totalAgentCostUsd"
+    - "totalGateCostUsd"
+    - "totalAdvisorCostUsd"
+    - "costUsd"
+    - "checkpointsDone"
+    - "dearestStageCostUsd"
+    - "dearestStageShare"
+    - "dearestStageSessions"
+    - "dearestStageCheckpoints"
 
 sections:
-  - heading: "The bill"
+  - heading: "The whole bill"
     body:
-      - "The figures in this section are recomputed from the run store every
-        time the site is built. None of them was typed here, and a figure whose
+      - "Every figure above is recomputed from the engine's own run store each
+        time this page is built. None of them was typed here, and a figure whose
         key the harvest cannot produce fails the build rather than rendering
-        blank."
-  - heading: "The waste"
+        blank. That is worth stating once at the top, because the rest of this
+        article is an argument about numbers, and an argument about numbers is
+        worth exactly what its numbers are worth."
+      - "The total is smaller than most people guess. It is also the least
+        useful number on the page. A total answers the question a finance
+        department asks and none of the questions an engineer asks, because it
+        cannot be planned against: the next run is not this corpus, and nobody
+        is buying a corpus."
+      - "The unit that can be planned against is the cost of a closed checkpoint
+        — one unit of work in a plan, gated, verified and confirmed. The strip
+        carries both that and the cost per session, and the two tell different
+        stories on purpose. Cost per session is the one that flatters you: it
+        falls whenever sessions get shorter, including when they get shorter
+        because they are being cut off before they finish. Cost per closed
+        checkpoint moves the other way, and it is the one that notices."
+      - "Both figures name what they were divided by, because there is more than
+        one defensible denominator here and mixing them is wrong twice. The
+        corpus has more sessions than it has sessions that recorded any agent
+        tokens at all: rehearsals, demos and dead starts spent nothing. Divide
+        by the wrong one of those and the per-session cost moves by more than
+        most of the savings anybody is arguing about."
+      - "The checkpoints figure carries its own denominator for the same reason.
+        The second half of it is what was planned, and the gap between the two
+        is work that was scoped and never closed. It stays in the numerator of
+        nothing and in the article regardless, because a corpus that quietly
+        drops its unfinished plans has published an advertisement."
+
+  - heading: "It is a cache-read bill"
     body:
-      - "The interesting half of a bill is the part that bought nothing. A run
-        that only publishes its successes has published an advertisement, and
-        the number a reader needs in order to plan their own work is the one
-        that includes the stage that went nowhere."
+      - "Almost all of the tokens in this corpus are cache reads. Not most —
+        almost all, to the point where the share above rounds to a number people
+        assume is a typo. Fresh input and generated output together are a
+        rounding error beside the re-reading."
+      - "That is the whole explanation for why billions of tokens cost thousands
+        of dollars rather than tens of thousands. Cache reads are priced at a
+        fraction of fresh input, so the blended rate per million tokens across
+        one of these runs lands well under a dollar. Every run in the corpus
+        publishes its own blended rate, and none of them is close to a list
+        price."
+      - "It also inverts the intuition about where to be careful. Continuing a
+        long session is cheap; starting a new one is not. A fresh session pays
+        full price to read the tracker, the plan, the design document and enough
+        of the code to be useful, and only then does it start earning the cache
+        discount. Anything that ends sessions early — a ceiling set below the
+        size of the work, a crash, a rail the agent rides past — is buying the
+        expensive tokens again and again while the dashboard shows the cheap
+        ones."
+      - "The practical consequence for a plan is that session count is a cost
+        driver in its own right, independent of how much work gets done. Two
+        sessions that deliver one checkpoint cost more than one session that
+        delivers one checkpoint, and the difference is not small."
+
+  - heading: "The lanes, and the one that is an estimate"
+    body:
+      - "The store separates what was spent on the delivering agent from what
+        was spent on the gates and on the advisor lane, and the split is the
+        most quietly useful thing in the ledger. Effectively all of it is the
+        agent. The gates — every battery, every build, every test run, across
+        the whole corpus — cost less than a sandwich."
+      - "That is not an efficiency. It is what a gate is. A gate runs real
+        commands and reads real exit codes; there is no model in the loop to pay
+        for. Any design that asks a language model to judge whether the build
+        passed has both spent money and accepted an opinion where an exit code
+        was available."
+      - "The advisor lane is the third figure, and it comes with a caveat this
+        site would rather print than bury: it is priced by the engine at a flat
+        rate per second of advisor wall-clock, not metered from the model. It is
+        an estimate sitting beside two measurements. It is almost certainly the
+        right order of magnitude and it is not the same kind of number, so it is
+        labelled as what it is. A page that let an estimate pass for a
+        measurement, on this site, would be the one failure that mattered."
+
+  - heading: "The waste has a shape, and the shape is a stage"
+    body:
+      - "Runs do not waste money evenly. They waste it in one place, and the
+        place is usually a single stage that goes sideways while everything
+        around it behaves. So the strip publishes, for each run named here, its
+        dearest single stage: what that stage cost, what share of the run that
+        was, how many sessions it took and how many checkpoints it closed."
+      - "The fleet backlog's dearest stage is the clean case. Nearly a quarter
+        of a run that closed every checkpoint it opened, spent in one stage,
+        across more sessions than any other stage in that run — and the reason
+        was not the work. The remaining work was to merge two pull requests into
+        sites that deploy when their default branch moves, and the deploy
+        provider's daily allowance for production builds was fully used. The
+        window would reopen at a known time, several hours out."
+      - "Nothing failed. The gates were green. The tracker was honest. The
+        knowledge ledger from that stage is a small masterpiece of diligence:
+        session after session re-measured the allowance, wrote down that the
+        reopening time had not drifted, declared an acceptance for the work it
+        could not start, and exited without claiming anything. Each of those
+        sessions paid full price to orient itself, read the plan, run the gate
+        battery, take a fresh reading of a clock, and write a handoff saying
+        what the previous handoff already said."
+      - "The engine had no way to express wait. A session that cannot proceed
+        had exactly two moves available — carry on regardless, or end — and
+        ending was the honest one, so the honest move is what the agents kept
+        making. They were not being wasteful. They were being careful inside a
+        vocabulary that had no word for the thing that was true."
+      - "The fix is a verb, and it is cheap: a session can now declare itself
+        blocked until a named future instant, with a reason. The run sleeps
+        until then and spawns one more session, burning no attempt, and the
+        reason is handed to it. What was several sessions of diligent
+        clock-reading becomes one line and a nap. The measurement in the strip
+        above is what that line is worth, in the only unit that settles the
+        argument."
+
+  - heading: "Money spent on work that stopped"
+    body:
+      - "The second run named here is an abandoned prototype. It closed a little
+        over half the checkpoints it planned and was left there when the work
+        moved to a different repository. Its dearest stage closed nothing at all
+        — no checkpoints, three sessions, and close to a third of everything the
+        run ever spent."
+      - "That figure is in this corpus on purpose. A run that stops is not an
+        anomaly to be quietly dropped from the denominator; it is one of the
+        outcomes, and it has a price. The corpus also keeps two false starts and
+        a run aborted inside its first minute, all of them near enough free, all
+        of them published. The cost of publishing them is a slightly worse
+        average. The cost of hiding them is that every number on the site
+        becomes a claim about the good days only."
+      - "The pattern across both runs is the same, and it is the one thing here
+        worth carrying into a different system entirely: waste concentrates. It
+        does not arrive as a uniform ten per cent tax on every session. It
+        arrives as one stage that eats a quarter or a third of a run while every
+        other stage behaves normally, which means the stage split is where to
+        look, and the run total is where not to."
+
+  - heading: "How to read your own bill"
+    body:
+      - "Three moves, in order. First, name your denominator and keep the whole
+        system on it. Sessions that recorded no tokens are real sessions and a
+        rate that includes them means something different from a rate that does
+        not; either is defensible, and quietly switching between them is how a
+        cost story stops being true without anybody editing it."
+      - "Second, price the closed checkpoint, not the session. A cap that cuts
+        sessions shorter improves the per-session figure by construction. The
+        per-checkpoint figure is the one that tells you whether the work got
+        cheaper or merely got chopped into more pieces, each of which paid its
+        own start-up cost."
+      - "Third, read the stage split before you read anything else. Sort the
+        stages of a finished run by what they cost, look at the top one, and ask
+        what it closed. If the answer is little or nothing, the money is not in
+        the model's price per token or in anybody's efficiency — it is in one
+        stage that could not proceed and had no way to say so. That is a design
+        problem with a fix, and it is invisible from the total."
 
 readNext: []

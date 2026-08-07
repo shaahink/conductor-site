@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-08-07T00:28:32.277Z",
+  "generatedAtUtc": "2026-08-07T01:28:24.910Z",
   "corpus": {
     "totalRuns": {
       "value": 18,
@@ -82,6 +82,13 @@
       "display": "3.8B",
       "label": "cache read",
       "source": "run.db, opened read-only"
+    },
+    "totalCacheReadShare": {
+      "value": 0.9832700621034938,
+      "display": "98.3%",
+      "label": "of the corpus's tokens were cache reads",
+      "source": "run.db, opened read-only",
+      "note": "cache read over cache read plus in plus out; the three counts are published beside it"
     },
     "totalGatesGreen": {
       "value": 648,
@@ -238,6 +245,52 @@
           "display": "0",
           "label": "ledger entries",
           "source": "run.db, opened read-only"
+        },
+        "tokensPerCheckpoint": {
+          "value": 0,
+          "display": "0",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor money --run <run> --json",
+          "note": "every token the run spent, over the 0 checkpoints it closed"
+        },
+        "costPerMillionTokens": {
+          "value": 0,
+          "display": "$0.00",
+          "label": "per million tokens, blended",
+          "source": "conductor money --run <run> --json",
+          "note": "what the run paid for a million tokens of any kind — the cache reads are most of them, and they are the cheap ones"
+        },
+        "cacheReadShare": {
+          "value": 0,
+          "display": "0%",
+          "label": "of the run's tokens were cache reads",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageCostUsd": {
+          "value": 0,
+          "display": "$0.00",
+          "label": "in the run's dearest single stage",
+          "source": "conductor money --run <run> --json",
+          "note": "the dearest of the 1 stages this run ran"
+        },
+        "dearestStageShare": {
+          "value": 0,
+          "display": "0%",
+          "label": "of the run, spent in that one stage",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageSessions": {
+          "value": 1,
+          "display": "1",
+          "label": "sessions in that stage",
+          "source": "conductor money --run <run> --json",
+          "note": "of the 1 the whole run took"
+        },
+        "dearestStageCheckpoints": {
+          "value": 0,
+          "display": "0",
+          "label": "checkpoints closed in it",
+          "source": "conductor money --run <run> --json"
         }
       }
     },
@@ -331,6 +384,52 @@
           "display": "7",
           "label": "ledger entries",
           "source": "run.db, opened read-only"
+        },
+        "tokensPerCheckpoint": {
+          "value": 0,
+          "display": "0",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor money --run <run> --json",
+          "note": "every token the run spent, over the 0 checkpoints it closed"
+        },
+        "costPerMillionTokens": {
+          "value": 0.0233,
+          "display": "$0.02",
+          "label": "per million tokens, blended",
+          "source": "conductor money --run <run> --json",
+          "note": "what the run paid for a million tokens of any kind — the cache reads are most of them, and they are the cheap ones"
+        },
+        "cacheReadShare": {
+          "value": 0.96458,
+          "display": "96.5%",
+          "label": "of the run's tokens were cache reads",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageCostUsd": {
+          "value": 0.17,
+          "display": "$0.17",
+          "label": "in the run's dearest single stage",
+          "source": "conductor money --run <run> --json",
+          "note": "the dearest of the 1 stages this run ran"
+        },
+        "dearestStageShare": {
+          "value": 1,
+          "display": "100%",
+          "label": "of the run, spent in that one stage",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageSessions": {
+          "value": 3,
+          "display": "3",
+          "label": "sessions in that stage",
+          "source": "conductor money --run <run> --json",
+          "note": "of the 3 the whole run took"
+        },
+        "dearestStageCheckpoints": {
+          "value": 0,
+          "display": "0",
+          "label": "checkpoints closed in it",
+          "source": "conductor money --run <run> --json"
         }
       }
     },
@@ -424,6 +523,52 @@
           "display": "0",
           "label": "ledger entries",
           "source": "run.db, opened read-only"
+        },
+        "tokensPerCheckpoint": {
+          "value": 0,
+          "display": "0",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor money --run <run> --json",
+          "note": "every token the run spent, over the 0 checkpoints it closed"
+        },
+        "costPerMillionTokens": {
+          "value": 0,
+          "display": "$0.00",
+          "label": "per million tokens, blended",
+          "source": "conductor money --run <run> --json",
+          "note": "what the run paid for a million tokens of any kind — the cache reads are most of them, and they are the cheap ones"
+        },
+        "cacheReadShare": {
+          "value": 0,
+          "display": "0%",
+          "label": "of the run's tokens were cache reads",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageCostUsd": {
+          "value": 0,
+          "display": "$0.00",
+          "label": "in the run's dearest single stage",
+          "source": "conductor money --run <run> --json",
+          "note": "the dearest of the 1 stages this run ran"
+        },
+        "dearestStageShare": {
+          "value": 0,
+          "display": "0%",
+          "label": "of the run, spent in that one stage",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageSessions": {
+          "value": 1,
+          "display": "1",
+          "label": "sessions in that stage",
+          "source": "conductor money --run <run> --json",
+          "note": "of the 1 the whole run took"
+        },
+        "dearestStageCheckpoints": {
+          "value": 0,
+          "display": "0",
+          "label": "checkpoints closed in it",
+          "source": "conductor money --run <run> --json"
         }
       }
     },
@@ -517,6 +662,52 @@
           "display": "24",
           "label": "ledger entries",
           "source": "run.db, opened read-only"
+        },
+        "tokensPerCheckpoint": {
+          "value": 15677089,
+          "display": "15.7M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor money --run <run> --json",
+          "note": "every token the run spent, over the 6 checkpoints it closed"
+        },
+        "costPerMillionTokens": {
+          "value": 1.2728,
+          "display": "$1.27",
+          "label": "per million tokens, blended",
+          "source": "conductor money --run <run> --json",
+          "note": "what the run paid for a million tokens of any kind — the cache reads are most of them, and they are the cheap ones"
+        },
+        "cacheReadShare": {
+          "value": 0.99032,
+          "display": "99%",
+          "label": "of the run's tokens were cache reads",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageCostUsd": {
+          "value": 44.15,
+          "display": "$44.15",
+          "label": "in the run's dearest single stage",
+          "source": "conductor money --run <run> --json",
+          "note": "the dearest of the 4 stages this run ran"
+        },
+        "dearestStageShare": {
+          "value": 0.31606337060665135,
+          "display": "31.6%",
+          "label": "of the run, spent in that one stage",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageSessions": {
+          "value": 3,
+          "display": "3",
+          "label": "sessions in that stage",
+          "source": "conductor money --run <run> --json",
+          "note": "of the 11 the whole run took"
+        },
+        "dearestStageCheckpoints": {
+          "value": 0,
+          "display": "0",
+          "label": "checkpoints closed in it",
+          "source": "conductor money --run <run> --json"
         }
       }
     },
@@ -610,6 +801,52 @@
           "display": "5",
           "label": "ledger entries",
           "source": "run.db, opened read-only"
+        },
+        "tokensPerCheckpoint": {
+          "value": 1622514,
+          "display": "1.6M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor money --run <run> --json",
+          "note": "every token the run spent, over the 2 checkpoints it closed"
+        },
+        "costPerMillionTokens": {
+          "value": 0.8978,
+          "display": "$0.90",
+          "label": "per million tokens, blended",
+          "source": "conductor money --run <run> --json",
+          "note": "what the run paid for a million tokens of any kind — the cache reads are most of them, and they are the cheap ones"
+        },
+        "cacheReadShare": {
+          "value": 0.97168,
+          "display": "97.2%",
+          "label": "of the run's tokens were cache reads",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageCostUsd": {
+          "value": 2.91,
+          "display": "$2.91",
+          "label": "in the run's dearest single stage",
+          "source": "conductor money --run <run> --json",
+          "note": "the dearest of the 1 stages this run ran"
+        },
+        "dearestStageShare": {
+          "value": 1,
+          "display": "100%",
+          "label": "of the run, spent in that one stage",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageSessions": {
+          "value": 1,
+          "display": "1",
+          "label": "sessions in that stage",
+          "source": "conductor money --run <run> --json",
+          "note": "of the 1 the whole run took"
+        },
+        "dearestStageCheckpoints": {
+          "value": 2,
+          "display": "2",
+          "label": "checkpoints closed in it",
+          "source": "conductor money --run <run> --json"
         }
       }
     },
@@ -703,6 +940,52 @@
           "display": "90",
           "label": "ledger entries",
           "source": "run.db, opened read-only"
+        },
+        "tokensPerCheckpoint": {
+          "value": 7558392,
+          "display": "7.6M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor money --run <run> --json",
+          "note": "every token the run spent, over the 29 checkpoints it closed"
+        },
+        "costPerMillionTokens": {
+          "value": 1.0232,
+          "display": "$1.02",
+          "label": "per million tokens, blended",
+          "source": "conductor money --run <run> --json",
+          "note": "what the run paid for a million tokens of any kind — the cache reads are most of them, and they are the cheap ones"
+        },
+        "cacheReadShare": {
+          "value": 0.97935,
+          "display": "97.9%",
+          "label": "of the run's tokens were cache reads",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageCostUsd": {
+          "value": 52.06,
+          "display": "$52.06",
+          "label": "in the run's dearest single stage",
+          "source": "conductor money --run <run> --json",
+          "note": "the dearest of the 13 stages this run ran"
+        },
+        "dearestStageShare": {
+          "value": 0.23213350989597964,
+          "display": "23.2%",
+          "label": "of the run, spent in that one stage",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageSessions": {
+          "value": 10,
+          "display": "10",
+          "label": "sessions in that stage",
+          "source": "conductor money --run <run> --json",
+          "note": "of the 24 the whole run took"
+        },
+        "dearestStageCheckpoints": {
+          "value": 4,
+          "display": "4",
+          "label": "checkpoints closed in it",
+          "source": "conductor money --run <run> --json"
         }
       }
     },
@@ -796,6 +1079,52 @@
           "display": "134",
           "label": "ledger entries",
           "source": "run.db, opened read-only"
+        },
+        "tokensPerCheckpoint": {
+          "value": 24854617,
+          "display": "24.9M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor money --run <run> --json",
+          "note": "every token the run spent, over the 25 checkpoints it closed"
+        },
+        "costPerMillionTokens": {
+          "value": 0.6842,
+          "display": "$0.68",
+          "label": "per million tokens, blended",
+          "source": "conductor money --run <run> --json",
+          "note": "what the run paid for a million tokens of any kind — the cache reads are most of them, and they are the cheap ones"
+        },
+        "cacheReadShare": {
+          "value": 0.98685,
+          "display": "98.7%",
+          "label": "of the run's tokens were cache reads",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageCostUsd": {
+          "value": 148.5,
+          "display": "$148.50",
+          "label": "in the run's dearest single stage",
+          "source": "conductor money --run <run> --json",
+          "note": "the dearest of the 7 stages this run ran"
+        },
+        "dearestStageShare": {
+          "value": 0.3493253944637582,
+          "display": "34.9%",
+          "label": "of the run, spent in that one stage",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageSessions": {
+          "value": 9,
+          "display": "9",
+          "label": "sessions in that stage",
+          "source": "conductor money --run <run> --json",
+          "note": "of the 28 the whole run took"
+        },
+        "dearestStageCheckpoints": {
+          "value": 4,
+          "display": "4",
+          "label": "checkpoints closed in it",
+          "source": "conductor money --run <run> --json"
         }
       }
     },
@@ -889,6 +1218,52 @@
           "display": "92",
           "label": "ledger entries",
           "source": "run.db, opened read-only"
+        },
+        "tokensPerCheckpoint": {
+          "value": 19402772,
+          "display": "19.4M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor money --run <run> --json",
+          "note": "every token the run spent, over the 26 checkpoints it closed"
+        },
+        "costPerMillionTokens": {
+          "value": 0.7139,
+          "display": "$0.71",
+          "label": "per million tokens, blended",
+          "source": "conductor money --run <run> --json",
+          "note": "what the run paid for a million tokens of any kind — the cache reads are most of them, and they are the cheap ones"
+        },
+        "cacheReadShare": {
+          "value": 0.98482,
+          "display": "98.5%",
+          "label": "of the run's tokens were cache reads",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageCostUsd": {
+          "value": 68.03,
+          "display": "$68.03",
+          "label": "in the run's dearest single stage",
+          "source": "conductor money --run <run> --json",
+          "note": "the dearest of the 8 stages this run ran"
+        },
+        "dearestStageShare": {
+          "value": 0.18888713958423747,
+          "display": "18.9%",
+          "label": "of the run, spent in that one stage",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageSessions": {
+          "value": 4,
+          "display": "4",
+          "label": "sessions in that stage",
+          "source": "conductor money --run <run> --json",
+          "note": "of the 28 the whole run took"
+        },
+        "dearestStageCheckpoints": {
+          "value": 4,
+          "display": "4",
+          "label": "checkpoints closed in it",
+          "source": "conductor money --run <run> --json"
         }
       }
     },
@@ -982,6 +1357,52 @@
           "display": "90",
           "label": "ledger entries",
           "source": "run.db, opened read-only"
+        },
+        "tokensPerCheckpoint": {
+          "value": 18680395,
+          "display": "18.7M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor money --run <run> --json",
+          "note": "every token the run spent, over the 17 checkpoints it closed"
+        },
+        "costPerMillionTokens": {
+          "value": 0.7011,
+          "display": "$0.70",
+          "label": "per million tokens, blended",
+          "source": "conductor money --run <run> --json",
+          "note": "what the run paid for a million tokens of any kind — the cache reads are most of them, and they are the cheap ones"
+        },
+        "cacheReadShare": {
+          "value": 0.98567,
+          "display": "98.6%",
+          "label": "of the run's tokens were cache reads",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageCostUsd": {
+          "value": 55.47,
+          "display": "$55.47",
+          "label": "in the run's dearest single stage",
+          "source": "conductor money --run <run> --json",
+          "note": "the dearest of the 6 stages this run ran"
+        },
+        "dearestStageShare": {
+          "value": 0.24915207721431257,
+          "display": "24.9%",
+          "label": "of the run, spent in that one stage",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageSessions": {
+          "value": 4,
+          "display": "4",
+          "label": "sessions in that stage",
+          "source": "conductor money --run <run> --json",
+          "note": "of the 17 the whole run took"
+        },
+        "dearestStageCheckpoints": {
+          "value": 4,
+          "display": "4",
+          "label": "checkpoints closed in it",
+          "source": "conductor money --run <run> --json"
         }
       }
     },
@@ -1075,6 +1496,52 @@
           "display": "105",
           "label": "ledger entries",
           "source": "run.db, opened read-only"
+        },
+        "tokensPerCheckpoint": {
+          "value": 19860271,
+          "display": "19.9M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor money --run <run> --json",
+          "note": "every token the run spent, over the 24 checkpoints it closed"
+        },
+        "costPerMillionTokens": {
+          "value": 0.7483,
+          "display": "$0.75",
+          "label": "per million tokens, blended",
+          "source": "conductor money --run <run> --json",
+          "note": "what the run paid for a million tokens of any kind — the cache reads are most of them, and they are the cheap ones"
+        },
+        "cacheReadShare": {
+          "value": 0.98157,
+          "display": "98.2%",
+          "label": "of the run's tokens were cache reads",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageCostUsd": {
+          "value": 56.53,
+          "display": "$56.53",
+          "label": "in the run's dearest single stage",
+          "source": "conductor money --run <run> --json",
+          "note": "the dearest of the 8 stages this run ran"
+        },
+        "dearestStageShare": {
+          "value": 0.1901818798399409,
+          "display": "19%",
+          "label": "of the run, spent in that one stage",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageSessions": {
+          "value": 4,
+          "display": "4",
+          "label": "sessions in that stage",
+          "source": "conductor money --run <run> --json",
+          "note": "of the 41 the whole run took"
+        },
+        "dearestStageCheckpoints": {
+          "value": 4,
+          "display": "4",
+          "label": "checkpoints closed in it",
+          "source": "conductor money --run <run> --json"
         }
       }
     },
@@ -1168,6 +1635,52 @@
           "display": "203",
           "label": "ledger entries",
           "source": "run.db, opened read-only"
+        },
+        "tokensPerCheckpoint": {
+          "value": 16481026,
+          "display": "16.5M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor money --run <run> --json",
+          "note": "every token the run spent, over the 45 checkpoints it closed"
+        },
+        "costPerMillionTokens": {
+          "value": 0.8524,
+          "display": "$0.85",
+          "label": "per million tokens, blended",
+          "source": "conductor money --run <run> --json",
+          "note": "what the run paid for a million tokens of any kind — the cache reads are most of them, and they are the cheap ones"
+        },
+        "cacheReadShare": {
+          "value": 0.97662,
+          "display": "97.7%",
+          "label": "of the run's tokens were cache reads",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageCostUsd": {
+          "value": 116.63,
+          "display": "$116.63",
+          "label": "in the run's dearest single stage",
+          "source": "conductor money --run <run> --json",
+          "note": "the dearest of the 9 stages this run ran"
+        },
+        "dearestStageShare": {
+          "value": 0.27672990296859856,
+          "display": "27.7%",
+          "label": "of the run, spent in that one stage",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageSessions": {
+          "value": 9,
+          "display": "9",
+          "label": "sessions in that stage",
+          "source": "conductor money --run <run> --json",
+          "note": "of the 69 the whole run took"
+        },
+        "dearestStageCheckpoints": {
+          "value": 7,
+          "display": "7",
+          "label": "checkpoints closed in it",
+          "source": "conductor money --run <run> --json"
         }
       }
     },
@@ -1261,6 +1774,52 @@
           "display": "109",
           "label": "ledger entries",
           "source": "run.db, opened read-only"
+        },
+        "tokensPerCheckpoint": {
+          "value": 23805111,
+          "display": "23.8M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor money --run <run> --json",
+          "note": "every token the run spent, over the 22 checkpoints it closed"
+        },
+        "costPerMillionTokens": {
+          "value": 0.6844,
+          "display": "$0.68",
+          "label": "per million tokens, blended",
+          "source": "conductor money --run <run> --json",
+          "note": "what the run paid for a million tokens of any kind — the cache reads are most of them, and they are the cheap ones"
+        },
+        "cacheReadShare": {
+          "value": 0.9866,
+          "display": "98.7%",
+          "label": "of the run's tokens were cache reads",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageCostUsd": {
+          "value": 71.22,
+          "display": "$71.22",
+          "label": "in the run's dearest single stage",
+          "source": "conductor money --run <run> --json",
+          "note": "the dearest of the 10 stages this run ran"
+        },
+        "dearestStageShare": {
+          "value": 0.19871395501381492,
+          "display": "19.9%",
+          "label": "of the run, spent in that one stage",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageSessions": {
+          "value": 4,
+          "display": "4",
+          "label": "sessions in that stage",
+          "source": "conductor money --run <run> --json",
+          "note": "of the 26 the whole run took"
+        },
+        "dearestStageCheckpoints": {
+          "value": 4,
+          "display": "4",
+          "label": "checkpoints closed in it",
+          "source": "conductor money --run <run> --json"
         }
       }
     },
@@ -1354,6 +1913,52 @@
           "display": "38",
           "label": "ledger entries",
           "source": "run.db, opened read-only"
+        },
+        "tokensPerCheckpoint": {
+          "value": 9846119,
+          "display": "9.8M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor money --run <run> --json",
+          "note": "every token the run spent, over the 17 checkpoints it closed"
+        },
+        "costPerMillionTokens": {
+          "value": 0.825,
+          "display": "$0.83",
+          "label": "per million tokens, blended",
+          "source": "conductor money --run <run> --json",
+          "note": "what the run paid for a million tokens of any kind — the cache reads are most of them, and they are the cheap ones"
+        },
+        "cacheReadShare": {
+          "value": 0.97985,
+          "display": "98%",
+          "label": "of the run's tokens were cache reads",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageCostUsd": {
+          "value": 40.85,
+          "display": "$40.85",
+          "label": "in the run's dearest single stage",
+          "source": "conductor money --run <run> --json",
+          "note": "the dearest of the 4 stages this run ran"
+        },
+        "dearestStageShare": {
+          "value": 0.41908099440791735,
+          "display": "41.9%",
+          "label": "of the run, spent in that one stage",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageSessions": {
+          "value": 6,
+          "display": "6",
+          "label": "sessions in that stage",
+          "source": "conductor money --run <run> --json",
+          "note": "of the 15 the whole run took"
+        },
+        "dearestStageCheckpoints": {
+          "value": 5,
+          "display": "5",
+          "label": "checkpoints closed in it",
+          "source": "conductor money --run <run> --json"
         }
       }
     },
@@ -1447,6 +2052,52 @@
           "display": "46",
           "label": "ledger entries",
           "source": "run.db, opened read-only"
+        },
+        "tokensPerCheckpoint": {
+          "value": 2219059,
+          "display": "2.2M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor money --run <run> --json",
+          "note": "every token the run spent, over the 20 checkpoints it closed"
+        },
+        "costPerMillionTokens": {
+          "value": 0.8559,
+          "display": "$0.86",
+          "label": "per million tokens, blended",
+          "source": "conductor money --run <run> --json",
+          "note": "what the run paid for a million tokens of any kind — the cache reads are most of them, and they are the cheap ones"
+        },
+        "cacheReadShare": {
+          "value": 0.97484,
+          "display": "97.5%",
+          "label": "of the run's tokens were cache reads",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageCostUsd": {
+          "value": 18.44,
+          "display": "$18.44",
+          "label": "in the run's dearest single stage",
+          "source": "conductor money --run <run> --json",
+          "note": "the dearest of the 6 stages this run ran"
+        },
+        "dearestStageShare": {
+          "value": 0.4853398758535725,
+          "display": "48.5%",
+          "label": "of the run, spent in that one stage",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageSessions": {
+          "value": 4,
+          "display": "4",
+          "label": "sessions in that stage",
+          "source": "conductor money --run <run> --json",
+          "note": "of the 12 the whole run took"
+        },
+        "dearestStageCheckpoints": {
+          "value": 5,
+          "display": "5",
+          "label": "checkpoints closed in it",
+          "source": "conductor money --run <run> --json"
         }
       }
     },
@@ -1540,6 +2191,52 @@
           "display": "44",
           "label": "ledger entries",
           "source": "run.db, opened read-only"
+        },
+        "tokensPerCheckpoint": {
+          "value": 7465272,
+          "display": "7.5M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor money --run <run> --json",
+          "note": "every token the run spent, over the 20 checkpoints it closed"
+        },
+        "costPerMillionTokens": {
+          "value": 0.782,
+          "display": "$0.78",
+          "label": "per million tokens, blended",
+          "source": "conductor money --run <run> --json",
+          "note": "what the run paid for a million tokens of any kind — the cache reads are most of them, and they are the cheap ones"
+        },
+        "cacheReadShare": {
+          "value": 0.981,
+          "display": "98.1%",
+          "label": "of the run's tokens were cache reads",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageCostUsd": {
+          "value": 44.74,
+          "display": "$44.74",
+          "label": "in the run's dearest single stage",
+          "source": "conductor money --run <run> --json",
+          "note": "the dearest of the 6 stages this run ran"
+        },
+        "dearestStageShare": {
+          "value": 0.4033305116298358,
+          "display": "40.3%",
+          "label": "of the run, spent in that one stage",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageSessions": {
+          "value": 7,
+          "display": "7",
+          "label": "sessions in that stage",
+          "source": "conductor money --run <run> --json",
+          "note": "of the 15 the whole run took"
+        },
+        "dearestStageCheckpoints": {
+          "value": 6,
+          "display": "6",
+          "label": "checkpoints closed in it",
+          "source": "conductor money --run <run> --json"
         }
       }
     },
@@ -1633,6 +2330,52 @@
           "display": "113",
           "label": "ledger entries",
           "source": "run.db, opened read-only"
+        },
+        "tokensPerCheckpoint": {
+          "value": 16829731,
+          "display": "16.8M",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor money --run <run> --json",
+          "note": "every token the run spent, over the 25 checkpoints it closed"
+        },
+        "costPerMillionTokens": {
+          "value": 0.7869,
+          "display": "$0.79",
+          "label": "per million tokens, blended",
+          "source": "conductor money --run <run> --json",
+          "note": "what the run paid for a million tokens of any kind — the cache reads are most of them, and they are the cheap ones"
+        },
+        "cacheReadShare": {
+          "value": 0.98278,
+          "display": "98.3%",
+          "label": "of the run's tokens were cache reads",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageCostUsd": {
+          "value": 64.5,
+          "display": "$64.50",
+          "label": "in the run's dearest single stage",
+          "source": "conductor money --run <run> --json",
+          "note": "the dearest of the 7 stages this run ran"
+        },
+        "dearestStageShare": {
+          "value": 0.20293945160104906,
+          "display": "20.3%",
+          "label": "of the run, spent in that one stage",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageSessions": {
+          "value": 8,
+          "display": "8",
+          "label": "sessions in that stage",
+          "source": "conductor money --run <run> --json",
+          "note": "of the 32 the whole run took"
+        },
+        "dearestStageCheckpoints": {
+          "value": 1,
+          "display": "1",
+          "label": "checkpoints closed in it",
+          "source": "conductor money --run <run> --json"
         }
       }
     },
@@ -1726,6 +2469,52 @@
           "display": "0",
           "label": "ledger entries",
           "source": "run.db, opened read-only"
+        },
+        "tokensPerCheckpoint": {
+          "value": 540,
+          "display": "540",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor money --run <run> --json",
+          "note": "every token the run spent, over the 3 checkpoints it closed"
+        },
+        "costPerMillionTokens": {
+          "value": 0.8951,
+          "display": "$0.90",
+          "label": "per million tokens, blended",
+          "source": "conductor money --run <run> --json",
+          "note": "what the run paid for a million tokens of any kind — the cache reads are most of them, and they are the cheap ones"
+        },
+        "cacheReadShare": {
+          "value": 0,
+          "display": "0%",
+          "label": "of the run's tokens were cache reads",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageCostUsd": {
+          "value": 0,
+          "display": "$0.00",
+          "label": "in the run's dearest single stage",
+          "source": "conductor money --run <run> --json",
+          "note": "the dearest of the 2 stages this run ran"
+        },
+        "dearestStageShare": {
+          "value": 0.6666666666666666,
+          "display": "66.7%",
+          "label": "of the run, spent in that one stage",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageSessions": {
+          "value": 4,
+          "display": "4",
+          "label": "sessions in that stage",
+          "source": "conductor money --run <run> --json",
+          "note": "of the 6 the whole run took"
+        },
+        "dearestStageCheckpoints": {
+          "value": 2,
+          "display": "2",
+          "label": "checkpoints closed in it",
+          "source": "conductor money --run <run> --json"
         }
       }
     },
@@ -1819,6 +2608,52 @@
           "display": "0",
           "label": "ledger entries",
           "source": "run.db, opened read-only"
+        },
+        "tokensPerCheckpoint": {
+          "value": 480,
+          "display": "480",
+          "label": "tokens per checkpoint closed",
+          "source": "conductor money --run <run> --json",
+          "note": "every token the run spent, over the 6 checkpoints it closed"
+        },
+        "costPerMillionTokens": {
+          "value": 0.8713,
+          "display": "$0.87",
+          "label": "per million tokens, blended",
+          "source": "conductor money --run <run> --json",
+          "note": "what the run paid for a million tokens of any kind — the cache reads are most of them, and they are the cheap ones"
+        },
+        "cacheReadShare": {
+          "value": 0,
+          "display": "0%",
+          "label": "of the run's tokens were cache reads",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageCostUsd": {
+          "value": 0,
+          "display": "$0.00",
+          "label": "in the run's dearest single stage",
+          "source": "conductor money --run <run> --json",
+          "note": "the dearest of the 3 stages this run ran"
+        },
+        "dearestStageShare": {
+          "value": 0.36,
+          "display": "36%",
+          "label": "of the run, spent in that one stage",
+          "source": "conductor money --run <run> --json"
+        },
+        "dearestStageSessions": {
+          "value": 4,
+          "display": "4",
+          "label": "sessions in that stage",
+          "source": "conductor money --run <run> --json",
+          "note": "of the 10 the whole run took"
+        },
+        "dearestStageCheckpoints": {
+          "value": 2,
+          "display": "2",
+          "label": "checkpoints closed in it",
+          "source": "conductor money --run <run> --json"
         }
       }
     }
@@ -1827,6 +2662,6 @@
     "runLevel": "conductor history --json --limit 0",
     "store": "run.db, opened read-only; every query filtered by run_id",
     "labels": "anonymise.json — a run with no entry is excluded, never renamed",
-    "budgetShaped": "not here: floors, median closers, wrap-up, rollover rates, tokens per checkpoint, blended $/M and cap values come from `conductor budget` and `conductor money`"
+    "budgetShaped": "asked of the verbs, never computed here: tokens per checkpoint, blended $/M and the stage split come from `conductor money --run <id> --json`; floors, median closers, wrap-up and cap values come from `conductor budget`"
   }
 }

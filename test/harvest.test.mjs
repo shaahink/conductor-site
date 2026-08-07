@@ -21,7 +21,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-import { buildCorpus } from "../scripts/harvest.mjs";
+import { buildCorpus, refuseBudgetShaped } from "../scripts/harvest.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const corpusJson = JSON.parse(readFileSync(join(root, "src", "data", "corpus.json"), "utf8"));
@@ -56,6 +56,19 @@ function fakeRun(runId, overrides = {}) {
       ownerApprovals: 1,
       events: {},
       ...(overrides.store ?? {})
+    },
+    /* What `conductor money --run <id> --json` answers, in the shape
+       `readMoney` reduces it to. Fabricated here for the same reason the store
+       is: these tests are about what the anonymisation map lets through, and
+       nothing in them should need a verb, a database or somebody's real run. */
+    money: {
+      stages: 4,
+      costUsd: 1000,
+      tokensPerCheckpoint: 1_050_000,
+      costPerMillionTokens: 0.5,
+      cacheReadShare: 0.9,
+      dearestStage: { costUsd: 400, sessions: 30, checkpoints: 2, share: 0.4 },
+      ...(overrides.money ?? {})
     }
   };
 }
@@ -184,4 +197,61 @@ test("a corpus key and a run key never share a name", () => {
   );
   const clashes = Object.keys(corpusJson.corpus).filter((key) => perRun.has(key));
   assert.deepEqual(clashes, [], "one key, one meaning: see corpusFigures() in scripts/harvest.mjs");
+});
+
+/* --------------------------------------------------------------------------
+   Where a money-shaped number is allowed to come from.
+   --------------------------------------------------------------------------
+   The rule (SPEC Part VI, and the note at the top of the harvest): tokens per
+   checkpoint, blended dollars per million and the stage split are asked of
+   `conductor money`, never recomputed from SQL here. A hand query of exactly
+   these numbers was contradicted four times over in August 2026.
+
+   The guard used to refuse the NAMES, which was easy to check and slightly
+   wrong: it also refused the verb's own answers, so the figures the rule points
+   at could never be published at all. It now tests the source, which is the
+   claim the strip prints under the number — so these two tests are the same
+   key twice, passing once and failing once on nothing but where it came from.
+   -------------------------------------------------------------------------- */
+
+const figureFrom = (source) => ({ value: 1, display: "1", label: "per checkpoint", source });
+
+test("a budget-shaped figure the harvest computed itself is refused", () => {
+  assert.throws(
+    () => refuseBudgetShaped({ tokensPerCheckpoint: figureFrom("run.db, opened read-only") }, {}),
+    /tokensPerCheckpoint/
+  );
+});
+
+test("the same figure measured by the verb is published", () => {
+  refuseBudgetShaped({ tokensPerCheckpoint: figureFrom("conductor money --run <run> --json") }, {});
+  refuseBudgetShaped(
+    {},
+    { "a-run": { figures: { medianCloserTokens: figureFrom("conductor budget --json") } } }
+  );
+});
+
+test("every money-shaped figure in the committed corpus names the verb", () => {
+  /* The other direction, against what actually shipped: no figure may carry a
+     money-shaped name unless a verb answered it. */
+  const moneyShaped = /perCheckpoint|perMillion|dearestStage/i;
+  for (const [label, run] of Object.entries(corpusJson.runs)) {
+    for (const [key, figure] of Object.entries(run.figures)) {
+      if (!moneyShaped.test(key)) continue;
+      assert.match(
+        figure.source,
+        /^conductor (money|budget)\b/,
+        `${label}.${key} is money-shaped but says it came from ${figure.source}`
+      );
+    }
+  }
+});
+
+test("a run collected without asking the verb cannot be published", () => {
+  const run = fakeRun("aaaaaaaa1111");
+  delete run.money;
+  assert.throws(
+    () => buildCorpus([run], mapOf({ aaaaaaaa: { label: "the-one", scenario: "A run", repoKey: "one" } })),
+    /money/
+  );
 });
