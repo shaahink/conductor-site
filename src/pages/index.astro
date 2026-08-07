@@ -39,7 +39,7 @@ const { meta, hero, notes } = page.data;
   editCollection="homePage"
   editEntry="home"
 >
-  <main class="home">
+  <main id="main" class="home">
     {/* `data-sk-edit` names the content path the element is showing, and sits
         beside the binding it names so it is easy to write and obvious when it
         rots. The editor checks both that the path resolves and that the
@@ -84,7 +84,7 @@ const { meta, hero, notes } = page.data;
 
   .home p {
     font-size: var(--text-lead);
-    color: var(--overlay);
+    color: var(--muted);
     margin-block-start: var(--space-s);
   }
 

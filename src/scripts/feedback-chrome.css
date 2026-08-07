@@ -156,7 +156,7 @@
 .rv-menu .rv-count {
   padding: 9px 13px 5px;
   font-size: 12px;
-  color: var(--overlay);
+  color: var(--muted);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -240,7 +240,7 @@
   background: var(--mantle);
   border-block-end: 1px solid var(--selection);
   font-size: 13px;
-  color: var(--overlay);
+  color: var(--muted);
 }
 .rv-ctx-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* The element the reader pointed at, named the way the DOM names it. */
@@ -280,14 +280,14 @@
 .rv-root textarea:focus,
 .rv-root input:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
 .rv-root textarea::placeholder,
-.rv-root input::placeholder { color: var(--overlay); }
+.rv-root input::placeholder { color: var(--muted); }
 
-.rv-attach { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--overlay); }
+.rv-attach { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
 .rv-attach-btn {
   background: none;
   border: 1px dashed var(--selection);
   border-radius: 9px;
-  color: var(--overlay);
+  color: var(--muted);
   padding: 8px 12px;
   font-size: 13px;
   display: flex;
@@ -326,7 +326,7 @@
 .rv-drop { outline: 2px dashed var(--accent); outline-offset: -6px; }
 
 .rv-foot { display: flex; align-items: center; gap: 10px; padding: 0 14px 13px; }
-.rv-foot .rv-msg { flex: 1; font-size: 12.5px; color: var(--overlay); min-width: 0; }
+.rv-foot .rv-msg { flex: 1; font-size: 12.5px; color: var(--muted); min-width: 0; }
 .rv-send {
   background: var(--accent);
   color: var(--base);
@@ -339,7 +339,7 @@
 }
 .rv-send:hover { background: color-mix(in srgb, var(--accent) 88%, var(--text)); }
 .rv-send[disabled] { opacity: 0.5; cursor: default; }
-.rv-ghost { background: none; border: 0; color: var(--overlay); padding: 0 6px; min-height: 44px; font-size: 14px; }
+.rv-ghost { background: none; border: 0; color: var(--muted); padding: 0 6px; min-height: 44px; font-size: 14px; }
 .rv-ghost:hover { color: var(--text); text-decoration: underline; }
 
 /* Success state — deliberately unmissable, so there is never a doubt about
@@ -381,11 +381,11 @@
   to { stroke-dashoffset: 0; }
 }
 .rv-done h3 { margin: 0; font-size: 19px; font-weight: 700; color: var(--text); }
-.rv-done p { margin: 0; font-size: 14px; color: var(--overlay); max-width: 30ch; }
+.rv-done p { margin: 0; font-size: 14px; color: var(--muted); max-width: 30ch; }
 .rv-done-quote {
   margin-top: 10px;
   font-size: 13px;
-  color: var(--overlay);
+  color: var(--muted);
   font-style: italic;
   max-width: 34ch;
   overflow: hidden;

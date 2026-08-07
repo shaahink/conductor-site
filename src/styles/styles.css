@@ -152,6 +152,40 @@ pre code {
   outline-offset: 2px;
 }
 
+/* The skip link (Base.astro). Hidden the way `.visually-hidden` is hidden —
+   in the layout, in the tab order, out of the paint — and then given its size
+   back on focus rather than being animated in from off-screen, so a reader
+   with `prefers-reduced-motion` and a reader without get the same control at
+   the same instant.
+
+   `:focus`, not `:focus-visible`: this is the one element on the site that is
+   *only* ever reached by keyboard, so the browser's heuristic about whether to
+   show a focus ring has nothing to decide and getting it wrong here means the
+   link never appears. */
+.skip-link {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.skip-link:focus {
+  inline-size: auto;
+  block-size: auto;
+  overflow: visible;
+  clip-path: none;
+  inset-block-start: var(--space-2xs);
+  inset-inline-start: var(--space-2xs);
+  z-index: 1;
+  padding-block: var(--space-2xs);
+  padding-inline: var(--space-s);
+  background: var(--mantle);
+  border: var(--rule);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

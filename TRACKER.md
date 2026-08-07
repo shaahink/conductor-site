@@ -75,7 +75,7 @@ tooling: `npx` **cannot be launched under `conductor bg`** here (it resolves npx
 |---|---|
 | Total checkpoints | 28 |
 | Done | 0 |
-| Claimed (unconfirmed) | 24 |
+| Claimed (unconfirmed) | 25 |
 
 ## Checkpoints
 

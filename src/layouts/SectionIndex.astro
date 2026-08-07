@@ -34,7 +34,7 @@ const { meta, title, standfirst } = page.data;
   editCollection="sectionPages"
   editEntry={page.id}
 >
-  <main class="section-index">
+  <main id="main" class="section-index">
     <h1 data-sk-edit="title">{title}</h1>
     <p class="standfirst" data-sk-edit="standfirst">{standfirst}</p>
 
@@ -59,7 +59,7 @@ const { meta, title, standfirst } = page.data;
 
   .standfirst {
     font-size: var(--text-lead);
-    color: var(--overlay);
+    color: var(--muted);
     margin-block-start: var(--space-s);
   }
 </style>

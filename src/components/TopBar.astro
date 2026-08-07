@@ -10,6 +10,19 @@ import { navSections } from "../lib/collections.js";
 
 const sections = await navSections();
 
+/* Every word the theme button can ever show. "Theme" is what the markup ships
+   with, because before `theme.js` runs nothing knows which scheme is in force
+   and a button that guesses is a button that lies for one frame; "Dark" and
+   "Light" are what `paint()` writes.
+
+   They are listed here so the button can be sized to the widest of them
+   *before* any of them is chosen — see the grid in the style block. The list
+   is the same one `src/scripts/theme.js` writes, and
+   `test/theme-toggle.test.mjs` fails if the two ever disagree, because a label
+   added there and not here brings the layout shift straight back. */
+const LABELS = ["Theme", "Dark", "Light"];
+const INITIAL = LABELS[0];
+
 /* `aria-current="page"` on the section a reader is inside, including its
    children: /concepts/context-engineering/ is still Concepts. */
 const path = Astro.url.pathname;
@@ -38,8 +51,22 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
       media query in tokens.css. The gating rule is global (styles.css)
       because Astro's scoped styles rewrite a selector that starts at <html>
       into one that can never match. */}
+  {/* The live label sits in the same single grid cell as a hidden copy of
+      every other word the button can show, so the box is already as wide as
+      the widest one and swapping the text moves nothing. `visibility: hidden`
+      keeps a sizer in the layout while taking it out of the paint and out of
+      the accessibility tree; `aria-hidden` says so a second time, because a
+      screen reader reading "Theme Dark Light" would be worse than the shift
+      this fixes. */}
   <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch the theme">
-    <span data-theme-label>Theme</span>
+    <span data-theme-label>{INITIAL}</span>
+    {
+      LABELS.filter((label) => label !== INITIAL).map((label) => (
+        <span class="sizer" aria-hidden="true">
+          {label}
+        </span>
+      ))
+    }
   </button>
 </header>
 
@@ -75,7 +102,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
   }
 
   nav a {
-    color: var(--overlay);
+    color: var(--muted);
     text-decoration: none;
   }
 
@@ -90,15 +117,31 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
     font-weight: var(--weight-medium);
   }
 
+  /* A one-cell grid with every candidate label stacked in it. The track is
+     sized to the widest word, so the button's box is settled at first paint
+     and stays settled: `Theme` → `Dark` on load used to drag the whole nav
+     12px, and `Dark` → `Light` another 3px on every flip. Not a JS fix — the
+     script has already run by the time it could measure anything, and the
+     first shift happens before it runs at all. */
   .theme-toggle {
     font: inherit;
     font-size: var(--text-small);
-    color: var(--overlay);
+    color: var(--muted);
     background: none;
     border: var(--rule);
     padding-block: var(--space-3xs);
     padding-inline: var(--space-2xs);
     cursor: pointer;
+    display: inline-grid;
+    justify-items: center;
+  }
+
+  .theme-toggle > * {
+    grid-area: 1 / 1;
+  }
+
+  .theme-toggle .sizer {
+    visibility: hidden;
   }
 
   .theme-toggle:hover {

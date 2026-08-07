@@ -32,6 +32,26 @@
 
    Semantic colours are for status only, never decoration (SPEC Part II).
 
+   **The seventeenth token is not a role.** `--muted` is derived, not lifted:
+   the Face holds `--overlay` to 3:1, which is the bar a terminal needs and
+   WCAG's bar for large text, and this site then spent it on standfirsts,
+   captions, nav links and table keys — all of them well under 24px, where the
+   bar is 4.5:1. Measured on the built site, mocha's overlay is 3.36:1 on base
+   and 3.59:1 on the top bar's mantle: legible-ish, and a Lighthouse
+   `color-contrast` failure on every page. The fix is not to move a Face role —
+   the Face is right about its own frames — it is to stop using it for reading
+   text. `--muted` is `--text` mixed toward `--base`, so it stays inside the
+   scheme by construction and cannot be a hex that is correct in one and wrong
+   in the other. `--overlay` keeps rules, borders and card-size type;
+   `test/tokens.test.mjs` fails the build if it is set as a colour anywhere
+   else, and `test/contrast.test.mjs` recomputes the mix and holds it to 4.5:1
+   against both `--base` and `--mantle`.
+
+   The two percentages differ because the two palettes do: mocha's text is
+   11.34:1 on its base and latte's is 7.06:1, so the same mix that mutes mocha
+   visibly would leave latte illegible. One number would have been tidier and
+   wrong for one of the two schemes.
+
    Each palette block opens with a bang-comment naming its scheme; that marker
    is what test/contrast.test.mjs parses. Do not remove it, and keep each
    block's declarations in role order. */
@@ -55,6 +75,10 @@
   --sky: #89dceb;
   --pending: #585b70;
   --skipped: #7f849c;
+
+  /* Derived, not a role — see the header. 60% lands 4.94:1 on base and 5.29:1
+     on mantle, against text's own 11.34:1, so it still reads as receding. */
+  --muted: color-mix(in srgb, var(--text) 60%, var(--base));
 
   color-scheme: dark;
 }
@@ -84,6 +108,12 @@
     --pending: #9ca0b0;
     --skipped: #6c6f85;
 
+    /* 85%, not 60%: latte's text is 7.06:1 on its own base where mocha's is
+       11.34:1, so there is far less room to spend. This lands 4.91:1 on base
+       and 4.56:1 on mantle — the tightest number on the site, and the reason
+       the test checks mantle and not only base. */
+    --muted: color-mix(in srgb, var(--text) 85%, var(--base));
+
     color-scheme: light;
   }
 }
@@ -106,6 +136,10 @@
   --sky: #0272a8;
   --pending: #9ca0b0;
   --skipped: #6c6f85;
+
+  /* Kept identical to the media-query block above; the drift test now covers
+     `--muted` too, so the two cannot come apart. */
+  --muted: color-mix(in srgb, var(--text) 85%, var(--base));
 
   color-scheme: light;
 }

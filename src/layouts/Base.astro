@@ -53,6 +53,34 @@ const canonicalUrl = absolute(Astro.site!, canonical);
    rather than a default in the schema — a schema default is a value fourteen
    content files would each carry a copy of. src/lib/seo.ts. */
 const ogImageUrl = absolute(Astro.site!, ogImage ?? ogCardFor(canonical));
+
+/* ── two notes that belong beside the markup and cannot live there ─────────
+
+   Both are here because a comment in template position has to choose between
+   being shipped and being parsed. Astro strips `{/* ... *\/}` and keeps
+   `<!-- ... -->`, and five HTML comments in this file were 2,632 bytes on
+   every page — 14.6% of one — so they are all Astro comments now. But an
+   Astro comment is a JSX expression: it may not sit between </head> and
+   <body> (two expressions under one root), and it may not contain an
+   angle-bracketed tag, which the checker reads as markup and then loses the
+   rest of the file to. Prose about elements, and examples containing them,
+   go in the frontmatter.
+
+   **The body's three `data-sk-*` attributes** tell the editor which content
+   file this page is showing. `data-sk-editor-path` is /edit here because this
+   template builds with format "directory"; a site with format "file" says
+   /edit.html.
+
+   **Owner-facing stats (PLAN §3.7).** Once this site has its row in the
+   sk-stats instance, import `umamiTag` from "@shaahink/sitekit/analytics" and
+   spread it onto an `is:inline` script in the head — cookieless, so no consent
+   banner:
+
+       src: "https://sk-stats.vercel.app/script.js"
+       websiteId: the id from Settings → Websites
+
+   The sk-stats origin must join script-src and connect-src in astro.config's
+   CSP in the same commit. */
 ---
 
 <html lang="en">
@@ -61,10 +89,10 @@ const ogImageUrl = absolute(Astro.site!, ogImage ?? ogCardFor(canonical));
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
 
-    <!-- The two faces, built same-origin. Both preload: the sans carries the
-         body from the first paint and the mono carries the wordmark and the
-         evidence figures beside it. astro.config's `fonts` block assembles
-         each cssVariable; nothing here or in the CSS names a family. -->
+    {/* The two faces, built same-origin. Both preload: the sans carries the
+        body from the first paint and the mono carries the wordmark and the
+        evidence figures beside it. astro.config's `fonts` block assembles
+        each cssVariable; nothing here or in the CSS names a family. */}
     <Font cssVariable="--font-sans" preload />
     <Font cssVariable="--font-mono" preload />
 
@@ -80,49 +108,46 @@ const ogImageUrl = absolute(Astro.site!, ogImage ?? ogCardFor(canonical));
     <meta name="twitter:title" content={title} />
     <meta name="twitter:image" content={ogImageUrl} />
 
-    <!-- Two things that have to happen before first paint. The `js` class
-         enables progressive-enhancement styles. The second half reads a theme
-         the visitor chose *explicitly* and writes it on <html>, so a reader
-         who picked light does not get a frame of mocha first.
+    {/* Two things that have to happen before first paint. The `js` class
+        enables progressive-enhancement styles. The second half reads a theme
+        the visitor chose *explicitly* and writes it on the root element, so a
+        reader who picked light does not get a frame of mocha first.
 
-         It writes nothing when there is no stored choice, on purpose: that
-         visitor is following `prefers-color-scheme` through the media query
-         in tokens.css, and an unconditional write would freeze their system
-         preference at whatever it was on their first visit. localStorage
-         throws rather than returning null in a blocked context, hence the
-         try.
+        It writes nothing when there is no stored choice, on purpose: that
+        visitor is following `prefers-color-scheme` through the media query
+        in tokens.css, and an unconditional write would freeze their system
+        preference at whatever it was on their first visit. localStorage
+        throws rather than returning null in a blocked context, hence the
+        try.
 
-         Inline and hashed by hand: its sha256 sits in astro.config's CSP
-         block — change one, change both, and test/csp.test.mjs fails if you
-         change only one. -->
+        Inline and hashed by hand: its sha256 sits in astro.config's CSP
+        block — change one, change both, and test/csp.test.mjs fails if you
+        change only one. */}
     <script is:inline>document.documentElement.classList.add("js");try{const t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch{}</script>
 
-    <!-- Owner-facing stats (PLAN §3.7): once this site has its row in the
-         sk-stats instance, import umamiTag from "@shaahink/sitekit/analytics"
-         and drop the tag here — cookieless, so no consent banner. The
-         sk-stats origin must join script-src and connect-src in
-         astro.config's CSP in the same commit.
-
-         <script
-           is:inline
-           {...umamiTag({
-             src: "https://sk-stats.vercel.app/script.js",
-             websiteId: "the id from Settings → Websites"
-           })}
-         />
-    -->
+    {/* Owner-facing stats go here — the shape is in the frontmatter above. */}
 
     <slot name="head" />
   </head>
 
-  <!-- The editor reads these to know which file this page is showing.
-       `data-sk-editor-path` is /edit here because this template builds with
-       format "directory"; a site with format "file" says /edit.html. -->
   <body
     data-sk-collection={editCollection}
     data-sk-entry={editEntry}
     data-sk-editor-path="/edit"
   >
+    {/* The first thing in the tab order, and the only one that has to be:
+        every page here puts a top bar of four links ahead of its content, and
+        a reader on a keyboard or a switch should not walk them again on every
+        page of a twenty-one page site. Hidden until it takes focus, revealed
+        where it is — a skip link that is invisible *while focused* is the
+        classic version of this control that helps nobody.
+
+        `#main` is the id every layout puts on its one main element;
+        `scripts/a11y.mjs` checks over the built output that the target
+        actually exists on every page, because a skip link pointing at nothing
+        is silent in every browser. */}
+    <a class="skip-link" href="#main">Skip to content</a>
+
     <TopBar />
 
     <slot />

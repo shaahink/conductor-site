@@ -30,13 +30,20 @@ function effective() {
   return stored() ?? (prefersLight.matches ? "light" : "dark");
 }
 
+/* The words the button can show, as a map rather than a ternary, because
+   `TopBar.astro` has to size the button to the widest of them before any of
+   them is chosen — otherwise painting the real label shifts the whole nav row.
+   `test/theme-toggle.test.mjs` reads this object and the markup's sizer list
+   and fails when they disagree, so a third state cannot be added here alone. */
+const LABEL = { dark: "Dark", light: "Light" };
+
 /* The button says what it will do, not what is currently true: a control
    labelled with its own current state is the oldest ambiguity in toggles. */
 function paint(button) {
   const next = effective() === "dark" ? "light" : "dark";
   button.setAttribute("aria-label", `Switch to the ${next} theme`);
   const label = button.querySelector("[data-theme-label]");
-  if (label) label.textContent = next === "dark" ? "Dark" : "Light";
+  if (label) label.textContent = LABEL[next];
 }
 
 export function installThemeToggle() {
