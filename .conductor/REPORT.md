@@ -1,10 +1,10 @@
 ﻿# Conductor — conductor-site - a field guide to agentic engineering run report
 
-_Updated 2026-08-07 02:49 UTC · branch `main` · HEAD `bc021ae`_
+_Updated 2026-08-07 03:14 UTC · branch `main` · HEAD `cb44186`_
 
 **Status:** Idle
-**Stage:** S6 —  · attempts used 0 · working ▸ S6.4
-**Checkpoints:** 23/28 done · **Sessions run:** 14 · **Cost:** $102.8457 (agent $102.8248 + gates $0.0208) · **Tokens:** 2,005,450 in / 839,714 out
+**Stage:** S6 —  · attempts used 0
+**Checkpoints:** 24/28 done · **Sessions run:** 15 · **Cost:** $113.0415 (agent $113.0180 + gates $0.0234) · **Tokens:** 2,166,638 in / 912,079 out
 
 ## Stage progress
 
@@ -15,7 +15,7 @@ _Updated 2026-08-07 02:49 UTC · branch `main` · HEAD `bc021ae`_
 | S3 |  | ██████████ 4/4 | done |
 | S4 |  | ██████████ 4/4 | done |
 | S5 |  | ██████████ 4/4 | done |
-| S6 |  | ████████░░ 3/4 | **← active** |
+| S6 |  | ██████████ 4/4 | done |
 | S7 |  | ░░░░░░░░░░ 0/4 | todo |
 
 <details> ✅<summary>S1 —  (4/4)</summary>
@@ -73,14 +73,14 @@ _Updated 2026-08-07 02:49 UTC · branch `main` · HEAD `bc021ae`_
 
 </details>
 
-<details><summary>S6 —  (3/4)</summary>
+<details> ✅<summary>S6 —  (4/4)</summary>
 
 | # | Title | Status | Commit |
 |---|---|---|---|
-| S6.1 | Report A, the fleet round, published as a scenario with no client name, no private repo name and no field-note prose — and a check that greps the built output for the forbidden list | ✅ DONE | - |
-| S6.2 | Report B, the long build that ended at 45 of 46, published with the shortfall as the subject rather than a footnote | ✅ DONE | - |
-| S6.3 | Report C, the engine run with an evaluation suite as its release gate | ✅ DONE | - |
-| S6.4 | `/runs` lists all 18 runs from harvested data with generalised labels and real numbers, and names the three abandoned July runs as abandoned rather than in-flight | ⬜ TODO | - |
+| S6.1 | Report A, the fleet round, published as a scenario with no client name, no private repo name and no field-note prose — and a check that greps the built output for the forbidden list | ✅ DONE | [`fcbbb72`](https://github.com/shaahink/conductor-site/commit/fcbbb72) |
+| S6.2 | Report B, the long build that ended at 45 of 46, published with the shortfall as the subject rather than a footnote | ✅ DONE | [`fcbbb72`](https://github.com/shaahink/conductor-site/commit/fcbbb72) |
+| S6.3 | Report C, the engine run with an evaluation suite as its release gate | ✅ DONE | [`fcbbb72`](https://github.com/shaahink/conductor-site/commit/fcbbb72) |
+| S6.4 | `/runs` lists all 18 runs from harvested data with generalised labels and real numbers, and names the three abandoned July runs as abandoned rather than in-flight | ✅ DONE | - |
 
 </details>
 
@@ -113,6 +113,7 @@ _Updated 2026-08-07 02:49 UTC · branch `main` · HEAD `bc021ae`_
 | 12 | S5 | Deliver | 1 | 08-07 01:36 | 0:27 | Advanced | S5.3 | 3 | site-fast:OK · generated:OK · evidence:OK | $10.4334 | $0.0033 | 190,206/83,979 |
 | 13 | S5 | Deliver | 1 | 08-07 02:04 | 0:16 | Advanced | S5.4 | 2 | site-fast:OK · generated:OK · evidence:OK | $5.4673 | $0.0036 | 118,247/40,393 |
 | 14 | S6 | Deliver | 1 | 08-07 02:21 | 0:27 | Advanced | S6.1 S6.2 S6.3 | 4 | site-fast:OK · generated:OK · evidence:OK | $11.1692 | $0.0025 | 194,497/101,053 |
+| 15 | S6 | Deliver | 1 | 08-07 02:49 | 0:24 | Advanced | S6.4 | 3 | site-fast:OK · generated:OK · evidence:OK | $10.1932 | $0.0026 | 161,188/72,365 |
 
 ## Money
 
@@ -120,26 +121,22 @@ _What this run has cost, from its own `costs` rows. Same numbers as `conductor m
 
 | scope | sessions | tokens | cache reads | cost | checkpoints | tok/ckpt | $/ckpt |
 |---|---|---|---|---|---|---|---|
-| **run total** | 13 | 112.9M | 97.7% | $91.67 | 18 | 6.27M | $5.09 |
+| **run total** | 14 | 126.5M | 97.8% | $102.85 | 21 | 6.03M | $4.90 |
 | stage S1 | 2 | 19.7M | 98.0% | $15.40 | 4 | 4.92M | $3.85 |
 | stage S2 | 2 | 20.4M | 97.7% | $17.04 | 4 | 5.09M | $4.26 |
 | stage S3 | 4 | 17.1M | 97.4% | $14.31 | 2 | 8.55M | $7.15 |
 | stage S4 | 2 | 22.4M | 97.5% | $18.67 | 4 | 5.59M | $4.67 |
 | stage S5 | 3 | 33.3M | 97.9% | $26.25 | 4 | 8.33M | $6.56 |
-| 2026-08 | 13 | 112.9M | 97.7% | $91.67 | 18 | 6.27M | $5.09 |
+| stage S6 | 1 | 13.7M | 97.8% | $11.17 | 3 | 4.56M | $3.72 |
+| 2026-08 | 14 | 126.5M | 97.8% | $102.85 | 21 | 6.03M | $4.90 |
 
-_Where the money goes: agent $91.66 (100%) · gate $0.02 (0%) · blended $0.81/M tokens._
+_Where the money goes: agent $102.82 (100%) · gate $0.02 (0%) · blended $0.81/M tokens._
 
 ## Timeline
 
 _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 
 ```
-08-07 00:10:10  • session #6 S3 Resume started (attempt 1/4)
-08-07 00:10:19  • session #6 S3 → LimitBackoff  (8.7s)
-08-07 00:40:17  • session #7 S3 Resume started (attempt 1/4)
-08-07 00:40:22  • session #7 S3 → LimitBackoff  (5.6s)
-08-07 01:10:22  • session #8 S3 Resume started (attempt 1/4)
 08-07 01:22:20  ▪ gate site-fast pass [session]  (10.7s)
 08-07 01:22:20  ▪ gate generated pass [session]  (2.4s)
 08-07 01:22:24  • session #8 S3 → Advanced · done S3.3,S3.4 · 5 commit(s)  (12m01s)
@@ -175,6 +172,11 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 08-07 03:49:45  ▪ gate site-fast pass [session]  (9.7s)
 08-07 03:49:45  ▪ gate generated pass [session]  (1.7s)
 08-07 03:49:45  ▪ gate evidence pass [session]  (13.7s)
+08-07 03:49:47  • session #14 S6 → Advanced · done S6.1,S6.2,S6.3 · 4 commit(s)  (28m23s)
+08-07 03:49:47  • session #15 S6 Deliver started (attempt 1/4)
+08-07 04:14:40  ▪ gate site-fast pass [session]  (10.2s)
+08-07 04:14:40  ▪ gate generated pass [session]  (1.8s)
+08-07 04:14:40  ▪ gate evidence pass [session]  (14.0s)
 ```
 
 ## Health
@@ -182,7 +184,7 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 _Execution-health signals, folded from the event log (`.conductor/events.jsonl`)._
 
 ```
-sessions 14 · retries 0 (0 %) · overall Ok
+sessions 15 · retries 0 (0 %) · overall Ok
 ✓ no health concerns detected
 ```
 
@@ -198,11 +200,6 @@ vs upstream: up to date
 
 ### Commits by session
 
-- **s4 (S2 Deliver)** — 4 commit(s):
-  - [`8ada555`](https://github.com/shaahink/conductor-site/commit/8ada555) docs(tracker): hand off with S2 complete
-  - [`689854a`](https://github.com/shaahink/conductor-site/commit/689854a) docs(evidence): the three litmus tests, applied to the page that has to be right
-  - [`bd66fc9`](https://github.com/shaahink/conductor-site/commit/bd66fc9) feat(concepts): context engineering, written end to end
-  - [`a6d5f98`](https://github.com/shaahink/conductor-site/commit/a6d5f98) feat(content): the parts of a page nobody looks at, gated
 - **s8 (S3 Resume)** — 5 commit(s):
   - [`5612369`](https://github.com/shaahink/conductor-site/commit/5612369) docs(tracker): hand off with S3 complete
   - [`3a97fd3`](https://github.com/shaahink/conductor-site/commit/3a97fd3) docs(evidence): the gate, red both ways, and the one it found by itself
@@ -234,6 +231,10 @@ vs upstream: up to date
   - [`29817f8`](https://github.com/shaahink/conductor-site/commit/29817f8) feat(reports): the long build, with the checkpoint that never closed as the subject
   - [`c70d83b`](https://github.com/shaahink/conductor-site/commit/c70d83b) feat(reports): the fleet round, read against the fleet either side of it
   - [`fcbbb72`](https://github.com/shaahink/conductor-site/commit/fcbbb72) feat(evidence): a forbidden list nobody is allowed to write down
+- **s15 (S6 Deliver)** — 3 commit(s):
+  - [`cb44186`](https://github.com/shaahink/conductor-site/commit/cb44186) chore: drop the commit-message scratch file
+  - [`f5c751d`](https://github.com/shaahink/conductor-site/commit/f5c751d) feat(runs): the corpus table, once a real page had had a look at it
+  - [`9afde8c`](https://github.com/shaahink/conductor-site/commit/9afde8c) feat(runs): every run in the corpus, including the ones that stopped
 
 ## Last gate run
 
@@ -241,58 +242,59 @@ site-fast:OK · generated:OK · evidence:OK
 
 ## Last session result
 
-> **Three reports and the anonymisation check landed; S6.4 remains**
-> - Delivered S6.1, S6.2 and S6.3 — Reports A, B and C written figure-free (1,562 / 1,484 / ~1,600 words), chained A → B → C → A, plus `scripts/anonymity.mjs` and `npm run anonymity`, whose forbidden list is derived from the run store at check …
-> - QA of session 13: no findings. Battery re-run green from a clean tree before the first edit (0 errors, 61 tests, 380 annotations on 19 pages, evidence over 15 entries), both claimed commits present, evidence file on disk, `commit_count > 0`…
-> - Corrected my own work in flight: three comparative claims in Report C were checked against the corpus and narrowed before publishing, and the S6.2 evidence file was fixed to stop asserting a cause it had not measured — filed instead as bug …
+> **S6.4 landed — /runs lists all eighteen runs, three named abandoned. Stage S6 complete.**
+> - QA of session 14: **PASS, no findings.** Battery re-run green from a clean tree before any edit (0 errors, 73 tests, build exit 0 / 474 annotations, evidence + anonymity green); all three evidence files on disk. Only nit: the database's com…
+> - **S6.4 delivered and claimed.** `/runs` now carries the whole corpus below the three reports, oldest first, wholly from `corpus.json`: 20 `<tr>` (head + 18 runs + totals footer), `>running<` zero times in `dist/`, `abandoned` three times in…
+> - **Two layout traps found only by looking at the built page**, both fixed and recorded in the ledger: Astro strips the whitespace between sibling elements, so `nowrap` inline spans left the row header with no break opportunity and a 343px mi…
 >
-> artefacts: `scripts/anonymity.mjs`, `test/anonymity.test.mjs`, `src/content/reports/{the-fleet-round, the-long-build, the-engine-run}.yaml`, commits `fcbbb72`, `c70d83b`, `29817f8`
+> artefacts: `src/lib/corpus.ts`, `src/components/RunTable.astro`, `src/pages/runs/index.astro`, `src/layouts/SectionIndex.astro`, `src/content/schema.ts` (`corpusTable`), `src/content/sections/runs.yaml`, `src/lib/collections.ts`, `test/corpus.test.mjs`; commits `9afde8c`
 >
-> evidence: `docs/evidence/S6.1-anonymity.md`, `docs/evidence/S6.1-the-fleet-round.md`, `docs/evidence/S6.2-the-long-build.md`, `docs/evidence/S6.3-the-engine-run.md` — battery at head 0 errors, 73 tests, build exit 0 with 474 annotations on 21 pages, evidence green over 17 entries, anonymity exit 0
+> evidence: `docs/evidence/S6.4-the-corpus-index.md`, `docs/evidence/S6.4-runs-mocha.png`, `docs/evidence/S6.4-runs-latte.png` — battery at head 0 errors, 86 tests, build exit 0 with 478 annotations on 21 pages, `npm run evidence` and `npm run anonymity` both exit 0.
 >
-> gaps: S6.4 (`/runs` corpus table, three abandoned July runs to be named abandoned) not started; the quoted-prose half of the anonymity check cannot run without the untracked field notes and says so on every run; bug #4 open and unexplained, though nothing published depends on it
+> gaps: bug #5 (EvidenceStrip cells have no minimum width) left open; bugs #2–#4 unchanged; `anonymity` still cannot check the quoted-prose half of the rule on a machine with no field notes; next action is S7.1, which must re-confirm `astro.config`'s `site`.
 
 ## Tracker handoff
 
 ```
-last: **session 14** delivered **S6.1, S6.2 and S6.3** — all three reports, plus the
-  anonymisation check. QA of session 13: **no findings** — battery re-run green from a clean tree
-  before any edit (0 errors, 61 tests, build exit 0 with 380 annotations on 19 pages, evidence
-  green over 15 entries), both claimed commits exist, the evidence file is on disk, and the
-  `commit_count > 0` rule is held by a test in `harvest.test.mjs`.
-now on disk: reports A, B and C, chained A → B → C → A, all figure-free. Battery at head:
-  **0 errors, 73 tests, build 21 pages / 474 annotations on 21, evidence green over 17 entries,
-  `npm run anonymity` exit 0.** New machinery: **`scripts/anonymity.mjs` + `npm run anonymity`**,
-  which greps `dist/` after a build. **Its forbidden list is DERIVED at check time** from
-  `conductor history` and `docs/dev/FIELD-NOTES-*.md` and is never committed — committing it
-  would publish the names it protects. Findings are **redacted** (first char, last char, length)
-  because a CI log is published too; `--reveal` is for the owner's machine. Twelve pure tests in
-  `test/anonymity.test.mjs` hold it, with invented fixtures. Red proof in
-  `docs/evidence/S6.1-anonymity.md`.
-next: **S6.4** `/runs` — the corpus index: all 18 runs as a table, generalised labels, real
-  numbers, wholly from `corpus.json`. `src/pages/runs/index.astro` currently lists only the three
-  report entries via `SectionIndex`; the table is a **new** block on that page, not a new route.
-  Every run carries `status` in `corpus.json` — the **three abandoned July runs must be named
-  abandoned, not in-flight**; `EvidenceStrip.astro` already paints `status` in the Face's roles
-  (peach abandoned, yellow paused, skipped aborted) and that convention should be reused.
-open: **bug #4 filed this session** — `conductor budget` window checkpoints sum to 30 on the long
-  build against `conductor history`'s 45, while on the engine run they agree exactly (20+2=22).
-  Sessions partition correctly in both. Cause not established; nothing published depends on it
-  because no page ever adds a window count to a run count. Bugs #2 and #3 still open. SPEC Part V
-  article 3's `26 costed`/`15.5M` are stale (now **30**/**16.8M**); article 4's `19 of 34`/`10 of
-  11` and the S5.4 git ground truth are unpublished on purpose. Article 1's `$52.06`/`23.2%`
-  correction, concept 2's advisor split and concept 8's "push-only" still stand. **S7.1 must
-  re-confirm `site`.**
-tooling: prose refuses any number of two digits or more, and a currency/percent/decimal/ratio
-  too — so a `file.cs:411` citation **cannot go in article prose**, and articles have no
-  `citations` field; name it in words. **Never round-trip a content file through PowerShell
-  `Get-Content`/`Set-Content`** (mojibake + BOM); mutate with node. `npm run content` rewraps
-  YAML, so run it before quoting your own lines back. Commit messages to a file, then `-F`.
-  Battery is ~60s now (the harvest makes two verb calls per run). **A failed Astro build exits
-  0xC0000409, not 1.** `meta.description` caps at 160 chars and Astro reports it only as
-  "does not match collection schema" until you re-run `npx astro check` for the detail.
-  **Do not `select *` from `sessions` through `run_query`** — one row carries a whole digest and
-  three of them cost more context than the rest of the orientation put together. `conductor history --json` emits a UTF-8 BOM on Windows. **One run.db holds
-  several runs** — filter by `run_id`; `conductor money` needs `--run`, `conductor budget` takes
-  the run id positionally.
+last: **session 15** delivered **S6.4 — stage S6 is complete.** QA of session 14: **no findings.**
+  Battery re-run green from a clean tree *before* any edit (0 errors, 73 tests, build exit 0 with
+  474 annotations on 21 pages, evidence green, anonymity exit 0); all three evidence files on
+  disk. One bookkeeping nit only: the database records commit `fcbbb72` for S6.1/S6.2/S6.3, but
+  reports A, B and C actually landed in `c70d83b`, `29817f8` and `bc021ae` — `fcbbb72` is the
+  anonymity-check commit. Nothing published depends on it.
+now on disk: `/runs` carries the three reports and then **all 18 runs**, oldest first, from
+  `corpus.json` alone. The three the store still marks `running` render **ABANDONED** in the
+  Face's peach role; `>running<` appears **zero** times in `dist/`. New: **`src/lib/corpus.ts`**
+  (pure — it takes the corpus as a **parameter**, not an import, because a module with a
+  top-level JSON import **cannot be loaded by `node --test` at all**), `RunTable.astro`, a `<slot />`
+  on `SectionIndex`, and **optional** `sectionPageSchema.corpusTable` (`checkAnnotations` does
+  resolve an optional field — verified). `sectionPage()` now calls `refuseTypedFigures`, which
+  `ordered()` never did for `sections`. Battery at head: **0 errors, 86 tests, build 23 pages /
+  478 annotations on 21, evidence green over 17 entries, anonymity exit 0.** Evidence:
+  `docs/evidence/S6.4-the-corpus-index.md` + two full-page screenshots.
+next: **S7.1** — canonicals, sitemap, robots, OG images per section, and `astro.config`'s `site`
+  pointing at the real production URL. **S7.1 must re-confirm `site`.**
+open: bugs #2, #3, #4 still open. **Bug #5 filed this session**: `EvidenceStrip.astro`'s
+  `.cell { min-inline-size: var(--mono-inline-size) }` misuses a token that is a *font-size*
+  step-down (`0.9em`), so the strip's figure cells have no minimum width and do not line up. One
+  token, cosmetic, untouched because it is outside S6.4. SPEC Part V article 3's `26 costed`/
+  `15.5M` are stale (now **30**/**16.8M**); article 4's `19 of 34`/`10 of 11` and the S5.4 git
+  ground truth are unpublished on purpose. Article 1's `$52.06`/`23.2%` correction, concept 2's
+  advisor split and concept 8's "push-only" still stand.
+tooling: **Astro strips the whitespace between sibling elements**, so inline spans carrying
+  `white-space: nowrap` have **no break opportunity anywhere** — that made one table cell's
+  min-content the whole line as a single 343px word. Use flex + `flex-wrap`, not inline +
+  margin. **The 68ch measure is wrong for a table** read across; `RunTable` breaks out by
+  `--space-3xl` either side above `64rem`, the one breakpoint this site already has. Prose
+  refuses any number of two digits or more, and a currency/percent/decimal/ratio too — so a
+  `file.cs:411` citation **cannot go in article prose**; name it in words. **Never round-trip a
+  content file through PowerShell `Get-Content`/`Set-Content`** (mojibake + BOM); mutate with
+  node — and `/tmp` is not reliable from the Bash tool here, write scratch files under the repo
+  and delete them. `npm run content` rewraps YAML, so run it before quoting your own lines back.
+  Commit messages to a file, then `-F`. Battery is ~60s. **A failed Astro build exits 0xC0000409,
+  not 1.** `meta.description` caps at 160 chars and Astro reports it only as "does not match
+  collection schema" until you re-run `npx astro check`. **Do not `select *` from `sessions`
+  through `run_query`.** `conductor history --json` emits a UTF-8 BOM on Windows. **One run.db
+  holds several runs** — filter by `run_id`; `conductor money` needs `--run`, `conductor budget`
+  takes the run id positionally.
 ```
