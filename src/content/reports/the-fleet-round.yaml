@@ -186,4 +186,5 @@ sections:
         rest of the plan be thin. Count bugs filed as a signal rather than as
         debt. And put the label on the pull request, not in the plan."
 
-readNext: []
+readNext:
+  - "the-long-build"

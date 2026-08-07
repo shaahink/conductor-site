@@ -1,0 +1,187 @@
+meta:
+  title: "The long build"
+  description: "A large interactive feature built inside an existing site by an
+    autonomous run that ended one checkpoint short, and what the store says
+    about why."
+  ogDescription: "The run that ended one checkpoint short, published with the
+    shortfall as the subject."
+  canonical: "/runs/the-long-build/"
+
+slug: "the-long-build"
+order: 2
+title: "The long build"
+scenario: "A large interactive feature built inside an existing site, and the
+  checkpoint that never closed"
+standfirst: "This is the run that did not finish. It is here on purpose and it
+  is the most useful report on the site, because the store recorded exactly why
+  the last checkpoint stayed open and the answer was not the model, the plan or
+  the code. It was a ceiling."
+
+evidence:
+  runs:
+    - "the-long-build"
+  windows:
+    - "the-long-build-uncapped"
+    - "the-long-build-capped-6m"
+    - "the-long-build-capped-9m"
+  figures:
+    - "sessions"
+    - "checkpointsDone"
+    - "costUsd"
+    - "rollovers"
+    - "softBreaks"
+    - "ownerApprovals"
+    - "bugsFiled"
+    - "ledgerEntries"
+    - "windowSessions"
+    - "windowCheckpoints"
+    - "windowTokensPerCheckpoint"
+    - "windowRolloverRate"
+    - "windowMedianCloser"
+
+sections:
+  - heading: "The run that ended one short"
+    body:
+      - "A large interactive feature, built inside a site that already existed
+        and already had users. The shape is the one most teams actually face:
+        not a green field, but a substantial new thing that has to be threaded
+        into an existing codebase without breaking what is already shipping. It
+        is the longest run in this corpus by sessions and it is the only one
+        that did not close everything it opened."
+      - "The strip above has the count. One checkpoint stayed open, and this
+        report is about that one rather than about the others."
+      - "It is published for a reason that is easy to state and hard to act on.
+        A portfolio of runs that all finished is a portfolio with a filter on
+        it, and everyone reading it knows that, which is why nobody believes any
+        of them. The shortfall is the only part of this run that could not have
+        been written by somebody optimistic."
+
+  - heading: "Why the count is the only place it shows"
+    body:
+      - "The uncomfortable part is how complete this run looks from every angle
+        except the count."
+      - "Every stage in the plan was confirmed done. Every gate that ran came
+        back green — the strip on the verification article has the corpus-wide
+        version of that figure and this run contributed no red ones. The final
+        session ended having made progress and having committed. Of the defects
+        the run filed against itself, all but one were fixed. There is no error,
+        no crash, no abandoned branch and no angry log line anywhere in it."
+      - "There is also more than one answer to the question \"how many
+        checkpoints closed?\", which is worth sitting with. Counted naively, one
+        row per confirmation event in this run's own database, the answer is a
+        single-digit number. The engine's own answer is on the strip. Both come
+        out of the same file; only one of them is the run. That gap is why this
+        site takes checkpoint counts from the history verb and never from a
+        query somebody wrote, and it is not a subtle discrepancy — it is most of
+        the run."
+      - "So the shortfall survives in exactly one number, and only because
+        something bothered to publish a denominator. A run that reported
+        checkpoints closed, without checkpoints planned, would have reported a
+        clean sheet here and would not have been lying by any rule it had agreed
+        to."
+
+  - heading: "Three windows, one run"
+    body:
+      - "Now the cause, and the store has it directly. This run did not have one
+        budget ceiling; it had three in succession, and the budget verb
+        reconstructs each stretch of sessions as its own window. The strip
+        carries all three."
+      - "Read them in order. Under no ceiling at all, the run closed a
+        checkpoint for every session it spent, and nothing was killed. Under the
+        tightest ceiling, it spent five times as many sessions to close half as
+        many checkpoints again, and nearly two-thirds of those sessions were
+        killed at the ceiling. When the ceiling was raised, the rollover rate
+        fell back by two-thirds and the cost per checkpoint came down with it."
+      - "One variable moved. Same repository, same plan, same agents, same
+        gates, same person mostly not watching. The middle window is where the
+        last checkpoint was lost, and it is the only window whose behaviour is
+        different in kind rather than in degree."
+      - "The median closing session across the three windows is the figure that
+        explains the mechanism, and it is the one most likely to be misread. It
+        does not fall under the tight ceiling because sessions got more
+        efficient. It falls because the ceiling deleted the evidence of the
+        expensive ones: a session that would have taken longer than the ceiling
+        allows never closes anything, so it never enters the population of
+        sessions that closed something. A cap censors its own evidence, the
+        censored number looks like an improvement, and the article on measured
+        budgets works that trap through in full."
+
+  - heading: "The ceiling did not save money. It spent it"
+    body:
+      - "The tokens-per-checkpoint figure went up under the tight ceiling, not
+        down. That is the finding a budget conversation needs and almost never
+        gets, because a ceiling feels like a saving — it is literally a number
+        beyond which you will not pay — and the intuition is wrong for a
+        completely mundane reason."
+      - "A session that is killed at a ceiling is not a cheap session. It is a
+        session that paid full price for its whole context, did some real work,
+        and then stopped in a way that banked none of it. Everything it learned
+        is gone, and the next session pays to learn it again. Set the ceiling
+        low enough and you are not buying less work, you are buying the same
+        work repeatedly at the same rate."
+      - "The strip's rollover count for the whole run is about half of all the
+        sessions it ran. Read that as the real unit price. This is not a run
+        that cost what it cost and fell one short; it is a run that could have
+        closed everything it opened for materially less, and the ceiling is the
+        reason it did neither."
+
+  - heading: "What a rolled-over session leaves behind"
+    body:
+      - "Nothing, and that is measured rather than asserted. Across every
+        published run in this corpus, the sessions that rolled over recorded no
+        commit, no gate summary and no claim of a finished checkpoint — not
+        rarely, but in no case at all. The article on the ledger has the
+        measurement and the trap that nearly published its exact inverse."
+      - "So a rolled-over session is invisible to every downstream reader of the
+        store except the one counting rollovers. It leaves no artefact to
+        inspect, no claim to verify, no commit to review. If you build a
+        dashboard from what sessions wrote down, a run like this one looks
+        healthy in proportion to how badly it is going, because the sessions
+        that went badly are precisely the ones that wrote nothing."
+      - "This run also asked to stop, repeatedly. The soft-break figure on the
+        strip counts the cooperative breaks — the moment the engine tells a
+        session it is approaching the ceiling and asks it to wrap up. Most of
+        those requests, in the tight window, were followed by the session
+        carrying on and being killed anyway. That is not defiance; it is a
+        session that has correctly judged it is nearly finished, in an
+        arithmetic where being nearly finished is worth nothing."
+
+  - heading: "Three approvals in a run this long"
+    body:
+      - "The owner-approval figure is small and every one of them was granted.
+        Over a run of this length that is roughly one human decision per three
+        weeks of equivalent hand-work, and it is the number that decides whether
+        any of this is worth doing."
+      - "The ledger figure beside it is the other half. Those are the notes,
+        findings, decisions, traps and amendments the run wrote for itself: what
+        it learned, what it tried that did not work, and — in the amendments —
+        the checkpoints whose acceptance it argued with rather than quietly
+        reinterpreted. A run that files an amendment is a run whose plan was
+        wrong in a specific, recorded way. That is worth more than a run whose
+        plan was never questioned."
+      - "It is also the honest reply to the objection that unattended runs are
+        just expensive autocomplete. Something in this run noticed that a
+        checkpoint's acceptance encoded a false premise, said so in a place the
+        next session would read, and carried on. The mechanism is in the concept
+        page on human-in-the-loop; the evidence that it fires is here."
+
+  - heading: "If you are running something long"
+    body:
+      - "Set the ceiling against your measured median closing session, not
+        against your monthly budget. Those are different quantities and only one
+        of them is about whether work finishes. The budget verb prints both, and
+        if the ceiling sits below the median closer, the typical session that
+        would have finished something is being interrupted before it can."
+      - "Count rollovers as spend rather than as savings. They are the most
+        expensive sessions in any run, and the one place a run's real unit cost
+        hides."
+      - "Publish planned alongside closed, always. This run's entire shortfall
+        lives in the denominator, and a system that reports only the numerator
+        is not lying — it simply cannot express the thing that went wrong."
+      - "And when a long run ends one short, resist the urge to fold it into the
+        others. The last checkpoint is the most informative one you will get all
+        month. Everything before it was work going well, and there is very
+        little to learn from that."
+
+readNext:
+  - "the-fleet-round"
