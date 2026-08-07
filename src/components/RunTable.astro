@@ -62,16 +62,20 @@ const measured = generatedAtUtc.slice(0, 10);
               <span>{row.scenario}</span>
             )}
 
+            {/* Straight after the sentence rather than down among the dates,
+                which is where `EvidenceStrip.astro` puts it and is the more
+                useful place: the status is a fact about the run, not a fact
+                about the record of it. Only ever painted on a run that did not
+                finish, in the role the Face uses for the same meaning. Three of
+                these say `abandoned`, and they are the three the store still
+                marks `running`. */}
+            {row.status !== "completed" && (
+              <span class:list={["status", row.status]}>{row.status}</span>
+            )}
+
             <span class="meta">
               <time datetime={row.started}>{row.started}</time>
               <span class="repo">{row.repoKey}</span>
-              {/* Only ever painted on a run that did not finish, in the role
-                  the Face uses for the same meaning — the convention the
-                  evidence strip already set. Three of these say `abandoned`,
-                  and they are the three the store still marks `running`. */}
-              {row.status !== "completed" && (
-                <span class:list={["status", row.status]}>{row.status}</span>
-              )}
             </span>
           </th>
 
@@ -102,6 +106,21 @@ const measured = generatedAtUtc.slice(0, 10);
   .scroll {
     overflow-x: auto;
     margin-block-start: var(--space-m);
+  }
+
+  /* The one block on this site allowed past the reading measure, and the
+     exception is the measure's own reasoning rather than an escape from it:
+     62–72ch is how far an eye tracks a *line*, and this is read across. Left
+     inside the column, five columns of figures overflow a desktop window and
+     every reader gets the scrollbar, which is the affordance for the phone.
+
+     64rem is the breakpoint the sticky table of contents already uses — the
+     site has one, and a second one chosen to fit this table would be a number
+     nobody could explain later. Below it the scroll container does the work. */
+  @media (min-width: 64rem) {
+    .scroll {
+      margin-inline: calc(-1 * var(--space-3xl));
+    }
   }
 
   /* The focus ring belongs on the box that actually scrolls, so a keyboard
@@ -161,12 +180,20 @@ const measured = generatedAtUtc.slice(0, 10);
   }
 
   /* Shrink-to-fit: `1%` with `nowrap` gives each figure column exactly the
-     width of its widest cell and hands the rest of the table to the sentence. */
-  thead th:not(:first-child),
+     width of its widest cell and hands the rest of the table to the sentence.
+     The *headings* are deliberately left to wrap, and that is what makes it
+     work — "checkpoints closed" set on one line is nearly twice the width of
+     any figure under it, so a nowrap header row would size four columns off
+     their labels and squeeze the scenario into a ribbon. */
   tbody td,
   tfoot td {
     inline-size: 1%;
     white-space: nowrap;
+  }
+
+  thead th:not(:first-child),
+  tbody td,
+  tfoot td {
     text-align: end;
     padding-inline-start: var(--space-m);
   }
@@ -177,16 +204,28 @@ const measured = generatedAtUtc.slice(0, 10);
     color: var(--text);
   }
 
+  /* Flex rather than three inline spans with a margin between them, and the
+     reason is a compiler detail with a visible consequence: Astro strips the
+     whitespace between sibling elements, so inline children with `nowrap` on
+     them have no break opportunity anywhere along the line. The row header's
+     minimum width became the whole meta line set as one word — wide enough to
+     push the last two columns off the side of the table. Flex items wrap
+     between themselves, so the column can be as narrow as its widest fact. */
   .meta {
-    display: block;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
     font-family: var(--mono);
     font-size: var(--text-micro);
     color: var(--pending);
     margin-block-start: var(--space-3xs);
   }
 
-  .meta > * + * {
-    margin-inline-start: var(--space-2xs);
+  /* And never inside one of them: a date is full of hyphens and a repo key is
+     one long hyphenated word, so left alone they break mid-token and
+     `2026-07-11` reads as two things. */
+  .meta > * {
+    white-space: nowrap;
   }
 
   .repo {
@@ -198,8 +237,14 @@ const measured = generatedAtUtc.slice(0, 10);
      the quiet role for a run that never began. Colour carries meaning here or
      it is not used at all. */
   .status {
+    font-family: var(--mono);
+    font-size: var(--mono-inline-size);
     text-transform: uppercase;
     letter-spacing: 0.06em;
+    /* Astro strips the whitespace between sibling elements, so the gap after
+       the sentence has to be a margin — there is no space character here to
+       do it. */
+    margin-inline-start: var(--space-2xs);
   }
 
   .status.abandoned {
