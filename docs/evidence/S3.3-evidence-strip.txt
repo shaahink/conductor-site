@@ -1,0 +1,140 @@
+S3.3 - the evidence strip, and the key that has nothing behind it
+=================================================================
+
+The component (SPEC Part II): a monospace band carrying the figures a page
+cites, rendered from src/data/corpus.json, never hand-typed. Concept pages carry
+it at the foot; articles and reports carry it inline under the standfirst,
+because a long-form piece argues from its numbers and the reader should meet
+them before the argument rather than after it.
+
+
+1. What it renders, taken out of the built HTML
+-----------------------------------------------
+
+  dist/concepts/context-engineering/index.html
+
+    Evidence
+    A large interactive feature built inside an existing site - the run that
+    ended at 45 of 46, and why the last one did not close
+      69     sessions
+      482.9M cache read
+      203    ledger entries
+    A static-analysis engine for a compiled language, with an evaluation suite
+    as the release gate
+      26     sessions
+      516.7M cache read
+      109    ledger entries
+    Recomputed 2026-08-06 from conductor history --json --limit 0 and run.db,
+    opened read-only. Nothing on this page is typed in.
+
+  dist/articles/what-a-run-costs/index.html
+
+    Evidence
+    18 runs across 7 repositories
+      $3,016.29  spent across the corpus
+      340        sessions
+      $8.87      per session
+                 $3,016.29 over all 340 sessions, not only the 314 that
+                 recorded agent tokens
+      $10.51     per checkpoint closed
+                 $3,016.29 over the 287 checkpoints that closed, out of 300
+                 planned
+    A four-site web fleet, one shared component library, one round of
+    coordinated changes
+    A large interactive feature built inside an existing site - ...
+    A static-analysis engine for a compiled language, ...
+    Recomputed 2026-08-06 from conductor history --json --limit 0.
+
+  dist/runs/the-fleet-round/index.html
+
+    Evidence
+    A four-site web fleet, one shared component library, one round of
+    coordinated changes
+      25/25   checkpoints closed
+      28      sessions
+      $425.12 spent
+      32/32   gates green
+    Recomputed 2026-08-06 from ...
+
+  Three things to notice, because each is a rule rather than a layout choice.
+  Every rate prints its denominator underneath it, on the page, not in a
+  tooltip - a claim a reader has to hover to check is a claim the page did not
+  make. The article names three runs but only corpus-wide figures, so each run
+  earns its scenario line and no cells: the page is saying where it looked. And
+  the footer names the commands rather than asserting provenance in prose.
+
+
+2. A key the corpus does not have fails the build
+-------------------------------------------------
+
+  Replacing `ledgerEntries` with `softBreakRatio` in
+  src/content/concepts/context-engineering.yaml:
+
+  $ npm run build
+  concepts/context-engineering.yaml: evidence.figures names "softBreakRatio",
+  which is not in the corpus. Nothing on this site is typed in, so a key with no
+  figure behind it is a claim with no evidence behind it. Run `npm run harvest`
+  if the corpus is stale; otherwise the key is wrong.
+    corpus-wide keys: costPerCheckpoint, costPerSession, costedSessions,
+      totalBugsFiled, totalCacheRead, totalCheckpointsDone,
+      totalCheckpointsPlanned, totalCostUsd, totalGatesGreen, totalGatesRed,
+      totalGatesRun, totalLedgerEntries, totalOwnerApprovals, totalRepos,
+      totalRollovers, totalRuns, totalSessions, totalSoftBreaks, totalTokensIn,
+      totalTokensOut
+    per-run keys:     bugsFiled, cacheRead, checkpointsDone, checkpointsTotal,
+      costUsd, gatesGreen, gatesTotal, ledgerEntries, ownerApprovals,
+      rollovers, sessions, softBreaks, tokensIn, tokensOut
+    at resolveEvidence -> ordered -> callGetStaticPaths
+
+  It fires from ordered(), which is to say from the index page that merely lists
+  the entry - before the page a reader would have opened is built at all. The
+  page does not render blank; it does not render.
+
+
+3. And a run label the corpus does not publish
+----------------------------------------------
+
+  Replacing `the-engine-run` with `nine-streets` - the shape of the mistake
+  somebody makes by reaching for the real name of a run:
+
+  $ npm run build
+  concepts/context-engineering.yaml: evidence.runs names "nine-streets", which
+  the corpus does not publish. Either anonymise.json has no entry for that run -
+  in which case it is excluded on purpose and cannot be cited - or the label is
+  a typo. Published runs: the-abandoned-prototype, the-aborted-start,
+  the-accounting-run, the-ci-cleanup, the-demo, the-engine-run,
+  the-first-false-start, the-fleet-backlog, the-fleet-round,
+  the-fleet-round-after, the-long-build, the-one-session-chore,
+  the-orchestrator-core, the-rehearsal, the-second-false-start,
+  the-second-feature, the-terminal-face, the-third-feature.
+
+  That is the anonymisation rule and the evidence rule meeting: a run excluded
+  from the corpus cannot be cited by content either, and the failure says which
+  of the two reasons applies.
+
+  src/content/concepts/context-engineering.yaml was restored from HEAD after
+  each break; the working tree is clean.
+
+
+4. One thing measured here that S3.4 has to build around
+--------------------------------------------------------
+
+  The failing build exits -1073740791 (0xC0000409) after a libuv assertion
+  rather than exit 1. Non-zero, so a gate does catch it - but it is a crash
+  signal, not a clean failure, and this repo already knew that a failed Astro
+  build does not reliably exit 1. So the `evidence` gate at S3.4 is a plain Node
+  script that checks staleness with `harvest --check` and scans content for
+  cited keys itself, rather than a wrapper around `npm run build`.
+
+
+5. Battery
+----------
+
+  $ npm run check     astro check 0 errors, 42 tests pass
+  $ npm run build     10 pages, 63 annotations on 8 pages all resolve
+
+  No `data-sk-edit` anywhere in the strip, and that is correct rather than
+  missing: `evidence` is on every collection's omit list, so the editor has no
+  field for it, and an annotation naming a field the form model lacks fails the
+  build. There is nothing here for an owner to edit - editing a key does not
+  produce a different number, it produces a failed build.
