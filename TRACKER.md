@@ -4,32 +4,34 @@
 
 ## Handoff (overwrite this block, ≤12 lines, no history)
 
-last: **session 13** delivered **S5.4** — machinery in `239d249`, article in the commit after it.
-  **Stage S5 is complete: all four articles are written.** QA of session 12: **no findings** —
-  battery re-run green from a clean tree before any edit (0 errors, 57 tests, build exit 0 with
-  341 annotations on 18 pages, evidence green over 14 entries), both claimed commits exist, the
-  evidence file is on disk, and article 3 measures 1,827 words against its claimed 1,818.
-now on disk: articles 1–4, all figure-free. Battery at head: **0 errors, 61 tests, build 21 pages
-  / 380 annotations on 19, evidence gate green over 15 cited entries.** New: a **ledger block** of
-  twelve corpus keys, all sourced `STORE`, published in pairs so neither half is a bare count —
-  `sessionsThatRolledOver` 53, `sessionsThatDidNot` 287, then `rolloversWith*` /`othersWith*` for
-  commit, gate summary, claim, result summary and digest. **The trap, proven red and kept in
-  `docs/evidence/S5.4-the-ledger-that-lied.md`: `commit_count` must be tested `> 0`, never
-  `is not null`** — the null test publishes `53/53` and `287/287`, the exact inverse, formatted as
-  a measurement. A test in `harvest.test.mjs` holds it.
-next: **S6.1–S6.3**, the three reports, then **S6.4** `/runs`. SPEC Part VI is the authority: read
-  **the rule** before the three report briefs, because a report is an article plus a `scenario`
-  label and the anonymisation rule is the checkpoint's acceptance, not a preamble. S6.1 also owes
-  a **check that greps the built output** for the forbidden list. The corpus already carries every
-  per-run figure the reports need, and `reportSchema` already exists — this is writing, not
-  machinery. Run labels come from `anonymise.json`; three July runs must be named **abandoned**.
-open: git ground truth for the S5.4 article lives in a private repo — it is **described in words
-  and published as no figure**, deliberately, and the page says so. SPEC Part V article 3's
-  `26 costed`/`15.5M` are stale (now **30**/**16.8M**) and its `25–54M`/`12.8–15.3M` were
-  stage-level, not windows — corrections are in `docs/evidence/S5.3-the-nudge-below-the-median.md`.
-  SPEC Part V article 4's `19 of 34`/`10 of 11` are likewise unpublished on purpose. Article 1's
-  `$52.06`/`23.2%` correction, concept 2's advisor split and concept 8's "push-only" still stand.
-  Bugs #2 and #3 still open. **S7.1 must re-confirm `site`.**
+last: **session 14** delivered **S6.1, S6.2 and S6.3** — all three reports, plus the
+  anonymisation check. QA of session 13: **no findings** — battery re-run green from a clean tree
+  before any edit (0 errors, 61 tests, build exit 0 with 380 annotations on 19 pages, evidence
+  green over 15 entries), both claimed commits exist, the evidence file is on disk, and the
+  `commit_count > 0` rule is held by a test in `harvest.test.mjs`.
+now on disk: reports A, B and C, chained A → B → C → A, all figure-free. Battery at head:
+  **0 errors, 73 tests, build 21 pages / 474 annotations on 21, evidence green over 17 entries,
+  `npm run anonymity` exit 0.** New machinery: **`scripts/anonymity.mjs` + `npm run anonymity`**,
+  which greps `dist/` after a build. **Its forbidden list is DERIVED at check time** from
+  `conductor history` and `docs/dev/FIELD-NOTES-*.md` and is never committed — committing it
+  would publish the names it protects. Findings are **redacted** (first char, last char, length)
+  because a CI log is published too; `--reveal` is for the owner's machine. Twelve pure tests in
+  `test/anonymity.test.mjs` hold it, with invented fixtures. Red proof in
+  `docs/evidence/S6.1-anonymity.md`.
+next: **S6.4** `/runs` — the corpus index: all 18 runs as a table, generalised labels, real
+  numbers, wholly from `corpus.json`. `src/pages/runs/index.astro` currently lists only the three
+  report entries via `SectionIndex`; the table is a **new** block on that page, not a new route.
+  Every run carries `status` in `corpus.json` — the **three abandoned July runs must be named
+  abandoned, not in-flight**; `EvidenceStrip.astro` already paints `status` in the Face's roles
+  (peach abandoned, yellow paused, skipped aborted) and that convention should be reused.
+open: **bug #4 filed this session** — `conductor budget` window checkpoints sum to 30 on the long
+  build against `conductor history`'s 45, while on the engine run they agree exactly (20+2=22).
+  Sessions partition correctly in both. Cause not established; nothing published depends on it
+  because no page ever adds a window count to a run count. Bugs #2 and #3 still open. SPEC Part V
+  article 3's `26 costed`/`15.5M` are stale (now **30**/**16.8M**); article 4's `19 of 34`/`10 of
+  11` and the S5.4 git ground truth are unpublished on purpose. Article 1's `$52.06`/`23.2%`
+  correction, concept 2's advisor split and concept 8's "push-only" still stand. **S7.1 must
+  re-confirm `site`.**
 tooling: prose refuses any number of two digits or more, and a currency/percent/decimal/ratio
   too — so a `file.cs:411` citation **cannot go in article prose**, and articles have no
   `citations` field; name it in words. **Never round-trip a content file through PowerShell
@@ -50,7 +52,7 @@ tooling: prose refuses any number of two digits or more, and a currency/percent/
 |---|---|
 | Total checkpoints | 28 |
 | Done | 0 |
-| Claimed (unconfirmed) | 19 |
+| Claimed (unconfirmed) | 20 |
 
 ## Checkpoints
 
@@ -100,7 +102,7 @@ phase (a code path is not evidence). Agent claims are marked DONE; engine confir
 | S5.1 | "What an autonomous run actually costs" — the corpus P&L including the waste, every figure keyed to `corpus.json` | DONE | 1ef5db5 | docs/evidence/S5.1-what-a-run-costs.md |
 | S5.2 | "Never believe the agent" — verification as a separate program, built around the 29 red gates rather than the 648 green ones | DONE | 1ef5db5 | docs/evidence/S5.2-never-believe-the-agent.md |
 | S5.3 | "The nudge that sat below the median" — the measured-budget method, written so a reader can run it on their own store | DONE | 3896cb8 | docs/evidence/S5.3-the-nudge-below-the-median.md |
-| S5.4 | "The ledger that lied" — telemetry you cannot trust, and what it took to fix it | TODO | - | - |
+| S5.4 | "The ledger that lied" — telemetry you cannot trust, and what it took to fix it | DONE | 239d249 | docs/evidence/S5.4-the-ledger-that-lied.md |
 
 ### S6 — 
 

@@ -1,0 +1,197 @@
+meta:
+  title: "The engine run"
+  description: "A static-analysis engine for a compiled language, built by an
+    autonomous run whose release gate was an evaluation suite rather than a test
+    suite."
+  ogDescription: "The run whose release gate was an evaluation suite, and the red
+    gates that came with it."
+  canonical: "/runs/the-engine-run/"
+
+slug: "the-engine-run"
+order: 3
+title: "The engine run"
+scenario: "A static-analysis engine for a compiled language, with an evaluation
+  suite as the release gate"
+standfirst: "Every checkpoint closed, and this is still the reddest run in the
+  corpus. It holds nearly a third of every gate failure measured here, every
+  unusual failure exit code in the whole store, and the only gates that never
+  ran at all. That combination is not a contradiction. It is what a real release
+  gate looks like."
+
+evidence:
+  runs:
+    - "the-engine-run"
+  windows:
+    - "the-engine-run-uncapped"
+  figures:
+    - "sessions"
+    - "checkpointsDone"
+    - "costUsd"
+    - "gatesGreen"
+    - "gatesRed"
+    - "bugsFiled"
+    - "ledgerEntries"
+    - "tokensPerCheckpoint"
+    - "totalGatesRed"
+    - "runsWithARedGate"
+    - "totalGatesCrashed"
+    - "windowMedianCloser"
+    - "windowMaxCloser"
+
+sections:
+  - heading: "The situation"
+    body:
+      - "A static-analysis engine for a compiled language: a tool that reads
+        source code it did not write and reports things about it. The work was a
+        substantial rebuild of how the engine models what it has read."
+      - "What makes this shape worth its own report is that correctness here is
+        not a boolean. An analysis engine that compiles, runs, and returns
+        results can be comprehensively wrong, and it will be wrong quietly — a
+        rule that stops firing, a relationship that stops being followed, a
+        false positive rate that creeps. None of that breaks a build. All of it
+        makes the tool useless."
+      - "So the release gate could not be a test suite in the usual sense. It
+        was an evaluation suite: the engine run against a corpus of real inputs,
+        its output compared against what it is supposed to find, with a
+        threshold below which the run does not proceed. That is the same
+        instrument an agent evaluation uses, pointed at a compiler-shaped
+        problem instead of a model, and everything that makes it awkward is the
+        same too."
+
+  - heading: "An evaluation is a different kind of gate"
+    body:
+      - "Three things separate it from a test suite, and a plan that treats them
+        as the same thing will be surprised by all three."
+      - "It is slow. The evaluation gate is by a wide margin the slowest thing
+        this run ran: ten minutes and upward is an ordinary pass of it, against
+        a minute or two for the build gate beside it. That changes what a gate
+        is. Not a check you run on every save, but a checkpoint-shaped
+        commitment that dominates a session's wall clock."
+      - "It is a measurement, not an assertion. A test suite says pass or fail;
+        a corpus evaluation produces a number and somebody has to decide which
+        numbers are acceptable. The moment that threshold lives anywhere a
+        working agent can reach, the gate is gone — not through bad faith, but
+        because a threshold that is one point too high looks exactly like a
+        threshold that needs adjusting, and adjusting it is a completely normal
+        edit on a completely normal day."
+      - "And it regresses silently. A rule that stops firing does not throw. The
+        entire value of the gate is that it holds a record of what the engine
+        used to find, so that not finding it any more is an event rather than a
+        gradual change of subject."
+
+  - heading: "The reddest run here, and it closed everything"
+    body:
+      - "The strip carries this run's gate figures next to the corpus totals,
+        and the comparison is the point. Nearly a third of every gate failure
+        measured across this entire corpus of runs happened here, in a run that
+        closed every checkpoint it opened. Most runs in the corpus never saw a
+        red gate at all."
+      - "That is the distribution the verification article predicts, seen from
+        inside a single run. Red gates are not a symptom of a run going badly.
+        They are a symptom of a run being checked against something that can
+        disagree with it, and the runs that generate them are the ones where the
+        checking has teeth."
+      - "The engine's own session outcomes make it concrete. This run has an
+        outcome recorded on several of its sessions that means, specifically,
+        that the battery came back red — not that the agent failed, not that it
+        ran out of room, but that the work was finished, believed finished, and
+        contradicted. Those sessions are the ones that justify the whole
+        apparatus. Everything else is a system agreeing with itself."
+      - "It is worth being precise about what a red evaluation gate costs, too.
+        The longest failure in this run spent over ten minutes running before it
+        reported. That is not waste — a gate that fails fast on the cheap
+        failures and slowly on the expensive ones is behaving correctly — but it
+        is the reason a plan has to budget for red gates rather than treat them
+        as an exception."
+
+  - heading: "Every strange exit code in the corpus is in this one run"
+    body:
+      - "The failures here are not all the same kind, and that is the finding
+        this report exists to carry. Most gate failures anywhere are a plain
+        failure status: the command ran, did work, and said no. This run has
+        those. It also has, uniquely in the corpus, every other failure status
+        measured anywhere in the store — including a set of gate results whose
+        status is not a failure code at all but a Windows crash status, recorded
+        against durations of tens of milliseconds where the same gate takes
+        minutes when it works."
+      - "Those gates did not fail. They never started. Something in the
+        toolchain died initialising, and the only way to tell that apart from a
+        real failure is to have kept the process's own exit status rather than a
+        summary of it."
+      - "This is the difference between a checking system and a report about
+        one. An agent asked to describe its own build, in perfect good faith,
+        reads a red battery and starts fixing code that was never compiled — an
+        expensive afternoon that leaves no trace of having been wasted. And in
+        the other direction, a wrapper written as \"if the exit status is one,
+        fail\" reads a crash as a pass, which is the failure this fleet has
+        actually paid for."
+      - "The rule that falls out is narrow and worth copying exactly: store the
+        process's own exit status, and treat every value that is not the success
+        one as red — including, especially, the ones you do not recognise. The
+        interesting failures are the unrecognised ones, and a run that
+        concentrates them the way this one does is telling you where your
+        environment is fragile, not where your agent is."
+
+  - heading: "The bugs it left open"
+    body:
+      - "The bugs-filed figure on the strip is high for a run this length, and
+        almost none of them were closed inside it. That looks like a poor result
+        and is close to the opposite."
+      - "On the site build reported elsewhere on this page's siblings, the
+        pattern is inverted — nearly every defect filed was also fixed. The
+        difference is not diligence, it is subject. A defect in a website is a
+        thing that is wrong and can be made right in the checkpoint that found
+        it. A defect in an analysis engine is usually a finding about analysis
+        quality: this construct is modelled wrongly, this pattern produces a
+        false positive, this relationship is not followed through a particular
+        indirection. Fixing one of those is a piece of engine work in its own
+        right, with its own evaluation consequences, and doing it inside an
+        unrelated checkpoint is how an evaluation suite gets quietly widened
+        until it no longer measures anything."
+      - "So the tracked-bug list here is functioning as a backlog of engine
+        findings rather than as a list of mistakes, and leaving them open is the
+        correct call. Read the ledger figure beside it the same way: this run
+        recorded decisions, findings and traps, and — unlike the long build —
+        recorded nothing at all as a general note. A run against a subject that
+        punishes vagueness writes differently."
+
+  - heading: "The most expensive session in the corpus is here"
+    body:
+      - "The two window figures on the strip are worth reading together. The
+        largest session that ever closed a checkpoint anywhere in this corpus is
+        this run's, and it cost more than twice this run's own median closer —
+        which is itself near the top of the range for any completed run here."
+      - "The evaluation suite is most of the explanation. A session that must
+        run a quarter-hour evaluation, read its output, decide whether the delta
+        is acceptable and act on it is doing something structurally more
+        expensive than a session that runs a build and reads an error. There is
+        no decomposition that makes it cheap, because the expensive part is the
+        evidence, not the work."
+      - "This is the number to check before setting a ceiling on a run like
+        this. A ceiling below the median closing session does not make sessions
+        cheaper — it stops them closing anything, and the report on the long
+        build has the measured version of what that does to a run. If you are
+        gating on an evaluation suite, your sessions are expensive by
+        construction, and the ceiling has to be set against what they measurably
+        cost rather than against what you hoped they would."
+
+  - heading: "What to copy from it"
+    body:
+      - "Gate on the thing that would actually be a regression, even when it is
+        slow. A fast gate on a proxy for quality is a green light with a
+        plausible name."
+      - "Keep the threshold and the corpus outside the working agent's reach.
+        Not because anyone is dishonest, but because the edit that removes the
+        gate is indistinguishable from the edit that fixes it, and only one of
+        them is visible afterwards."
+      - "Store real exit statuses and treat every unrecognised one as red. Then
+        look at how long the gate ran: a failure in milliseconds against a
+        neighbour that takes minutes is not a failure, it is an absence, and the
+        two want completely different responses."
+      - "Expect the good run to be the red one. A run against a subject that can
+        disagree with you will accumulate failures, and their absence in a
+        comparable run is a question about the checking rather than a compliment
+        to the work."
+
+readNext:
+  - "the-fleet-round"
