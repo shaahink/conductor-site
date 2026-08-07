@@ -1,0 +1,187 @@
+---
+/* The evidence strip: the site's signature component (SPEC Part II).
+   ---------------------------------------------------------------------------
+   A monospace band carrying the figures a page cites. Monospace is not
+   decoration here — it is the site's one typographic rule with meaning in it:
+   when a reader sees mono, they are looking at something recomputed from
+   Conductor's run store rather than something somebody wrote. Every number in
+   this component came out of `src/data/corpus.json`, and the page that placed
+   it named a key, never a value.
+
+   Each figure prints its own label, and a rate prints its denominator, because
+   "$8.87 per session" is two different claims depending on whether the divisor
+   was every session or only the ones that recorded tokens. The footer names the
+   commands a reader can run to get the same numbers. That is litmus test 1
+   rendered rather than asserted.
+
+   No `data-sk-edit` anywhere in here, and that is correct rather than an
+   oversight: `evidence` is on every collection's `omit` list in schema.ts, so
+   the editor has no field for it, and an annotation naming a field the form
+   model does not have fails the build. There is nothing here for an owner to
+   edit — editing a key does not produce a different number, it produces a
+   failed build. */
+import { resolveEvidence, type Evidence } from "../lib/evidence.js";
+
+interface Props {
+  /** The entry this evidence came from, so a bad key names its own file. */
+  where: string;
+  evidence: Evidence;
+  /** Articles carry the strip inline, near the top; concepts at the foot. */
+  variant?: "foot" | "inline";
+}
+
+const { where, evidence, variant = "foot" } = Astro.props;
+const { groups, sources, generatedAtUtc } = resolveEvidence(where, evidence);
+const measured = generatedAtUtc.slice(0, 10);
+---
+
+{
+  groups.length > 0 && (
+    <section class:list={["evidence", variant]} aria-labelledby="evidence">
+      {/* The id is the anchor the in-page table of contents links to, so it is
+          the heading's own slug rather than a name invented for the aria
+          attribute. One id, both jobs. */}
+      <h2 id="evidence">Evidence</h2>
+
+      {groups.map((group) => (
+        <div class="group">
+          <p class="scenario">
+            {group.scenario}
+            {group.status && group.status !== "completed" && (
+              <span class:list={["status", group.status]}>{group.status}</span>
+            )}
+          </p>
+
+          {group.cells.length > 0 && (
+            <dl class="figures">
+              {group.cells.map((cell) => (
+                <div class="cell">
+                  <dt class="value">{cell.display}</dt>
+                  <dd class="label">
+                    {cell.label}
+                    {cell.note && <span class="note">{cell.note}</span>}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )}
+        </div>
+      ))}
+
+      <p class="provenance">
+        Recomputed <time datetime={generatedAtUtc}>{measured}</time> from{" "}
+        {sources.join(" and ")}. Nothing on this page is typed in.
+      </p>
+    </section>
+  )
+}
+
+<style>
+  /* A band, not a card: hairline rules and space, the Face's own discipline.
+     `--mantle` is the role behind the reading surface in both schemes, which is
+     what makes the strip read as a different kind of thing without becoming a
+     box with a shadow on it. */
+  .evidence {
+    border-block: var(--rule);
+    background: var(--mantle);
+    padding-block: var(--space-m);
+    padding-inline: var(--space-s);
+  }
+
+  .evidence.foot {
+    margin-block-start: var(--space-2xl);
+  }
+
+  .evidence.inline {
+    margin-block: var(--space-l);
+  }
+
+  .evidence h2 {
+    font-size: var(--text-micro);
+    font-weight: var(--weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--overlay);
+    margin-block-end: var(--space-s);
+  }
+
+  .group + .group {
+    margin-block-start: var(--space-m);
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-s);
+  }
+
+  /* The scenario is the sentence a reader maps their own situation onto, so it
+     is the one part of the strip set in the body face. */
+  .scenario {
+    font-size: var(--text-small);
+    color: var(--overlay);
+  }
+
+  /* Status only ever paints a run that did not finish, and it paints in the
+     role the Face uses for the same meaning: peach for stopped work, yellow for
+     work that is waiting. A page that showed every run's status in colour would
+     be using colour for decoration, which is the rule Part II sets. */
+  .status {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-inline-start: var(--space-2xs);
+  }
+
+  .status.abandoned {
+    color: var(--peach);
+  }
+
+  .status.paused {
+    color: var(--yellow);
+  }
+
+  .status.aborted {
+    color: var(--skipped);
+  }
+
+  .figures {
+    margin-block-start: var(--space-s);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-m);
+  }
+
+  .cell {
+    min-inline-size: var(--mono-inline-size);
+  }
+
+  .value {
+    font-family: var(--mono);
+    font-size: var(--text-h3);
+    color: var(--text);
+    line-height: var(--leading-tight);
+  }
+
+  .label {
+    margin-inline-start: 0;
+    font-size: var(--text-micro);
+    color: var(--overlay);
+  }
+
+  /* The denominator. Small, always present on a rate, and never in a tooltip:
+     a claim a reader has to hover to check is a claim the page did not make. */
+  .note {
+    display: block;
+    color: var(--pending);
+    max-inline-size: var(--measure-narrow);
+    margin-block-start: var(--space-3xs);
+  }
+
+  .provenance {
+    margin-block-start: var(--space-m);
+    font-size: var(--text-micro);
+    color: var(--pending);
+  }
+
+  .provenance time {
+    font-family: var(--mono);
+  }
+</style>

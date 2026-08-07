@@ -8,6 +8,7 @@
    The table of contents is built from the same `sections` array the page
    renders, so the two cannot disagree about what is on the page. */
 import type { CollectionEntry } from "astro:content";
+import EvidenceStrip from "../components/EvidenceStrip.astro";
 import ReadNext, { type Destination } from "../components/ReadNext.astro";
 import { slugify } from "../lib/text.js";
 import Reading from "./Reading.astro";
@@ -19,7 +20,7 @@ interface Props {
 }
 
 const { entry, collection, next } = Astro.props;
-const { meta, title, standfirst, sections } = entry.data;
+const { meta, title, standfirst, sections, evidence } = entry.data;
 const scenario = "scenario" in entry.data ? entry.data.scenario : undefined;
 
 const headed = sections.map((section) => ({ ...section, id: slugify(section.heading) }));
@@ -42,6 +43,12 @@ const headings = headed.map((section) => ({ depth: 2, slug: section.id, text: se
 
     <h1 data-sk-edit="title">{title}</h1>
     <p class="standfirst" data-sk-edit="standfirst">{standfirst}</p>
+
+    {/* Inline rather than at the foot, which is what SPEC Part II asks of an
+        article: a long-form piece argues from the numbers, so the reader meets
+        them before the argument rather than after it. A concept page is the
+        other way round — see src/pages/concepts/[entry].astro. */}
+    <EvidenceStrip where={`${collection}/${entry.id}.yaml`} evidence={evidence} variant="inline" />
 
     {
       headed.map((section, index) => (

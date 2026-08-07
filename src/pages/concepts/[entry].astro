@@ -6,12 +6,15 @@
    here beside the markup that renders them, and their ids are written once and
    handed to both the anchor and the table of contents.
 
-   There is no evidence section yet. The keys are in the entry and nothing
-   renders them, because the corpus they name does not exist until S3: the
-   strip that turns `softBreaks` into a number arrives with the harvest. A
-   section that printed the keys themselves would be a placeholder wearing
-   content's clothes, and this site's whole argument is against those. */
+   The evidence strip is last, at the foot, which is where SPEC Part II puts
+   it. That is one move out of the order Part III lists the fields in — the
+   entry shape has `evidence` before `tryIt` — and the reason to follow Part II
+   here is that the strip is the page's conclusion rather than one of its
+   paragraphs: the reader has been told the idea, the failure and the mechanism,
+   and the last thing on the page is what it actually cost when it ran. `tryIt`
+   is two lines and belongs beside the mechanism it demonstrates. */
 import type { GetStaticPaths } from "astro";
+import EvidenceStrip from "../../components/EvidenceStrip.astro";
 import ReadNext from "../../components/ReadNext.astro";
 import Reading from "../../layouts/Reading.astro";
 import { ordered, readNextOf } from "../../lib/collections.js";
@@ -22,7 +25,8 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { entry } = Astro.props;
-const { meta, title, alsoKnownAs, oneLine, theIdea, theProblem, inConductor, tryIt } = entry.data;
+const { meta, title, alsoKnownAs, oneLine, theIdea, theProblem, inConductor, tryIt, evidence } =
+  entry.data;
 
 const next = (await readNextOf("concepts", entry)).map((other) => ({
   href: `/concepts/${other.id}/`,
@@ -36,7 +40,8 @@ const moves = [
   { id: "the-idea", text: "The idea" },
   { id: "the-problem", text: "What goes wrong without it" },
   { id: "in-conductor", text: "How Conductor does it" },
-  { id: "try-it", text: "Try it" }
+  { id: "try-it", text: "Try it" },
+  { id: "evidence", text: "Evidence" }
 ];
 const headings = moves.map((move) => ({ depth: 2, slug: move.id, text: move.text }));
 ---
@@ -115,6 +120,8 @@ const headings = moves.map((move) => ({ depth: 2, slug: move.id, text: move.text
         ))
       }
     </dl>
+
+    <EvidenceStrip where={`concepts/${entry.id}.yaml`} evidence={evidence} />
 
     <ReadNext items={next} />
   </article>

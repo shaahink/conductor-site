@@ -10,6 +10,7 @@
    Vercel function imports that one from outside the build. The two are
    deliberately different jobs. */
 import { getCollection, type CollectionEntry } from "astro:content";
+import { assertEvidenceResolves } from "./evidence.js";
 import { refuseTypedFigures } from "./figures.js";
 
 /** The collections a reader browses. `homePage` and `sectionPages` are the
@@ -97,6 +98,13 @@ export async function ordered<C extends Listed>(collection: C): Promise<Collecti
        the `evidence` field. See src/lib/figures.ts for what counts and for the
        one gap it leaves. */
     refuseTypedFigures(`${collection}/${entry.id}.yaml`, entry.data);
+
+    /* And the other half of litmus test 1: the keys a page *does* name have to
+       have something behind them. A key the corpus does not carry fails here,
+       from the index page that merely lists the entry, rather than rendering as
+       a blank cell on the page a reader actually opened. See
+       src/lib/evidence.ts for why an empty cell is the worse outcome. */
+    assertEvidenceResolves(`${collection}/${entry.id}.yaml`, entry.data);
 
     /* And litmus test 3, made structural. "A concept page is useful without
        Conductor": delete `inConductor` from an entry and what is left has to
