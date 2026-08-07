@@ -159,8 +159,55 @@ function readStore(db, runId) {
     events[row.type] = row.n;
   }
 
+  /* What a session wrote down about itself, split by whether it rolled over.
+     ---------------------------------------------------------------------------
+     Five columns of the `sessions` row, and they are not five versions of the
+     same thing. `commit_count`, `gate_summary`, `newly_done` and
+     `result_summary` are the record of what a session *did*; `digest` is the
+     note the *next* session reads to pick the work up. One faces backwards and
+     one faces forwards, and separating the two by outcome is the whole of
+     article 4 — a population where the forward-facing field is almost always
+     present and every backward-facing one is empty is a population whose
+     history was never written, not one that did nothing.
+
+     Split on outcome rather than filtered to it, because a count with no
+     comparison is unreadable. Zero commits among the rollovers means nothing
+     until you know what the same column says for the sessions beside them.
+
+     `commit_count > 0` rather than `is not null`: the column is written with a
+     zero rather than left empty, so a null test would answer that every
+     rollover recorded its commits and every one of them happened to make none.
+     That is exactly the reading this article exists to correct. The four text
+     columns get the empty-string test as well as the null test, because a
+     column trimmed to nothing is a column that was never filled in. */
+  const wrote = (column) =>
+    `coalesce(sum(case when ${column} is not null and trim(${column}) != ''
+                       then 1 else 0 end), 0)`;
+  const blank = { sessions: 0, commits: 0, gateSummaries: 0, claims: 0, results: 0, digests: 0 };
+  const records = { rolled: { ...blank }, other: { ...blank } };
+  for (const row of all(
+    `select case when outcome = 'RolledOver' then 1 else 0 end as rolled,
+            count(*) as sessions,
+            coalesce(sum(case when commit_count > 0 then 1 else 0 end), 0) as commits,
+            ${wrote("gate_summary")} as gateSummaries,
+            ${wrote("newly_done")} as claims,
+            ${wrote("result_summary")} as results,
+            ${wrote("digest")} as digests
+       from sessions where run_id = ? group by rolled`
+  )) {
+    records[row.rolled === 1 ? "rolled" : "other"] = {
+      sessions: row.sessions,
+      commits: row.commits,
+      gateSummaries: row.gateSummaries,
+      claims: row.claims,
+      results: row.results,
+      digests: row.digests
+    };
+  }
+
   return {
     byCategory,
+    records,
     tokensIn: sumOver(byCategory, "tokensIn"),
     tokensOut: sumOver(byCategory, "tokensOut"),
     cacheRead: sumOver(byCategory, "cacheRead"),
@@ -738,6 +785,16 @@ function corpusFigures(runs, repoKeys) {
   const honoured = overCapped((w) => w.nudgedAndEndedClean);
   const killed = overCapped((w) => w.rollovers);
 
+  /* The two populations article 4 compares: every session that rolled over,
+     and every session that did not. Both come from the same five columns of
+     the same table, so the only thing that differs between the two halves is
+     the outcome — which is what makes the contrast a measurement rather than a
+     pair of counts that happen to sit next to each other. */
+  const rolled = (pick) => sum((r) => pick(r.store.records.rolled));
+  const other = (pick) => sum((r) => pick(r.store.records.other));
+  const rolledSessions = rolled((rec) => rec.sessions);
+  const otherSessions = other((rec) => rec.sessions);
+
   return {
     totalRuns: figure(runs.length, plain(runs.length), "runs", HISTORY),
     totalRepos: figure(repoKeys.size, plain(repoKeys.size), "repositories", "anonymise.json"),
@@ -823,6 +880,98 @@ function corpusFigures(runs, repoKeys) {
       "the other runs' batteries were green every time they ran"
     ),
     totalRollovers: figure(sum((r) => r.store.rollovers), plain(sum((r) => r.store.rollovers)), "rollovers", STORE),
+
+    /* The ledger block. Ten figures because the claim is a comparison and a
+       comparison needs both sides published: the same five columns counted
+       over the sessions that rolled over and over the sessions that did not.
+       Every one of them names its own denominator in the display string, so a
+       reader never has to carry a total down the page to make sense of the
+       next number.
+
+       Read as a pair, the two halves invert. Four backward-facing columns are
+       near-universal among the sessions that ended normally and empty among
+       the rollovers; the one forward-facing column is near-universal among the
+       rollovers and present for barely half of everything else. Nothing here
+       is a claim about work not done — it is a claim about work not recorded,
+       and it is the reason this site publishes what a store says separately
+       from what a store proves. */
+    sessionsThatRolledOver: figure(
+      rolledSessions,
+      plain(rolledSessions),
+      "sessions ended by being rolled over",
+      STORE,
+      `counted from the sessions table's own outcome column, out of ${sessions} sessions in the corpus`
+    ),
+    sessionsThatDidNot: figure(
+      otherSessions,
+      plain(otherSessions),
+      "sessions ended some other way",
+      STORE,
+      "the comparison population: every session in the corpus whose outcome was not a rollover"
+    ),
+    rolloversWithACommit: figure(
+      rolled((rec) => rec.commits),
+      `${rolled((rec) => rec.commits)}/${rolledSessions}`,
+      "rolled-over sessions recorded a commit",
+      STORE,
+      "the column holds a zero rather than nothing at all, which is what makes it read as a measurement instead of a gap"
+    ),
+    rolloversWithAGateSummary: figure(
+      rolled((rec) => rec.gateSummaries),
+      `${rolled((rec) => rec.gateSummaries)}/${rolledSessions}`,
+      "recorded which gates they ran",
+      STORE
+    ),
+    rolloversWithAClaim: figure(
+      rolled((rec) => rec.claims),
+      `${rolled((rec) => rec.claims)}/${rolledSessions}`,
+      "recorded a checkpoint they closed",
+      STORE
+    ),
+    rolloversWithAResultSummary: figure(
+      rolled((rec) => rec.results),
+      `${rolled((rec) => rec.results)}/${rolledSessions}`,
+      "recorded a result summary",
+      STORE
+    ),
+    rolloversWithADigest: figure(
+      rolled((rec) => rec.digests),
+      `${rolled((rec) => rec.digests)}/${rolledSessions}`,
+      "recorded a digest for the next session",
+      STORE,
+      "the one field that faces forwards rather than back, and the one field a rollover almost always has"
+    ),
+    othersWithACommit: figure(
+      other((rec) => rec.commits),
+      `${other((rec) => rec.commits)}/${otherSessions}`,
+      "of the sessions that did not roll over recorded a commit",
+      STORE
+    ),
+    othersWithAGateSummary: figure(
+      other((rec) => rec.gateSummaries),
+      `${other((rec) => rec.gateSummaries)}/${otherSessions}`,
+      "recorded which gates they ran",
+      STORE
+    ),
+    othersWithAClaim: figure(
+      other((rec) => rec.claims),
+      `${other((rec) => rec.claims)}/${otherSessions}`,
+      "recorded a checkpoint they closed",
+      STORE
+    ),
+    othersWithAResultSummary: figure(
+      other((rec) => rec.results),
+      `${other((rec) => rec.results)}/${otherSessions}`,
+      "recorded a result summary",
+      STORE
+    ),
+    othersWithADigest: figure(
+      other((rec) => rec.digests),
+      `${other((rec) => rec.digests)}/${otherSessions}`,
+      "recorded a digest",
+      STORE,
+      "the inversion: the forward-facing field is the one a normal session most often skips, because the next session did not need it"
+    ),
     totalSoftBreaks: figure(
       sum((r) => r.store.softBreaks),
       plain(sum((r) => r.store.softBreaks)),

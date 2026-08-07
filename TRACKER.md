@@ -48,7 +48,7 @@ tooling: prose refuses any number of two digits or more, and a currency/percent/
 |---|---|
 | Total checkpoints | 28 |
 | Done | 0 |
-| Claimed (unconfirmed) | 18 |
+| Claimed (unconfirmed) | 19 |
 
 ## Checkpoints
 
@@ -97,7 +97,7 @@ phase (a code path is not evidence). Agent claims are marked DONE; engine confir
 |---|-----------|--------|--------|----------|
 | S5.1 | "What an autonomous run actually costs" — the corpus P&L including the waste, every figure keyed to `corpus.json` | DONE | 1ef5db5 | docs/evidence/S5.1-what-a-run-costs.md |
 | S5.2 | "Never believe the agent" — verification as a separate program, built around the 29 red gates rather than the 648 green ones | DONE | 1ef5db5 | docs/evidence/S5.2-never-believe-the-agent.md |
-| S5.3 | "The nudge that sat below the median" — the measured-budget method, written so a reader can run it on their own store | TODO | - | - |
+| S5.3 | "The nudge that sat below the median" — the measured-budget method, written so a reader can run it on their own store | DONE | 3896cb8 | docs/evidence/S5.3-the-nudge-below-the-median.md |
 | S5.4 | "The ledger that lied" — telemetry you cannot trust, and what it took to fix it | TODO | - | - |
 
 ### S6 — 

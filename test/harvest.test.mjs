@@ -55,6 +55,22 @@ function fakeRun(runId, overrides = {}) {
       softBreaks: 5,
       ownerApprovals: 1,
       events: {},
+      /* The two halves of the split `readStore` does on outcome. The rolled
+         half is deliberately shaped like the real one — a digest and nothing
+         else — so a test that reads the corpus block is reading the pattern
+         the article claims, not a set of round numbers that would agree with
+         any pattern at all. */
+      records: {
+        rolled: { sessions: 3, commits: 0, gateSummaries: 0, claims: 0, results: 1, digests: 3 },
+        other: {
+          sessions: 97,
+          commits: 80,
+          gateSummaries: 90,
+          claims: 70,
+          results: 95,
+          digests: 40
+        }
+      },
       ...(overrides.store ?? {})
     },
     /* What `conductor money --run <id> --json` answers, in the shape
@@ -363,6 +379,77 @@ test("the corpus ceiling block counts only what ran under a measured ceiling", (
   assert.equal(corpus.nudgesHonoured.value, 5);
   assert.equal(corpus.killedAtACeiling.value, 4);
   assert.equal(corpus.killedAfterANudge.value, 4);
+});
+
+test("the ledger block splits every session into exactly one of the two halves", () => {
+  const corpus = buildCorpus(
+    [fakeRun("aaaaaaaa1111")],
+    mapOf({ aaaaaaaa: { label: "the-mapped-one", scenario: "A run", repoKey: "one" } })
+  ).payload.corpus;
+
+  /* The arithmetic that makes the comparison honest. If the two halves do not
+     add up to the corpus, one of them is being counted against a denominator
+     that is not the population it came from — which is the failure mode SPEC's
+     denominator rule exists to prevent, arriving through the back door. */
+  assert.equal(
+    corpus.sessionsThatRolledOver.value + corpus.sessionsThatDidNot.value,
+    corpus.totalSessions.value
+  );
+
+  /* And the cross-check that costs nothing and would have caught a real bug:
+     `totalRollovers` counts the same population with a different query. Two
+     independent reads of one fact must agree, or one of them is wrong. */
+  assert.equal(corpus.sessionsThatRolledOver.value, corpus.totalRollovers.value);
+});
+
+test("a rollover that committed but recorded a zero counts as not recorded", () => {
+  /* The trap the article is about, held as a test rather than a comment.
+     `commit_count` is written with a zero on the rollover path rather than
+     left null, so a harvest that tested for null would publish "every rollover
+     recorded its commits" and be catastrophically wrong in the reassuring
+     direction. The fixture's rolled half has three sessions and zero commits;
+     what must never happen is the figure reading 3/3. */
+  const corpus = buildCorpus(
+    [fakeRun("aaaaaaaa1111")],
+    mapOf({ aaaaaaaa: { label: "the-mapped-one", scenario: "A run", repoKey: "one" } })
+  ).payload.corpus;
+
+  assert.equal(corpus.rolloversWithACommit.value, 0);
+  assert.equal(corpus.rolloversWithACommit.display, "0/3");
+  assert.notEqual(corpus.rolloversWithACommit.display, "3/3");
+});
+
+test("both halves of the ledger block are published, so neither is a bare count", () => {
+  /* A figure like "zero rollovers committed" is unreadable alone: it could be
+     a broken recorder or a population that genuinely did nothing. The article
+     only works because the same five columns are published for the sessions
+     beside them, so every backward-facing key must have its counterpart. */
+  const corpus = corpusJson.corpus;
+  for (const [rolledKey, otherKey] of [
+    ["rolloversWithACommit", "othersWithACommit"],
+    ["rolloversWithAGateSummary", "othersWithAGateSummary"],
+    ["rolloversWithAClaim", "othersWithAClaim"],
+    ["rolloversWithAResultSummary", "othersWithAResultSummary"],
+    ["rolloversWithADigest", "othersWithADigest"]
+  ]) {
+    assert.ok(corpus[rolledKey], `${rolledKey} is missing from the committed corpus`);
+    assert.ok(corpus[otherKey], `${otherKey} has no counterpart to compare against`);
+    assert.match(corpus[rolledKey].display, /^\d+\/\d+$/, `${rolledKey} must print its denominator`);
+    assert.match(corpus[otherKey].display, /^\d+\/\d+$/, `${otherKey} must print its denominator`);
+  }
+});
+
+test("the ledger block came from the store, not from a verb", () => {
+  /* The mirror of the budget-shaped rule. These are counts of columns, which
+     the store can answer and `conductor budget` cannot — so a source string
+     naming a verb here would be as wrong as a SQL-derived cap figure. */
+  for (const key of Object.keys(corpusJson.corpus).filter((k) => /^rollovers|^others/.test(k))) {
+    assert.equal(
+      corpusJson.corpus[key].source,
+      "run.db, opened read-only",
+      `${key} says it came from ${corpusJson.corpus[key].source}`
+    );
+  }
 });
 
 test("a run key and a window key never share a name", () => {

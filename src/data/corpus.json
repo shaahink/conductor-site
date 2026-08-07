@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-08-07T01:48:22.751Z",
+  "generatedAtUtc": "2026-08-07T02:11:06.833Z",
   "corpus": {
     "totalRuns": {
       "value": 18,
@@ -141,6 +141,83 @@
       "display": "53",
       "label": "rollovers",
       "source": "run.db, opened read-only"
+    },
+    "sessionsThatRolledOver": {
+      "value": 53,
+      "display": "53",
+      "label": "sessions ended by being rolled over",
+      "source": "run.db, opened read-only",
+      "note": "counted from the sessions table's own outcome column, out of 340 sessions in the corpus"
+    },
+    "sessionsThatDidNot": {
+      "value": 287,
+      "display": "287",
+      "label": "sessions ended some other way",
+      "source": "run.db, opened read-only",
+      "note": "the comparison population: every session in the corpus whose outcome was not a rollover"
+    },
+    "rolloversWithACommit": {
+      "value": 0,
+      "display": "0/53",
+      "label": "rolled-over sessions recorded a commit",
+      "source": "run.db, opened read-only",
+      "note": "the column holds a zero rather than nothing at all, which is what makes it read as a measurement instead of a gap"
+    },
+    "rolloversWithAGateSummary": {
+      "value": 0,
+      "display": "0/53",
+      "label": "recorded which gates they ran",
+      "source": "run.db, opened read-only"
+    },
+    "rolloversWithAClaim": {
+      "value": 0,
+      "display": "0/53",
+      "label": "recorded a checkpoint they closed",
+      "source": "run.db, opened read-only"
+    },
+    "rolloversWithAResultSummary": {
+      "value": 4,
+      "display": "4/53",
+      "label": "recorded a result summary",
+      "source": "run.db, opened read-only"
+    },
+    "rolloversWithADigest": {
+      "value": 52,
+      "display": "52/53",
+      "label": "recorded a digest for the next session",
+      "source": "run.db, opened read-only",
+      "note": "the one field that faces forwards rather than back, and the one field a rollover almost always has"
+    },
+    "othersWithACommit": {
+      "value": 246,
+      "display": "246/287",
+      "label": "of the sessions that did not roll over recorded a commit",
+      "source": "run.db, opened read-only"
+    },
+    "othersWithAGateSummary": {
+      "value": 264,
+      "display": "264/287",
+      "label": "recorded which gates they ran",
+      "source": "run.db, opened read-only"
+    },
+    "othersWithAClaim": {
+      "value": 203,
+      "display": "203/287",
+      "label": "recorded a checkpoint they closed",
+      "source": "run.db, opened read-only"
+    },
+    "othersWithAResultSummary": {
+      "value": 273,
+      "display": "273/287",
+      "label": "recorded a result summary",
+      "source": "run.db, opened read-only"
+    },
+    "othersWithADigest": {
+      "value": 139,
+      "display": "139/287",
+      "label": "recorded a digest",
+      "source": "run.db, opened read-only",
+      "note": "the inversion: the forward-facing field is the one a normal session most often skips, because the next session did not need it"
     },
     "totalSoftBreaks": {
       "value": 123,
