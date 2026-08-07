@@ -307,6 +307,15 @@ function corpusFigures(runs, repoKeys) {
   const perSession = round2(cost / sessions);
   const perCheckpoint = round2(cost / done);
 
+  /* The lanes. `costs.category` is how the store separates the delivering agent
+     from the two cheap things beside it, and the split is the whole of what
+     concept 2 has to say — an orchestrator is not many expensive models, it is
+     one expensive model and some arithmetic. Three categories, not two: the
+     plan document said "agent vs advisor" from a hand query and the store also
+     carries `gate`. Publishing all three is what stops the page rounding the
+     third one away. */
+  const inCategory = (name) => round2(sum((r) => r.store.byCategory[name]?.costUsd ?? 0));
+
   return {
     totalRuns: figure(runs.length, plain(runs.length), "runs", HISTORY),
     totalRepos: figure(repoKeys.size, plain(repoKeys.size), "repositories", "anonymise.json"),
@@ -321,6 +330,27 @@ function corpusFigures(runs, repoKeys) {
     totalCheckpointsDone: figure(done, `${done}/${planned}`, "checkpoints closed", HISTORY),
     totalCheckpointsPlanned: figure(planned, plain(planned), "checkpoints planned", HISTORY),
     totalCostUsd: figure(cost, usd(cost), "spent across the corpus", HISTORY),
+    totalAgentCostUsd: figure(
+      inCategory("agent"),
+      usd(inCategory("agent")),
+      "on the delivering agent",
+      STORE,
+      "the sessions that did the work, metered by the agent CLI's own token accounting"
+    ),
+    totalGateCostUsd: figure(
+      inCategory("gate"),
+      usd(inCategory("gate")),
+      "on running the gates",
+      STORE,
+      "the batteries themselves: real commands, real exit codes, no model in the loop"
+    ),
+    totalAdvisorCostUsd: figure(
+      inCategory("advisor"),
+      usd(inCategory("advisor")),
+      "on the advisor lane",
+      STORE,
+      "priced by the engine at a flat rate per second of advisor wall-clock, not metered from the model — an estimate of a lane whose real cost is too small for the ledger to have measured"
+    ),
     totalTokensIn: figure(sum((r) => r.store.tokensIn), big(sum((r) => r.store.tokensIn)), "tokens in", STORE),
     totalTokensOut: figure(sum((r) => r.store.tokensOut), big(sum((r) => r.store.tokensOut)), "tokens out", STORE),
     totalCacheRead: figure(sum((r) => r.store.cacheRead), big(sum((r) => r.store.cacheRead)), "cache read", STORE),

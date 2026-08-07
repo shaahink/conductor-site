@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-08-07T00:17:14.345Z",
+  "generatedAtUtc": "2026-08-07T00:28:32.277Z",
   "corpus": {
     "totalRuns": {
       "value": 18,
@@ -43,6 +43,27 @@
       "display": "$3,016.29",
       "label": "spent across the corpus",
       "source": "conductor history --json --limit 0"
+    },
+    "totalAgentCostUsd": {
+      "value": 3014.8,
+      "display": "$3,014.80",
+      "label": "on the delivering agent",
+      "source": "run.db, opened read-only",
+      "note": "the sessions that did the work, metered by the agent CLI's own token accounting"
+    },
+    "totalGateCostUsd": {
+      "value": 1.26,
+      "display": "$1.26",
+      "label": "on running the gates",
+      "source": "run.db, opened read-only",
+      "note": "the batteries themselves: real commands, real exit codes, no model in the loop"
+    },
+    "totalAdvisorCostUsd": {
+      "value": 0.24,
+      "display": "$0.24",
+      "label": "on the advisor lane",
+      "source": "run.db, opened read-only",
+      "note": "priced by the engine at a flat rate per second of advisor wall-clock, not metered from the model — an estimate of a lane whose real cost is too small for the ledger to have measured"
     },
     "totalTokensIn": {
       "value": 47519457,
