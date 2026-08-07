@@ -123,8 +123,25 @@ function readStore(db, runId) {
     };
   }
 
+  /* Four counts, not one, because "29 red" is worth very little on its own.
+     A gate battery can be green because everything passed or because half of
+     it was optional and the other half was skipped — so the skipped and
+     optional counts are what turn a pass rate into a claim. Both are zero
+     across this whole corpus, which is the only reason the pass rate means
+     what a reader will assume it means.
+
+     `crashed` separates a command that ran and said no from one that never
+     ran: an exit status the command did not choose — negative, or above the
+     128 that marks a signal — is a process that died on the way up. Four of
+     the corpus's red gates are that, at tens of milliseconds each, and they
+     are the ones an agent's own "tests pass" would have sailed straight past. */
   const gates = one(
-    `select count(*) as total, coalesce(sum(passed), 0) as green
+    `select count(*) as total,
+            coalesce(sum(passed), 0) as green,
+            coalesce(sum(skipped), 0) as skipped,
+            coalesce(sum(optional), 0) as optional,
+            coalesce(sum(case when passed = 0 and (exit_code < 0 or exit_code > 128)
+                              then 1 else 0 end), 0) as crashed
        from gates where run_id = ?`
   );
 
@@ -140,6 +157,9 @@ function readStore(db, runId) {
     cacheRead: sumOver(byCategory, "cacheRead"),
     gatesGreen: gates.green,
     gatesTotal: gates.total,
+    gatesSkipped: gates.skipped,
+    gatesOptional: gates.optional,
+    gatesCrashed: gates.crashed,
     bugsFiled: one(`select count(*) as n from bugs where run_id = ?`).n,
     ledgerEntries: one(`select count(*) as n from ledger where run_id = ?`).n,
     rollovers: one(
@@ -339,6 +359,13 @@ function runEntry(run, mapped) {
       cacheRead: figure(s.cacheRead, big(s.cacheRead), "cache read", STORE),
       gatesGreen: figure(s.gatesGreen, `${s.gatesGreen}/${s.gatesTotal}`, "gates green", STORE),
       gatesTotal: figure(s.gatesTotal, plain(s.gatesTotal), "gates run", STORE),
+      gatesRed: figure(
+        s.gatesTotal - s.gatesGreen,
+        plain(s.gatesTotal - s.gatesGreen),
+        "gates red",
+        STORE,
+        "every one of them required: no gate in this corpus was skipped or optional"
+      ),
       rollovers: figure(s.rollovers, plain(s.rollovers), "rollovers", STORE),
       softBreaks: figure(s.softBreaks, plain(s.softBreaks), "soft breaks", STORE),
       ownerApprovals: figure(s.ownerApprovals, plain(s.ownerApprovals), "owner approvals", STORE),
@@ -435,6 +462,7 @@ function corpusFigures(runs, repoKeys) {
   const planned = sum((r) => r.checkpointsTotal);
   const green = sum((r) => r.store.gatesGreen);
   const gates = sum((r) => r.store.gatesTotal);
+  const runsRed = runs.filter((r) => r.store.gatesTotal > r.store.gatesGreen).length;
 
   const perSession = round2(cost / sessions);
   const perCheckpoint = round2(cost / done);
@@ -507,6 +535,37 @@ function corpusFigures(runs, repoKeys) {
     totalGatesGreen: figure(green, `${green}/${gates}`, "gates green", STORE),
     totalGatesRun: figure(gates, plain(gates), "gates run", STORE),
     totalGatesRed: figure(gates - green, plain(gates - green), "gates red", STORE),
+    /* The two zeros that make the pass rate mean anything. A battery can be
+       green because it passed or because it was allowed not to run, and those
+       look identical in a summary line. */
+    totalGatesSkipped: figure(
+      sum((r) => r.store.gatesSkipped),
+      plain(sum((r) => r.store.gatesSkipped)),
+      "gates skipped",
+      STORE,
+      "in the whole corpus — every gate that was configured, ran"
+    ),
+    totalGatesOptional: figure(
+      sum((r) => r.store.gatesOptional),
+      plain(sum((r) => r.store.gatesOptional)),
+      "gates marked optional",
+      STORE,
+      "so every red one above was a gate somebody had to answer for"
+    ),
+    totalGatesCrashed: figure(
+      sum((r) => r.store.gatesCrashed),
+      plain(sum((r) => r.store.gatesCrashed)),
+      "of the red gates never ran at all",
+      STORE,
+      "an exit status the command did not choose — a process that died starting up, in tens of milliseconds, rather than a check that ran and said no"
+    ),
+    runsWithARedGate: figure(
+      runsRed,
+      `${runsRed}/${runs.length}`,
+      "runs that ever saw a red gate",
+      STORE,
+      "the other runs' batteries were green every time they ran"
+    ),
     totalRollovers: figure(sum((r) => r.store.rollovers), plain(sum((r) => r.store.rollovers)), "rollovers", STORE),
     totalSoftBreaks: figure(
       sum((r) => r.store.softBreaks),

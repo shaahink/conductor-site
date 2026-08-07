@@ -1,0 +1,154 @@
+meta:
+  title: "Never believe the agent"
+  description: "A green battery proves nothing on its own. The red gates are the
+    evidence, and this is what a corpus of them looks like once you count what
+    was skipped."
+  ogDescription: "A green battery proves nothing on its own. The red gates are the
+    evidence a checking system works."
+  canonical: "/articles/never-believe-the-agent/"
+
+slug: "never-believe-the-agent"
+order: 2
+title: "Never believe the agent"
+standfirst: "Verification has to be a separate program with real exit codes. The
+  argument for that is not in the gates that passed. It is in the ones that did
+  not, and in the few that never ran at all."
+
+evidence:
+  runs:
+    - "the-second-false-start"
+    - "the-engine-run"
+  figures:
+    - "totalGatesRun"
+    - "totalGatesGreen"
+    - "totalGatesRed"
+    - "totalGatesSkipped"
+    - "totalGatesOptional"
+    - "totalGatesCrashed"
+    - "runsWithARedGate"
+    - "totalGateCostUsd"
+    - "gatesRed"
+    - "gatesTotal"
+    - "checkpointsDone"
+
+sections:
+  - heading: "A pass rate is not evidence"
+    body:
+      - "The strip above carries a pass rate that looks good, and on its own it
+        is worth nothing at all. A checking system that never checks anything
+        also reports a perfect pass rate. So does one whose hardest gates are
+        marked optional, one whose slow gates are skipped on the branch where
+        the work happens, and one that reports on a battery it did not manage to
+        start."
+      - "That is why two of the figures above are zeros. Nothing in this corpus
+        was skipped, and nothing in it was marked optional. Every gate that a
+        plan configured, ran; every gate that ran, counted. Those two zeros are
+        what make the pass rate readable as a claim about the work rather than
+        as a claim about the configuration, and they are the two numbers that
+        published agent metrics almost never carry."
+      - "Ask them of any pass rate you are shown. How many checks were skipped?
+        How many were allowed to fail? A system that cannot answer has not
+        measured its own verification, and a system that can answer and does not
+        publish it has decided which half of the picture you get."
+
+  - heading: "The red ones are the whole argument"
+    body:
+      - "The gates that went red are the only direct evidence that the checking
+        works. Everything else is a system agreeing with itself. Each red gate
+        is a moment where an agent had finished, believed it was finished, and
+        something outside it disagreed in a way that could not be argued with."
+      - "They are rare and they concentrate. Most of the runs in this corpus
+        never saw a red gate at all; the ones that did, saw several. That
+        distribution is worth sitting with, because it is the opposite of what a
+        sceptic expects and the opposite of what an enthusiast expects. Agents
+        do not fail continuously and they do not fail never. They fail in
+        clusters, in the runs where something structural is wrong — an
+        environment that will not build, a language the plan was optimistic
+        about, a repository whose tests were already broken before anything
+        automated touched it."
+      - "The clearest case in the corpus is the first run named above. Its
+        battery was red every single time it ran, and it closed no checkpoints
+        at all before being abandoned. That run is in this corpus deliberately.
+        Without gates it would have produced session summaries, a tracker full
+        of plausible progress, and commits — and it would be sitting in a
+        portfolio somewhere as a success with an asterisk. The gates are the
+        reason it is honestly labelled as a false start instead."
+      - "The second run named is the other shape: a real engine, delivered
+        complete, closing every checkpoint it planned, with the largest cluster
+        of red gates in the corpus along the way. Red gates are not a sign that
+        a run is going badly. They are a sign that the run is being checked."
+
+  - heading: "Some of them never ran at all"
+    body:
+      - "Now the figure that pays for this article. A subset of the red gates in
+        this corpus did not fail. They never started: the exit status was one
+        the command never chooses — a Windows crash status, from a process that
+        died initialising — and the recorded duration was tens of milliseconds
+        against neighbours that took minutes."
+      - "That distinction is invisible in every reporting style except the one
+        that keeps real exit codes. A summary line says the checks did not pass.
+        A log tail shows nothing useful, because nothing ran. An agent asked to
+        report on its own build, in good faith, would say the build failed and
+        move on to fixing code that was never compiled — which is a genuinely
+        expensive way to spend an afternoon, and it happens quietly."
+      - "It gets worse in the other direction, and this fleet has paid for it: a
+        toolchain whose build crashes does not exit with a one. It exits with a
+        crash status, and a wrapper written as \"if the exit code is one, fail\"
+        reads that as success. The gate that catches this is not cleverer than
+        the agent. It just refuses to interpret. Anything other than the success
+        status is red, whatever the number was and whatever anybody says about
+        it afterwards."
+      - "So the rule is narrower than \"use a checker\". Keep the process's own
+        exit status, store it, and treat every non-success value as a failure
+        including the ones you do not recognise. The interesting failures are
+        exactly the unrecognised ones."
+
+  - heading: "Why it has to be a different program"
+    body:
+      - "The usual objection is cost: a real battery on every session sounds
+        expensive next to asking the model that just did the work whether it
+        went well. The gate figure above settles that. Every battery, every
+        build, every test run across this entire corpus cost less than a
+        sandwich, because a gate is a command and an exit code with no model in
+        the loop. There is no economic argument for the cheaper-looking option.
+        There never was."
+      - "The real argument is about write access. A worker that can edit the
+        check has not been verified; it has been consulted. And nothing about
+        that requires bad faith — a failing assertion that looks spurious, an
+        exemption that looks reasonable, a golden file regenerated because the
+        new output looks better. Every one of those is a normal edit on a normal
+        day. Run them under something fast and tireless, and the suite converges
+        on whatever the code already does."
+      - "Which is also why a claim and a confirmation have to be two separate
+        facts rather than one flag. The claim says a session believed it had
+        finished. The confirmation says a battery, re-run at the current head,
+        agreed. The gap between those two is the most informative quantity a run
+        produces, and a system that stores only one of them has thrown it away
+        for tidiness. The concept page on independent verification has the
+        mechanism; this article is only here for the measurements."
+
+  - heading: "Building one that bites"
+    body:
+      - "Four rules, all of them learned by getting them wrong first."
+      - "Re-run the battery at the current head, not at the moment the agent
+        said it was done. A gate result cached against the wrong commit is a
+        confirmation of something that is no longer there — and it looks
+        completely normal in the log, because it was green when it was true."
+      - "Count and publish what was skipped and what was optional, beside the
+        pass rate, every time. If those two counts are not zero, the pass rate
+        is a different claim from the one a reader will assume, and the
+        difference is exactly where a checking system rots."
+      - "Prove every gate red on purpose before you trust it green. Break the
+        thing it is supposed to catch, watch it fail, put the thing back. This
+        site does that to its own gates and writes the failure text into the
+        evidence file for the session that added them, because a gate nobody has
+        seen fail is not a gate — it is a green light with a plausible name, and
+        the only way to find out which one you have is to try it."
+      - "And when a gate does go red, do not withdraw the claim. Keep it
+        standing and make it true. The record that a session believed it was
+        finished, and was wrong, is the single most useful thing in the store
+        for anybody trying to work out whether this way of building software can
+        be trusted with the next thing."
+
+readNext:
+  - "what-a-run-costs"

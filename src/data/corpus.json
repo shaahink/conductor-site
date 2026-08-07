@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-08-07T01:28:24.910Z",
+  "generatedAtUtc": "2026-08-07T01:31:58.303Z",
   "corpus": {
     "totalRuns": {
       "value": 18,
@@ -108,6 +108,34 @@
       "label": "gates red",
       "source": "run.db, opened read-only"
     },
+    "totalGatesSkipped": {
+      "value": 0,
+      "display": "0",
+      "label": "gates skipped",
+      "source": "run.db, opened read-only",
+      "note": "in the whole corpus — every gate that was configured, ran"
+    },
+    "totalGatesOptional": {
+      "value": 0,
+      "display": "0",
+      "label": "gates marked optional",
+      "source": "run.db, opened read-only",
+      "note": "so every red one above was a gate somebody had to answer for"
+    },
+    "totalGatesCrashed": {
+      "value": 4,
+      "display": "4",
+      "label": "of the red gates never ran at all",
+      "source": "run.db, opened read-only",
+      "note": "an exit status the command did not choose — a process that died starting up, in tens of milliseconds, rather than a check that ran and said no"
+    },
+    "runsWithARedGate": {
+      "value": 6,
+      "display": "6/18",
+      "label": "runs that ever saw a red gate",
+      "source": "run.db, opened read-only",
+      "note": "the other runs' batteries were green every time they ran"
+    },
     "totalRollovers": {
       "value": 53,
       "display": "53",
@@ -215,6 +243,13 @@
           "display": "0",
           "label": "gates run",
           "source": "run.db, opened read-only"
+        },
+        "gatesRed": {
+          "value": 0,
+          "display": "0",
+          "label": "gates red",
+          "source": "run.db, opened read-only",
+          "note": "every one of them required: no gate in this corpus was skipped or optional"
         },
         "rollovers": {
           "value": 0,
@@ -355,6 +390,13 @@
           "label": "gates run",
           "source": "run.db, opened read-only"
         },
+        "gatesRed": {
+          "value": 4,
+          "display": "4",
+          "label": "gates red",
+          "source": "run.db, opened read-only",
+          "note": "every one of them required: no gate in this corpus was skipped or optional"
+        },
         "rollovers": {
           "value": 1,
           "display": "1",
@@ -493,6 +535,13 @@
           "display": "0",
           "label": "gates run",
           "source": "run.db, opened read-only"
+        },
+        "gatesRed": {
+          "value": 0,
+          "display": "0",
+          "label": "gates red",
+          "source": "run.db, opened read-only",
+          "note": "every one of them required: no gate in this corpus was skipped or optional"
         },
         "rollovers": {
           "value": 0,
@@ -633,6 +682,13 @@
           "label": "gates run",
           "source": "run.db, opened read-only"
         },
+        "gatesRed": {
+          "value": 0,
+          "display": "0",
+          "label": "gates red",
+          "source": "run.db, opened read-only",
+          "note": "every one of them required: no gate in this corpus was skipped or optional"
+        },
         "rollovers": {
           "value": 0,
           "display": "0",
@@ -771,6 +827,13 @@
           "display": "3",
           "label": "gates run",
           "source": "run.db, opened read-only"
+        },
+        "gatesRed": {
+          "value": 0,
+          "display": "0",
+          "label": "gates red",
+          "source": "run.db, opened read-only",
+          "note": "every one of them required: no gate in this corpus was skipped or optional"
         },
         "rollovers": {
           "value": 0,
@@ -911,6 +974,13 @@
           "label": "gates run",
           "source": "run.db, opened read-only"
         },
+        "gatesRed": {
+          "value": 0,
+          "display": "0",
+          "label": "gates red",
+          "source": "run.db, opened read-only",
+          "note": "every one of them required: no gate in this corpus was skipped or optional"
+        },
         "rollovers": {
           "value": 0,
           "display": "0",
@@ -1049,6 +1119,13 @@
           "display": "32",
           "label": "gates run",
           "source": "run.db, opened read-only"
+        },
+        "gatesRed": {
+          "value": 0,
+          "display": "0",
+          "label": "gates red",
+          "source": "run.db, opened read-only",
+          "note": "every one of them required: no gate in this corpus was skipped or optional"
         },
         "rollovers": {
           "value": 0,
@@ -1189,6 +1266,13 @@
           "label": "gates run",
           "source": "run.db, opened read-only"
         },
+        "gatesRed": {
+          "value": 2,
+          "display": "2",
+          "label": "gates red",
+          "source": "run.db, opened read-only",
+          "note": "every one of them required: no gate in this corpus was skipped or optional"
+        },
         "rollovers": {
           "value": 0,
           "display": "0",
@@ -1327,6 +1411,13 @@
           "display": "38",
           "label": "gates run",
           "source": "run.db, opened read-only"
+        },
+        "gatesRed": {
+          "value": 0,
+          "display": "0",
+          "label": "gates red",
+          "source": "run.db, opened read-only",
+          "note": "every one of them required: no gate in this corpus was skipped or optional"
         },
         "rollovers": {
           "value": 0,
@@ -1467,6 +1558,13 @@
           "label": "gates run",
           "source": "run.db, opened read-only"
         },
+        "gatesRed": {
+          "value": 6,
+          "display": "6",
+          "label": "gates red",
+          "source": "run.db, opened read-only",
+          "note": "every one of them required: no gate in this corpus was skipped or optional"
+        },
         "rollovers": {
           "value": 11,
           "display": "11",
@@ -1605,6 +1703,13 @@
           "display": "59",
           "label": "gates run",
           "source": "run.db, opened read-only"
+        },
+        "gatesRed": {
+          "value": 0,
+          "display": "0",
+          "label": "gates red",
+          "source": "run.db, opened read-only",
+          "note": "every one of them required: no gate in this corpus was skipped or optional"
         },
         "rollovers": {
           "value": 34,
@@ -1745,6 +1850,13 @@
           "label": "gates run",
           "source": "run.db, opened read-only"
         },
+        "gatesRed": {
+          "value": 9,
+          "display": "9",
+          "label": "gates red",
+          "source": "run.db, opened read-only",
+          "note": "every one of them required: no gate in this corpus was skipped or optional"
+        },
         "rollovers": {
           "value": 0,
           "display": "0",
@@ -1883,6 +1995,13 @@
           "display": "24",
           "label": "gates run",
           "source": "run.db, opened read-only"
+        },
+        "gatesRed": {
+          "value": 0,
+          "display": "0",
+          "label": "gates red",
+          "source": "run.db, opened read-only",
+          "note": "every one of them required: no gate in this corpus was skipped or optional"
         },
         "rollovers": {
           "value": 6,
@@ -2023,6 +2142,13 @@
           "label": "gates run",
           "source": "run.db, opened read-only"
         },
+        "gatesRed": {
+          "value": 5,
+          "display": "5",
+          "label": "gates red",
+          "source": "run.db, opened read-only",
+          "note": "every one of them required: no gate in this corpus was skipped or optional"
+        },
         "rollovers": {
           "value": 0,
           "display": "0",
@@ -2161,6 +2287,13 @@
           "display": "43",
           "label": "gates run",
           "source": "run.db, opened read-only"
+        },
+        "gatesRed": {
+          "value": 0,
+          "display": "0",
+          "label": "gates red",
+          "source": "run.db, opened read-only",
+          "note": "every one of them required: no gate in this corpus was skipped or optional"
         },
         "rollovers": {
           "value": 1,
@@ -2301,6 +2434,13 @@
           "label": "gates run",
           "source": "run.db, opened read-only"
         },
+        "gatesRed": {
+          "value": 3,
+          "display": "3",
+          "label": "gates red",
+          "source": "run.db, opened read-only",
+          "note": "every one of them required: no gate in this corpus was skipped or optional"
+        },
         "rollovers": {
           "value": 0,
           "display": "0",
@@ -2440,6 +2580,13 @@
           "label": "gates run",
           "source": "run.db, opened read-only"
         },
+        "gatesRed": {
+          "value": 0,
+          "display": "0",
+          "label": "gates red",
+          "source": "run.db, opened read-only",
+          "note": "every one of them required: no gate in this corpus was skipped or optional"
+        },
         "rollovers": {
           "value": 0,
           "display": "0",
@@ -2578,6 +2725,13 @@
           "display": "6",
           "label": "gates run",
           "source": "run.db, opened read-only"
+        },
+        "gatesRed": {
+          "value": 0,
+          "display": "0",
+          "label": "gates red",
+          "source": "run.db, opened read-only",
+          "note": "every one of them required: no gate in this corpus was skipped or optional"
         },
         "rollovers": {
           "value": 0,

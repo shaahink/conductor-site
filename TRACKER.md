@@ -4,31 +4,36 @@
 
 ## Handoff (overwrite this block, ≤12 lines, no history)
 
-last: **session 10** delivered **S4.3** (adbe41f) and **S4.4** (f1bbf09) — **stage S4 is
-  complete**. QA of session 9: **no findings**; battery re-run green from a clean tree before any
-  edit (0 errors, 42 tests, 14 pages, 154 annotations, 8 cited entries, 37 citations).
-now on disk: all ten concept pages. Battery: 0 errors, **45 tests**, 18 pages, 255 annotations,
-  evidence gate green over 12 cited entries, **all 74 citations resolve at engine `1632b9f`**.
-  New gate `test/spine.test.mjs` — `order` a permutation of one to ten, slug equals file name,
-  and the first `readNext` walking the whole spine. Both gates proven red by mutation this
-  session and restored: a bogus `totalOwnerApprovalsX` on concept 8, and all three spine defects.
-next: **S5** — the four articles. Two of them already have their evidence: article 2 is the
-  twenty-nine red gates (all required, none skipped or optional in the corpus), article 3 is the
-  measured-budget method. **Anything budget-shaped comes from `conductor budget` / `conductor
-  money`, never hand SQL** — and `runs.limits_json` is NULL on every imported run, so no cap
-  value can be gate-verified; say so on the page.
-open: **two SPEC figures corrected by measurement, do not retype either.** Part IV concept 2 says
-  agent $3,015 vs advisor $0.09; the store has **three** categories — agent $3,014.80, gate
-  $1.26, advisor $0.24 — and the advisor line is priced from elapsed seconds, not metered. Part
-  IV concept 8's "push-only" is wrong and concept 8 now says so on the page. Bug #3 (Appendix
-  A's `$9.37` and `~$10.85` divisions) and bug #2 (`--overlay` contrast) still stand. **S7.1
-  must re-confirm `site`.** Anonymisation trap for S5/S6: `SqliteRunStore.Bugs.cs:26` names a
-  private repo in its own comment — cite the line, paraphrase the measurement, never quote it.
-tooling: prose refuses any number of two digits or more — spell small quantities as words, and
-  never write a decimal, a ratio or a currency amount into content. **Never `git checkout --` a
-  file whose new version is uncommitted.** Commit messages to a file, then `-F`. The battery is
-  ~20s, so foreground it. **A failed Astro build exits 0xC0000409, not 1.** `conductor history
-  --json` emits a UTF-8 BOM on Windows. **One run.db holds several runs** — filter by `run_id`.
+last: **session 11** delivered **S5.1** (1ef5db5) and **S5.2**. QA of session 10: **no findings**
+  — battery re-run green from a clean tree before any edit (0 errors, 45 tests, build exit 0, 255
+  annotations, evidence gate green over 12 entries, all 74 citations resolve at `1632b9f`).
+now on disk: articles 1 and 2, both figure-free prose (1,629 and 1,394 words) with every quantity
+  in evidence keys. Battery: **0 errors, 49 tests, 306 annotations on 17 pages, evidence gate
+  green over 13 cited entries.** The harvest now asks **`conductor money --run <id> --json` once
+  per published run** (`readMoney`, +9.5s) — that is where `tokensPerCheckpoint`,
+  `costPerMillionTokens`, `cacheReadShare` and the four `dearestStage*` keys come from.
+  `refuseBudgetShaped` now tests a figure's **source**, not its name: budget-shaped keys ship
+  only when `conductor money`/`conductor budget` answered them. Four new tests cover that.
+next: **S5.3** (the measured-budget article) then **S5.4**. S5.3 needs window-level figures —
+  `conductor budget <run> --json` gives `windows[]` with cap, nudge, floor, medianCloser,
+  wrapUp, rolloverRate, tokensPerCheckpoint per window, and run-level `capPayoff`. Per-run keys
+  must be uniform across all 18 runs, so a window namespace is probably needed in `corpus.json`
+  plus a branch in `src/lib/evidence.ts`. **S5.4 is already measured, do not re-derive:** of
+  `the-long-build`'s 34 rolled-over sessions, **0 recorded a commit, 34 recorded no gate summary,
+  34 recorded no claim, 32 of 34 no result summary — but all 34 wrote a digest.** The git ground
+  truth that contradicts it lives in a private repo, so it cannot be gate-verified: publish the
+  artifact and describe the git check in words, printing no ratio for it.
+open: **SPEC Part V article 1's `$51.98` / `23%` are now re-measured: `$52.06` / `23.2%`, 10
+  sessions, 4 checkpoints** (`conductor money`, the-fleet-backlog's dearest stage). Concept 2's
+  advisor split and concept 8's "push-only" corrections still stand. Bug #3 and bug #2 still
+  open. **S7.1 must re-confirm `site`.**
+tooling: prose refuses any number of two digits or more, and a currency/percent/decimal/ratio
+  too — let the strip carry every quantity. **Never round-trip a content file through PowerShell
+  `Get-Content`/`Set-Content`**: it mangled every em dash to mojibake and added a BOM this
+  session (repaired with node). Mutate with node, restore with `npm run harvest` or git. Commit
+  messages to a file, then `-F`. Battery is ~35s now, still fine in the foreground. **A failed
+  Astro build exits 0xC0000409, not 1.** `conductor history --json` emits a UTF-8 BOM on Windows.
+  **One run.db holds several runs** — filter by `run_id`, and `conductor money` needs `--run`.
 
 
 ## Baseline numbers (from run.db)
