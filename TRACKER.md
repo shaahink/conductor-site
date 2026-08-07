@@ -4,24 +4,26 @@
 
 ## Handoff (overwrite this block, ≤12 lines, no history)
 
-last: **session 10** delivered **S4.3** (adbe41f) — concepts 7 and 8, durable execution and
-  human-in-the-loop. QA of session 9: **no findings**; battery re-run green from a clean tree
-  before any edit (0 errors, 42 tests, 14 pages, 154 annotations, 8 cited entries, 37 citations).
-now on disk: eight concept pages, the spine reading in `order` from one to eight. **All 54
-  citations resolve at engine `1632b9f`** via `scripts/citations.mjs` (engine path from
-  `CONDUCTOR_REPO` or the sibling directory — never a path this public repo commits). Battery:
-  0 errors, 42 tests, 16 pages, 205 annotations, evidence gate green over 10 cited entries, and
-  proven red by hand again (a bogus `totalOwnerApprovalsX` on concept 8 → exit 1, green on
-  restore).
-next: **S4.4** — concepts 9 and 10, agent observability and agent memory. It also owns closing
-  the chain: `human-in-the-loop.readNext` points at `agentic-engineering` as a placeholder and
-  must become `agent-observability`. A dangling slug fails the build, so it cannot be left empty.
+last: **session 10** delivered **S4.3** (adbe41f) and **S4.4** (f1bbf09) — **stage S4 is
+  complete**. QA of session 9: **no findings**; battery re-run green from a clean tree before any
+  edit (0 errors, 42 tests, 14 pages, 154 annotations, 8 cited entries, 37 citations).
+now on disk: all ten concept pages. Battery: 0 errors, **45 tests**, 18 pages, 255 annotations,
+  evidence gate green over 12 cited entries, **all 74 citations resolve at engine `1632b9f`**.
+  New gate `test/spine.test.mjs` — `order` a permutation of one to ten, slug equals file name,
+  and the first `readNext` walking the whole spine. Both gates proven red by mutation this
+  session and restored: a bogus `totalOwnerApprovalsX` on concept 8, and all three spine defects.
+next: **S5** — the four articles. Two of them already have their evidence: article 2 is the
+  twenty-nine red gates (all required, none skipped or optional in the corpus), article 3 is the
+  measured-budget method. **Anything budget-shaped comes from `conductor budget` / `conductor
+  money`, never hand SQL** — and `runs.limits_json` is NULL on every imported run, so no cap
+  value can be gate-verified; say so on the page.
 open: **two SPEC figures corrected by measurement, do not retype either.** Part IV concept 2 says
-  agent $3,015 vs advisor $0.09; the store has **three** categories and says agent $3,014.80,
-  gate $1.26, advisor $0.24 — and the advisor line is priced from elapsed seconds, not metered,
-  which the page labels. Part IV concept 8 calls the notification lane "push-only"; it long-polls
-  and handles callbacks that write `control.json`. Bug #3 (Appendix A's `$9.37` and `~$10.85`
-  divisions) and bug #2 (`--overlay` contrast) still stand. **S7.1 must re-confirm `site`.**
+  agent $3,015 vs advisor $0.09; the store has **three** categories — agent $3,014.80, gate
+  $1.26, advisor $0.24 — and the advisor line is priced from elapsed seconds, not metered. Part
+  IV concept 8's "push-only" is wrong and concept 8 now says so on the page. Bug #3 (Appendix
+  A's `$9.37` and `~$10.85` divisions) and bug #2 (`--overlay` contrast) still stand. **S7.1
+  must re-confirm `site`.** Anonymisation trap for S5/S6: `SqliteRunStore.Bugs.cs:26` names a
+  private repo in its own comment — cite the line, paraphrase the measurement, never quote it.
 tooling: prose refuses any number of two digits or more — spell small quantities as words, and
   never write a decimal, a ratio or a currency amount into content. **Never `git checkout --` a
   file whose new version is uncommitted.** Commit messages to a file, then `-F`. The battery is

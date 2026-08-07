@@ -1,0 +1,48 @@
+﻿S4.4 — every file:line citation on concepts 9 and 10, opened against the engine checkout
+scripts/citations.mjs, run 2026-08-07 against conductor at 1632b9f (branch feat/karvan)
+
+── concepts/agent-memory
+   ok       src/Conductor.Core/PromptBattery.Knowledge.cs:6
+            | /// <summary>M7.1: injects the most recent knowledge-ledger entries (findings, traps, decisions) from
+   ok       src/Conductor.Core/PromptBattery.Knowledge.cs:21
+            | // hand-edit entries are engine bookkeeping (M4.1), not agent knowledge — don't echo them back.
+   ok       src/Conductor.Core/PromptBattery.Knowledge.cs:27
+            | sb.AppendLine("What earlier sessions recorded (via `conductor note`). Do not re-derive or re-discover these:");
+   ok       src/Conductor.Core/PromptBattery.Knowledge.cs:44
+            | /// <summary>M7.2: injects the run's OPEN tracked bugs into the next prompt so an agent stops re-finding
+   ok       src/Conductor.Core/LessonsManager.cs:9
+            | /// <para>K1.3 rewrote this. Until then it was a diary — the reflection step pasted the first 500
+   ok       src/Conductor.Core/LessonsManager.cs:14
+            | /// <para>It also repeated itself. <c>TrimToCap</c> re-parsed the content it had ALREADY prepended the
+   ok       src/Conductor.Core/LessonsManager.cs:18
+            | /// <para>What lands here now is only sentences that state a RULE (see <see cref="ExtractRules"/>).
+   ok       src/Conductor.Core/LessonsManager.cs:31
+            | /// <summary>Sentences that state a rule, as opposed to a status. Deliberately narrow: the cost of
+   ok       src/Conductor.Core/Store/SqliteRunStore.Bugs.cs:6
+            | /// <summary>M7.2: a tracked bug — outlives the session that found it, injected into later prompts,
+   ok       src/Conductor.Core/Store/SqliteRunStore.Bugs.cs:26
+            | /// <para>M7.2 promised a bug row that "outlives the session that found it" and delivered exactly that
+── concepts/agent-observability
+   ok       src/Conductor.Core/Events/ConductorEvent.cs:6
+            | /// The B2 spine: a typed, append-only event describing a single Orchestrator transition. Every event
+   ok       src/Conductor.Core/Events/EventLog.cs:26
+            | /// (single-writer discipline, BATON-BRIEF §3.2 / stage trap). The OS buffer is flushed after every
+   ok       src/Conductor/Commands/HistoryCommand.cs:12
+            | /// K3.2 — <c>conductor history</c>. Before K3.1 there was nothing to browse: the store lived under
+   ok       src/Conductor/Commands/HistoryCommand.cs:18
+            | /// <para>It takes no plan and needs no repo. History is a property of the machine, so running it in
+   ok       src/Conductor/Commands/HistoryCommand.cs:16
+            | /// checkpoints, sessions. Both go through <see cref="RunArchive"/>, which is <c>Mode=ReadOnly</c>:
+   ok       src/Conductor/Commands/MoneyCommand.cs:19
+            | /// <para>Every figure is billed dollars and recorded tokens — the engine has no price table by design
+   ok       src/Conductor/Commands/BudgetCommand.cs:16
+            | /// <para>This verb does the measurement. It takes no numbers from its caller — not the cap, not the
+   ok       src/Conductor/Commands/JourneyCommand.cs:13
+            | /// U0.2 — a pre-flight itinerary: what will run, in what order, under what model, gated by what,
+   ok       face-go/internal/tui/conn.go:28
+            | // cmdFetchOwnerQueue polls GET /owner/queue (SF4.2). Unlike the other snapshot polls it REPORTS its
+   ok       face-go/internal/api/sse.go:16
+            | // subscribeSSE reconnects with backoff on any drop. since, if non-nil, is consulted on every
+
+citations: all 74 resolve at 1632b9f.
+exit 0
