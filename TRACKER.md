@@ -4,46 +4,48 @@
 
 ## Handoff (overwrite this block, ≤12 lines, no history)
 
-last: **session 16** delivered **S7.1** (commit `f7f7d6f`, pushed). QA of session 15: **no
-  findings** — battery re-run green from the tree as inherited, *before* any edit (0 errors, 86
-  tests, build 27→23 pages with 478 annotations on 21, evidence green, anonymity exit 0), all 18
-  runs render and `>running<` is absent from `dist/`. Handoff said "ABANDONED"; the markup is
-  lowercase `abandoned` in the peach role, which is what it claimed.
-now on disk: **`site` is CONFIRMED, not copied** — both candidate hosts answer 200, so what
-  settles it is that `conductor-site-virid.vercel.app` serves this site and the short alias
-  serves someone else's Next.js app. Two real defects fixed: the **sitemap listed 1 of 21
-  pages** (the template's file — worse than none, a crawler reads it as *this is the site*), and
-  **no page had an `og:image` at all**, so every shared link was a grey box. New: four 1200×630
-  cards in `public/og/`, screenshotted from **real pages** (`src/pages/og/[card].astro`) so
-  palette, type, words and figures all come from the site — the three figures per card go
-  through `resolveEvidence`. A card is a *picture of numbers taken once*, so
-  `src/data/og-cards.json` records the text at screenshot time and **`npm run seo`** re-renders
-  and compares. That gate (`scripts/seo.mjs`, after `build`) checks six things over `dist/` and
-  is **proven red eight ways** in `docs/evidence/S7.1-seo-gate-red.txt`. Battery at head: **0
-  errors, 93 tests, build 27 pages / 478 annotations on 21, evidence green, anonymity exit 0,
-  seo green.** Evidence: `docs/evidence/S7.1-seo-and-social.md` + `-battery.txt` + `-gate-red.txt`.
-next: **S7.2**, and it is **measured already — fix, do not re-measure** (full numbers in the
-  ledger note and on the card's amendment). Landmarks, `:focus-visible` and reduced motion are
-  **already done**. Three things are not: (a) the theme toggle shifts layout **twice** — on load
-  `Theme`(62px)→`Dark`(50px) drags the nav 12px, CLS 0.00007, and on flip `Dark`→`Light` is 3px;
-  fix by stacking every label the button can show in **one CSS grid cell** (extras
-  `visibility:hidden` + `aria-hidden`) so the browser sizes the box to the widest — **no JS
-  change, so no CSP hash change**. (b) Lighthouse desktop: a11y **96**, BP/SEO/agentic 100, one
-  failure — `color-contrast`, which is **bug #2 in the wild**: `--overlay` is **3.59:1** in mocha
-  on the nav links, the theme label, **`p.lead` on every concept page**, `.aka-label`,
-  `.aka-name`. The role is right (the Face holds overlay to the 3:1 *UI/large-text* bar and
-  `contrast.test.mjs` asserts that); the **usage** is wrong. Suggested: a derived quiet role,
-  `color-mix(in srgb, var(--text), var(--base))` — srgb mix is a plain per-channel lerp, so
-  `contrast.test.mjs` can recompute it and hold it to 4.5:1 — and keep `--overlay` for borders,
-  chrome and text ≥24px. (c) **no skip link on any page.**
-open: **new bug #6** — CI calls the fleet's shared `site-ci.yml`, which runs `astro check`, the
-  build and the three generated-file diffs and **nothing else**: `evidence`, `anonymity`, `seo`
-  and the 93 `node --test` cases are all local-only. A gate that runs on one machine rots. Fix in
-  a **second workflow in this repo**, not in the shared one — S7.3. Bugs #2, #3, #4, #5 still
-  open (#2 is S7.2's to close). SPEC Part V article 3's `26 costed`/`15.5M` are stale (now
-  **30**/**16.8M**); article 4's `19 of 34`/`10 of 11` and the S5.4 git ground truth are
-  unpublished on purpose. Article 1's `$52.06`/`23.2%` correction, concept 2's advisor split and
-  concept 8's "push-only" still stand.
+last: **session 17** delivered **S7.2**. QA of session 16: **no findings** — battery re-run
+  green from the tree as inherited, before any edit (0 errors, 93 tests, build 27 pages / 478
+  annotations on 21, evidence, anonymity and the new `seo` gate all exit 0). Evidence:
+  `docs/evidence/S7.2-accessibility-and-performance.md` + `-battery.txt` + `-battery-inherited.txt`.
+now on disk: **Lighthouse desktop is 100/100/100/100 in BOTH schemes** (was 96 a11y in each),
+  and a fresh load plus four theme flips reports **zero layout-shift entries** — not a small
+  number, none. `color-contrast` took **three passes** because each fix moved the complaint:
+  `--overlay` at 3.36:1, then `--pending` at 2.46:1 once that cleared, then `--blue` 4.34:1 and
+  `--accent` 4.45:1 in **latte only**. One mistake three times — a role the Face holds to *its*
+  bar, spent on a sentence. **No Face role was changed.** `tokens.css` now derives three tokens
+  that are not roles: `--muted` (text→base, **60% mocha / 85% latte** — mocha's text has 11.34:1
+  of headroom, latte's 7.06:1, so one number cannot serve both), `--link` and `--current`
+  (blue/accent →text at 80%, one number, one rule, because mixing *toward* text works in both).
+  **Mantle is the binding surface, not base** — latte's mantle is darker than its base, and the
+  top bar and evidence strip are both mantle; 4.56:1 is the tightest figure on the site.
+  `contrast.test.mjs` recomputes every mix (srgb is a per-channel lerp) and holds it to 4.5:1 on
+  base *and* mantle; `tokens.test.mjs` fails the build on `color: var(--overlay|--pending|--skipped)`
+  outside the 24px cards. Also: a skip link on all 22 pages, `id="main"` on every `<main>`, and
+  **`npm run a11y`** (`scripts/a11y.mjs`, after `build`) for the half that needs no browser.
+next: **S7.3** — regenerate the three generated files, README, CI green. **Bug #6 is its
+  spine:** CI calls the fleet's shared `site-ci.yml`, which runs only `astro check`, the build
+  and the three generated-file diffs — `evidence`, `anonymity`, `seo`, `a11y` and the 103
+  `node --test` cases are **local-only**. Fix in a **second workflow in this repo**, never in
+  the shared one.
+open: **new bug #7** — the review widget's panels sit on `--surface`, where `--muted` is
+  **3.60:1** in latte. Owner-only chrome, on no public page, but short of the bar. Bug #2 is
+  **closed** by this session. #3, #4, #5, #6 still open. SPEC Part V article 3's `26 costed`/
+  `15.5M` are stale (now **30**/**16.8M**); article 4's `19 of 34`/`10 of 11` and the S5.4 git
+  ground truth are unpublished on purpose. Article 1's `$52.06`/`23.2%` correction, concept 2's
+  advisor split and concept 8's "push-only" still stand.
+tooling-new: **an Astro comment is a JSX expression** and that bites twice. It may not sit
+  between `</head>` and `<body>` (ts(2657), "JSX expressions must have one parent element"), and
+  it **may not contain an angle-bracketed tag** — the checker reads the tag as markup, ends the
+  comment there, and reports the rest of the file as broken expressions with line numbers inside
+  prose. The build stays green throughout; only `astro check` sees it. Worse, **one ts(2657)
+  suppresses every other diagnostic in the file**, so fixing the first error made twenty-two
+  more appear that had been there all along. Rule: prose about elements, and any example
+  containing a tag, goes in the **frontmatter fence**. And **Astro ships `<!-- -->` to the
+  browser** — five of them in `Base.astro` were **2,632 bytes on every page, 14.6% of one**; as
+  `{/* */}` they cost nothing and `/concepts/` went 18,038 → 15,406 bytes. Any dist-scanning gate
+  must strip comments before parsing, which `a11y.mjs` learned by reporting its own author's
+  prose as a second `<main>` on all 21 pages.
 tooling: `npx` **cannot be launched under `conductor bg`** here (it resolves npx-cli.js against
   the repo) — use `node node_modules/astro/bin/astro.mjs preview --port 4321`. `conductor bg
   start` takes `--purpose`, not `--name`, and `bg stop` takes the **numeric pid**. A `cmd /c "a

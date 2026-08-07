@@ -92,13 +92,13 @@ li {
 }
 
 a {
-  color: var(--blue);
+  color: var(--link);
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
 }
 
 a:hover {
-  color: var(--accent);
+  color: var(--current);
 }
 
 strong {

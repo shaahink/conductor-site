@@ -97,7 +97,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
   }
 
   .wordmark:hover {
-    color: var(--accent);
+    color: var(--current);
   }
 
   nav ul {
@@ -119,7 +119,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
   /* One accent, used where it means something: it marks the current thing,
      which is the same job it does in the Face's own sidebar. */
   nav a[aria-current="page"] {
-    color: var(--accent);
+    color: var(--current);
     font-weight: var(--weight-medium);
   }
 

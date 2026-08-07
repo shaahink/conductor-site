@@ -1,29 +1,27 @@
-fix(a11y): the quiet ladder is not a text colour either, and the button holds still
+fix(a11y): the last two are the Face's own hues, and latte is where they fail
 
-Two corrections to the commit before this one, both found by measuring rather
-than by reading.
+Third pass at the same mistake, and the last one. Lighthouse in latte still
+had `color-contrast`: `--blue` at 4.34:1 on the footer's credit and
+`--accent` at 4.45:1 on the current section in the top bar, both link text at
+18px, which is not large text and does not get the 3:1 bar. Near misses, and
+therefore misses.
 
-The sizers covered every label except the one the markup ships, which is the
-tidy-looking version and does nothing: the first thing the script does is
-overwrite the live label, and with `Theme` gone from the document the track
-shrinks to `Dark` — the 12px shift, still there. Every candidate is a sizer
-now, the live label included, and the children stretch instead of centring so
-that nothing inside the button has a box that depends on the text in it.
-Measured: the button is 61.516px and the nav's right edge 1170.484px for all
-three labels, and a fresh load followed by four flips reports zero
-layout-shift entries. It was 0.00007 with one shift on load.
+Same answer as `--muted`, and cheaper: `--link` and `--current`, the blue and
+the accent mixed one fifth of the way toward `--text`. That lands 4.89:1 and
+5.34:1 in latte and leaves mocha above 8:1, and they are still recognisably
+the blue and the accent. One percentage rather than two, and one rule rather
+than one per scheme — mixing toward text works in both directions, where
+`--muted` mixes toward base and so needs a block each.
 
-And Lighthouse, re-run, moved its complaint rather than dropping it:
-`--pending` at 2.46:1 on the "also known as" line and on the harvest
-timestamp under the evidence strip. Same shape as `--overlay`, one rung
-further down — the Face holds the quiet ladder to 1.5:1 because a checkpoint
-nobody has reached is a row you skim past, and this site had it carrying the
-denominator under a rate. `--skipped` is 4.44:1, which is a near miss and
-therefore a miss. So the rule is the whole ladder, not one role: none of
-`--overlay`, `--pending`, `--skipped` may be a text colour outside the 24px
-cards, and tokens.test.mjs now says so for all three.
+Lighthouse desktop is now 100 for accessibility, best practices, SEO and
+agentic browsing in both schemes: 56 audits, none failing, where each scheme
+was 96 with one.
 
-The page loses a layer for it — four greys for reading text become two — and
-that is the right trade. A layer nobody can read is not a layer, and a second
-muted token four hundredths of a ratio above the first would be a distinction
-only a spreadsheet could see.
+docs/evidence/S7.2-accessibility-and-performance.md is the measurement — both
+Lighthouse passes, the three contrast rounds with the ratio that failed each
+one, the layout-shift trace that reports zero entries across a load and four
+flips, and the two things the numbers show that reading would not: that
+`--muted` needs a percentage per scheme because latte's text has 7.06:1 of
+headroom where mocha's has 11.34:1, and that mantle rather than base is the
+binding surface, because latte's mantle is darker than its base and the top
+bar and evidence strip both sit on it.
