@@ -1,10 +1,10 @@
 ﻿# Conductor — conductor-site - a field guide to agentic engineering run report
 
-_Updated 2026-08-07 01:36 UTC · branch `main` · HEAD `1c56db4`_
+_Updated 2026-08-07 02:04 UTC · branch `main` · HEAD `ebde9fc`_
 
 **Status:** Idle
-**Stage:** S5 —  · attempts used 0 · working ▸ S5.3
-**Checkpoints:** 18/28 done · **Sessions run:** 11 · **Cost:** $75.7663 (agent $75.7549 + gates $0.0114) · **Tokens:** 1,502,500 in / 614,289 out
+**Stage:** S5 —  · attempts used 0 · working ▸ S5.4
+**Checkpoints:** 19/28 done · **Sessions run:** 12 · **Cost:** $86.2030 (agent $86.1883 + gates $0.0147) · **Tokens:** 1,692,706 in / 698,268 out
 
 ## Stage progress
 
@@ -14,7 +14,7 @@ _Updated 2026-08-07 01:36 UTC · branch `main` · HEAD `1c56db4`_
 | S2 |  | ██████████ 4/4 | done |
 | S3 |  | ██████████ 4/4 | done |
 | S4 |  | ██████████ 4/4 | done |
-| S5 |  | █████░░░░░ 2/4 | **← active** |
+| S5 |  | ████████░░ 3/4 | **← active** |
 | S6 |  | ░░░░░░░░░░ 0/4 | todo |
 | S7 |  | ░░░░░░░░░░ 0/4 | todo |
 
@@ -62,13 +62,13 @@ _Updated 2026-08-07 01:36 UTC · branch `main` · HEAD `1c56db4`_
 
 </details>
 
-<details><summary>S5 —  (2/4)</summary>
+<details><summary>S5 —  (3/4)</summary>
 
 | # | Title | Status | Commit |
 |---|---|---|---|
-| S5.1 | "What an autonomous run actually costs" — the corpus P&L including the waste, every figure keyed to `corpus.json` | ✅ DONE | - |
-| S5.2 | "Never believe the agent" — verification as a separate program, built around the 29 red gates rather than the 648 green ones | ✅ DONE | - |
-| S5.3 | "The nudge that sat below the median" — the measured-budget method, written so a reader can run it on their own store | ⬜ TODO | - |
+| S5.1 | "What an autonomous run actually costs" — the corpus P&L including the waste, every figure keyed to `corpus.json` | ✅ DONE | [`1ef5db5`](https://github.com/shaahink/conductor-site/commit/1ef5db5) |
+| S5.2 | "Never believe the agent" — verification as a separate program, built around the 29 red gates rather than the 648 green ones | ✅ DONE | [`1ef5db5`](https://github.com/shaahink/conductor-site/commit/1ef5db5) |
+| S5.3 | "The nudge that sat below the median" — the measured-budget method, written so a reader can run it on their own store | ✅ DONE | - |
 | S5.4 | "The ledger that lied" — telemetry you cannot trust, and what it took to fix it | ⬜ TODO | - |
 
 </details>
@@ -110,6 +110,7 @@ _Updated 2026-08-07 01:36 UTC · branch `main` · HEAD `1c56db4`_
 | 9 | S4 | Deliver | 1 | 08-07 00:22 | 0:24 | Advanced | S4.1 S4.2 | 4 | site-fast:OK · generated:OK · evidence:OK | $10.4796 | $0.0015 | 208,409/76,148 |
 | 10 | S4 | Deliver | 1 | 08-07 00:46 | 0:22 | Advanced | S4.3 S4.4 | 4 | site-fast:OK · generated:OK · evidence:OK | $8.1825 | $0.0015 | 186,898/77,980 |
 | 11 | S5 | Deliver | 1 | 08-07 01:09 | 0:25 | Advanced | S5.1 S5.2 | 2 | site-fast:OK · generated:OK · evidence:OK | $10.3443 | $0.0024 | 180,290/76,483 |
+| 12 | S5 | Deliver | 1 | 08-07 01:36 | 0:27 | Advanced | S5.3 | 3 | site-fast:OK · generated:OK · evidence:OK | $10.4334 | $0.0033 | 190,206/83,979 |
 
 ## Money
 
@@ -117,25 +118,21 @@ _What this run has cost, from its own `costs` rows. Same numbers as `conductor m
 
 | scope | sessions | tokens | cache reads | cost | checkpoints | tok/ckpt | $/ckpt |
 |---|---|---|---|---|---|---|---|
-| **run total** | 10 | 79.5M | 97.7% | $65.42 | 14 | 5.68M | $4.67 |
+| **run total** | 11 | 93M | 97.7% | $75.77 | 16 | 5.81M | $4.74 |
 | stage S1 | 2 | 19.7M | 98.0% | $15.40 | 4 | 4.92M | $3.85 |
 | stage S2 | 2 | 20.4M | 97.7% | $17.04 | 4 | 5.09M | $4.26 |
 | stage S3 | 4 | 17.1M | 97.4% | $14.31 | 2 | 8.55M | $7.15 |
 | stage S4 | 2 | 22.4M | 97.5% | $18.67 | 4 | 5.59M | $4.67 |
-| 2026-08 | 10 | 79.5M | 97.7% | $65.42 | 14 | 5.68M | $4.67 |
+| stage S5 | 1 | 13.5M | 98.1% | $10.35 | 2 | 6.75M | $5.17 |
+| 2026-08 | 11 | 93M | 97.7% | $75.77 | 16 | 5.81M | $4.74 |
 
-_Where the money goes: agent $65.41 (100%) · gate $0.01 (0%) · blended $0.82/M tokens._
+_Where the money goes: agent $75.75 (100%) · gate $0.01 (0%) · blended $0.81/M tokens._
 
 ## Timeline
 
 _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 
 ```
-08-06 22:34:46  ▪ gate site-fast pass [session]  (8.3s)
-08-06 22:34:46  ▪ gate generated pass [session]  (1.8s)
-08-06 22:34:48  • session #2 S1 → Advanced · done S1.4 · 5 commit(s)  (16m30s)
-08-06 22:34:48  ▸ stage S2 entered
-08-06 22:34:48  • session #3 S2 Deliver started (attempt 1/4)
 08-06 22:57:06  ▪ gate site-fast pass [session]  (11.7s)
 08-06 22:57:06  ▪ gate generated pass [session]  (2.1s)
 08-06 22:57:09  • session #3 S2 → Advanced · done S2.1,S2.2 · 4 commit(s)  (22m20s)
@@ -171,6 +168,11 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 08-07 02:36:03  ▪ gate site-fast pass [session]  (12.1s)
 08-07 02:36:03  ▪ gate generated pass [session]  (2.1s)
 08-07 02:36:03  ▪ gate evidence pass [session]  (10.0s)
+08-07 02:36:07  • session #11 S5 → Advanced · done S5.1,S5.2 · 2 commit(s)  (26m16s)
+08-07 02:36:07  • session #12 S5 Deliver started (attempt 1/4)
+08-07 03:04:03  ▪ gate site-fast pass [session]  (11.6s)
+08-07 03:04:03  ▪ gate generated pass [session]  (2.3s)
+08-07 03:04:03  ▪ gate evidence pass [session]  (19.2s)
 ```
 
 ## Health
@@ -178,7 +180,7 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 _Execution-health signals, folded from the event log (`.conductor/events.jsonl`)._
 
 ```
-sessions 11 · retries 0 (0 %) · overall Ok
+sessions 12 · retries 0 (0 %) · overall Ok
 ✓ no health concerns detected
 ```
 
@@ -194,10 +196,6 @@ vs upstream: up to date
 
 ### Commits by session
 
-- **s1 (S1 Deliver)** — 3 commit(s):
-  - [`14ec19f`](https://github.com/shaahink/conductor-site/commit/14ec19f) feat(face): the layout shell, and a theme toggle that beats first paint
-  - [`5377737`](https://github.com/shaahink/conductor-site/commit/5377737) feat(face): two faces, a named type scale, and a test that spends neither
-  - [`f11fe55`](https://github.com/shaahink/conductor-site/commit/f11fe55) feat(face): the sixteen colour roles, both schemes, with the Face's own bar
 - **s2 (S1 Deliver)** — 5 commit(s):
   - [`fcdd90e`](https://github.com/shaahink/conductor-site/commit/fcdd90e) docs(tracker): hand off with S1 complete
   - [`cb40575`](https://github.com/shaahink/conductor-site/commit/cb40575) fix(face): the footer says whose site this is, not "New Site"
@@ -233,6 +231,10 @@ vs upstream: up to date
 - **s11 (S5 Deliver)** — 2 commit(s):
   - [`1c56db4`](https://github.com/shaahink/conductor-site/commit/1c56db4) feat(articles): the twenty-nine that went red, and the four that never ran
   - [`1ef5db5`](https://github.com/shaahink/conductor-site/commit/1ef5db5) feat(articles): the bill, including the money that bought nothing
+- **s12 (S5 Deliver)** — 3 commit(s):
+  - [`ebde9fc`](https://github.com/shaahink/conductor-site/commit/ebde9fc) docs(tracker): S5.3 landed, handoff for S5.4
+  - [`c33d05b`](https://github.com/shaahink/conductor-site/commit/c33d05b) feat(articles): the nudge that sat below the median
+  - [`3896cb8`](https://github.com/shaahink/conductor-site/commit/3896cb8) feat(evidence): a window namespace, so a cap that moved can be compared
 
 ## Last gate run
 
@@ -240,48 +242,54 @@ site-fast:OK · generated:OK · evidence:OK
 
 ## Last session result
 
-> **Two S5 articles landed with fresh evidence; harvest now sources money figures from the verb**
-> - **S5.1** — "What an autonomous run actually costs": 1,629 words, zero figures in prose, 15 evidence keys. SPEC's hand-derived waste figures re-verified against `conductor money`: the dearest stage of `the-fleet-backlog` is **$52.06 / 23.2% …
-> - **S5.2** — "Never believe the agent": 1,394 words, 11 evidence keys, argued from the 29 red gates. New measurement nobody publishes: **four of the 29 red gates never ran** — exit status `0xC0000142`, 21–178 ms against neighbours of 8–673 s …
-> - **QA of session 10: no findings.** Battery re-run green from a clean tree before the first edit; the "18 pages" in its handoff is the dist HTML count, the gate's "16 pages" is pages carrying annotations — both true.
+> **S5.3 landed — a window evidence namespace and the measured-budget article**
+> - QA of session 11: no findings. Battery re-run green before any edit (0 errors, 49 tests, 306 annotations on 17 pages, evidence gate green over 13 entries); both prior articles on disk matched their claimed shape.
+> - Built a third evidence namespace, `windows`, off `conductor budget <run> --json` — 22 windows, 8 under a measured ceiling, keyed `<run-label>-capped-<N>m`. A window is deliberately not required to carry every key (an uncapped one has no nud…
+> - Article 3 written figure-free, 1,818 words, 14 evidence keys, six sections. Its number nobody else publishes: of 50 sessions killed at a ceiling, 50 had already been nudged and none stopped. Its method finding: a cap censors its own evidenc…
 >
-> artefacts: `src/content/articles/what-a-run-costs.yaml`, `src/content/articles/never-believe-the-agent.yaml`, `scripts/harvest.mjs` (readMoney, source-based guard, four new gate counts), `test/harvest.test.mjs` (+4 tests), `src/data/corpus.json`; commits `1ef5db5`, `1c56db4`
+> artefacts: `src/content/articles/the-nudge-below-the-median.yaml`, `scripts/harvest.mjs` (readBudget/windowEntries/ceiling block), `src/lib/evidence.ts`, `src/content/schema.ts`, `test/harvest.test.mjs`, `src/data/corpus.json`; commits `3896cb8`, `c33d05b`, `ebde9fc`.
 >
-> evidence: `docs/evidence/S5.1-what-a-run-costs.md`, `docs/evidence/S5.2-never-believe-the-agent.md` — 0 errors, 49 tests, build exit 0 with 306 annotations on 17 pages, evidence gate current over 13 cited entries; typed-figure gate and the new source gate each proved red by mutation and restored.
+> evidence: `docs/evidence/S5.3-the-nudge-below-the-median.md` — astro check 0 errors, 57 tests pass, build 20 pages / 341 annotations resolve, evidence gate green over 14 cited entries, rendered strip 7 groups / 46 cells.
 >
-> gaps: S5.3 and S5.4 remain. S5.3 needs window-level budget figures (`conductor budget <run> --json` → `windows[]`), which likely means a third namespace in `corpus.json` and a branch in `src/lib/evidence.ts`; S5.4's measurements are already banked in the handoff and the ledger — its git ground truth sits in a private repo and must not be published as a ratio.
+> gaps: S5.4 not started but fully measured — every figure is in the ledger note and the handoff, including the cause and fix at engine `1632b9f`; its git ground truth is in a private repo and must be described in words with no ratio published. SPEC Part V article 3's `26 costed` / `15.5M` are stale (now 30 / 16.8M) and corrected in the evidence file rather than on the page.
 
 ## Tracker handoff
 
 ```
-last: **session 11** delivered **S5.1** (1ef5db5) and **S5.2**. QA of session 10: **no findings**
-  — battery re-run green from a clean tree before any edit (0 errors, 45 tests, build exit 0, 255
-  annotations, evidence gate green over 12 entries, all 74 citations resolve at `1632b9f`).
-now on disk: articles 1 and 2, both figure-free prose (1,629 and 1,394 words) with every quantity
-  in evidence keys. Battery: **0 errors, 49 tests, 306 annotations on 17 pages, evidence gate
-  green over 13 cited entries.** The harvest now asks **`conductor money --run <id> --json` once
-  per published run** (`readMoney`, +9.5s) — that is where `tokensPerCheckpoint`,
-  `costPerMillionTokens`, `cacheReadShare` and the four `dearestStage*` keys come from.
-  `refuseBudgetShaped` now tests a figure's **source**, not its name: budget-shaped keys ship
-  only when `conductor money`/`conductor budget` answered them. Four new tests cover that.
-next: **S5.3** (the measured-budget article) then **S5.4**. S5.3 needs window-level figures —
-  `conductor budget <run> --json` gives `windows[]` with cap, nudge, floor, medianCloser,
-  wrapUp, rolloverRate, tokensPerCheckpoint per window, and run-level `capPayoff`. Per-run keys
-  must be uniform across all 18 runs, so a window namespace is probably needed in `corpus.json`
-  plus a branch in `src/lib/evidence.ts`. **S5.4 is already measured, do not re-derive:** of
-  `the-long-build`'s 34 rolled-over sessions, **0 recorded a commit, 34 recorded no gate summary,
-  34 recorded no claim, 32 of 34 no result summary — but all 34 wrote a digest.** The git ground
-  truth that contradicts it lives in a private repo, so it cannot be gate-verified: publish the
-  artifact and describe the git check in words, printing no ratio for it.
-open: **SPEC Part V article 1's `$51.98` / `23%` are now re-measured: `$52.06` / `23.2%`, 10
-  sessions, 4 checkpoints** (`conductor money`, the-fleet-backlog's dearest stage). Concept 2's
-  advisor split and concept 8's "push-only" corrections still stand. Bug #3 and bug #2 still
-  open. **S7.1 must re-confirm `site`.**
+last: **session 12** delivered **S5.3** — machinery in `3896cb8`, article in `c33d05b`. QA of
+  session 11: **no findings** — battery re-run green before any edit (0 errors, 45→49 tests, build
+  exit 0, 306 annotations on 17 pages, evidence green over 13 entries); both articles on disk
+  match their claimed shape.
+now on disk: articles 1–3, all figure-free. Battery at head: **0 errors, 57 tests, build 20 pages
+  / 341 annotations, evidence gate green over 14 cited entries.** New: a **third evidence
+  namespace, `windows`** — `conductor budget <run> --json` once per published run, 22 windows, 8
+  under a measured ceiling. Content names them in **`evidence.windows`**. Window keys are
+  `<run-label>-uncapped` / `<run-label>-capped-<N>m`. **A window need not carry every key** (an
+  uncapped one has no nudge/headroom/wrap-up); the build fails only when *no named window* has a
+  cited key. New corpus keys: `cappedWindows` 8/22, `sessionsUnderACeiling` 168, `nudgesDelivered`
+  122, `nudgesHonoured` 72/122, `killedAtACeiling` 50, `killedAfterANudge` **50/50**.
+next: **S5.4** ("The ledger that lied"), the last of stage S5. **It is fully measured — the ledger
+  note has every figure, do not re-derive.** Corpus-wide: 53 rolled-over sessions, **0** with a
+  commit, **0** with a gate summary, **0** with a claim, 4 with a result summary, **52 with a
+  digest**; against 287 other sessions with 246 commits, 264 gate summaries, 203 claims, 273
+  result summaries and only **139** digests. That inversion is the article. Cause and fix are both
+  in the engine at `1632b9f`: the rollover branch in `SessionRunner.cs` (~424) now records the
+  facts before the resume hint, via `RecordRolloverFacts` in `VerdictEngine.Claims.cs`. The corpus
+  predates that fix. Needs ~7 new corpus keys off the `sessions` table (`commit_count`,
+  `gate_summary`, `newly_done`, `result_summary`, `digest`) — source `STORE`, none budget-shaped.
+open: git ground truth for S5.4 lives in a private repo — **describe it in words, publish no ratio
+  for it**. SPEC Part V article 3's `26 costed`/`15.5M` are stale (now **30**/**16.8M**) and its
+  `25–54M`/`12.8–15.3M` were stage-level, not windows — corrections are in
+  `docs/evidence/S5.3-the-nudge-below-the-median.md`. Article 1's `$52.06`/`23.2%` correction,
+  concept 2's advisor split and concept 8's "push-only" still stand. Bugs #2 and #3 still open.
+  **S7.1 must re-confirm `site`.**
 tooling: prose refuses any number of two digits or more, and a currency/percent/decimal/ratio
-  too — let the strip carry every quantity. **Never round-trip a content file through PowerShell
-  `Get-Content`/`Set-Content`**: it mangled every em dash to mojibake and added a BOM this
-  session (repaired with node). Mutate with node, restore with `npm run harvest` or git. Commit
-  messages to a file, then `-F`. Battery is ~35s now, still fine in the foreground. **A failed
-  Astro build exits 0xC0000409, not 1.** `conductor history --json` emits a UTF-8 BOM on Windows.
-  **One run.db holds several runs** — filter by `run_id`, and `conductor money` needs `--run`.
+  too — so a `file.cs:411` citation **cannot go in article prose**, and articles have no
+  `citations` field; name it in words. **Never round-trip a content file through PowerShell
+  `Get-Content`/`Set-Content`** (mojibake + BOM); mutate with node. `npm run content` rewraps
+  YAML, so run it before quoting your own lines back. Commit messages to a file, then `-F`.
+  Battery is ~60s now (the harvest makes two verb calls per run). **A failed Astro build exits
+  0xC0000409, not 1.** `conductor history --json` emits a UTF-8 BOM on Windows. **One run.db holds
+  several runs** — filter by `run_id`; `conductor money` needs `--run`, `conductor budget` takes
+  the run id positionally.
 ```
