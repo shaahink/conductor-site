@@ -43,9 +43,10 @@
 
 import { DatabaseSync } from "node:sqlite";
 import { execSync } from "node:child_process";
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { readFileSync, readdirSync, writeFileSync, mkdirSync } from "node:fs";
+import { dirname, join, posix } from "node:path";
 import { fileURLToPath } from "node:url";
+import { parse as parseYaml } from "yaml";
 
 const here = dirname(fileURLToPath(import.meta.url));
 export const repoRoot = join(here, "..");
@@ -491,6 +492,103 @@ function refuseBudgetShaped(corpus, runs) {
 }
 
 /* ---------------------------------------------------------------------------
+   The other half of the gate: what the pages actually cite
+   ---------------------------------------------------------------------------
+   Staleness is only one of the two ways this site's first litmus test fails. A
+   corpus that matches the store exactly is still wrong for the page if the page
+   names a key it does not have — and that half cannot be checked by looking at
+   the corpus alone, because the claim lives in the content.
+
+   `src/lib/evidence.ts` already refuses one at build time, and this is
+   deliberately a second implementation of the same rule rather than a shared
+   one. It has to be: that file is TypeScript imported by Astro, this runs as
+   plain Node inside a gate, and the gate must be able to say "red" without
+   Astro's build succeeding first. The build failure it duplicates exits with a
+   crash code rather than 1, which is exactly why the gate does not simply
+   wrap `npm run build`.
+   --------------------------------------------------------------------------- */
+
+const contentDir = join(repoRoot, "src", "content");
+
+/** Every `evidence:` block in the content, with the file that wrote it. */
+export function citedEvidence(dir = contentDir) {
+  const cited = [];
+  let looksLikeEvidence = 0;
+
+  for (const item of readdirSync(dir, { withFileTypes: true, recursive: true })) {
+    if (!item.isFile() || !item.name.endsWith(".yaml")) continue;
+    const full = join(item.parentPath, item.name);
+    const text = readFileSync(full, "utf8");
+    if (/^evidence:/m.test(text)) looksLikeEvidence += 1;
+
+    const data = parseYaml(text);
+    if (!data?.evidence) continue;
+    cited.push({
+      where: posix.join(...full.slice(contentDir.length + 1).split(/[\\/]/)),
+      runs: data.evidence.runs ?? [],
+      figures: data.evidence.figures ?? []
+    });
+  }
+
+  /* The failure mode of any scanner is under-reporting, and it is silent: a
+     file whose evidence block the parser did not see produces a gate that says
+     green about a page it never looked at. So the crude grep and the real parse
+     have to agree on how many files are in play. */
+  if (cited.length !== looksLikeEvidence) {
+    throw new Error(
+      `The evidence scan parsed ${cited.length} entries but ${looksLikeEvidence} content files ` +
+        `have an "evidence:" line. A file the scan cannot see is a page this gate would pass ` +
+        `without checking.`
+    );
+  }
+
+  return cited.sort((a, b) => a.where.localeCompare(b.where));
+}
+
+/** Each cited key that has nothing behind it, said the way a writer can act on.
+    ---------------------------------------------------------------------------
+    Every problem is collected rather than thrown at the first one. A gate that
+    reports one missing key, gets fixed, and then reports the next is a gate
+    that costs a full run per mistake. */
+export function unresolvedCitations(payload, cited = citedEvidence()) {
+  const corpusKeys = new Set(Object.keys(payload.corpus));
+  const runKeys = new Set(
+    Object.values(payload.runs).flatMap((run) => Object.keys(run.figures))
+  );
+  const published = new Set(Object.keys(payload.runs));
+  const problems = [];
+
+  for (const entry of cited) {
+    for (const label of entry.runs) {
+      if (!published.has(label)) {
+        problems.push(
+          `${entry.where}: evidence.runs names "${label}", which the corpus does not publish. ` +
+            `Either anonymise.json has no entry for that run — in which case it is excluded on ` +
+            `purpose and cannot be cited — or the label is a typo.`
+        );
+      }
+    }
+    for (const key of entry.figures) {
+      if (corpusKeys.has(key)) continue;
+      if (runKeys.has(key)) {
+        if (entry.runs.length === 0) {
+          problems.push(
+            `${entry.where}: evidence.figures names "${key}", a per-run figure, but the page ` +
+              `names no runs.`
+          );
+        }
+        continue;
+      }
+      problems.push(
+        `${entry.where}: evidence.figures names "${key}", which is not in the corpus. A key with ` +
+          `no figure behind it is a claim with no evidence behind it.`
+      );
+    }
+  }
+  return problems;
+}
+
+/* ---------------------------------------------------------------------------
    Running it
    --------------------------------------------------------------------------- */
 
@@ -558,6 +656,9 @@ function main() {
   const { payload, excluded } = harvest();
   const corpus = payload.corpus;
 
+  /* The gate, and it goes red two ways. Both are run before either is reported,
+     because a session that fixes the staleness and then discovers the missing
+     key on the next run has paid twice for one gate. */
   if (check) {
     let existing;
     try {
@@ -568,16 +669,36 @@ function main() {
       );
       process.exit(1);
     }
-    if (payloadOf(existing) !== payloadOf(payload)) {
+
+    const stale = payloadOf(existing) !== payloadOf(payload);
+
+    /* Cited keys are checked against what is COMMITTED, not against what was
+       just recomputed. The committed file is what the site renders from, so
+       when the two disagree it is the committed one whose holes a reader would
+       see — and reporting against the fresh corpus would hide a key that the
+       stale file is missing behind the staleness message. */
+    const unresolved = unresolvedCitations(stale ? existing : payload);
+
+    if (stale) {
       console.error(
-        "evidence: src/data/corpus.json is stale — the store no longer says what the committed " +
+        "evidence: src/data/corpus.json is STALE — the store no longer says what the committed " +
           "corpus says. Run `npm run harvest` and commit the result."
       );
-      process.exit(1);
+      for (const [key, fresh] of Object.entries(payload.corpus)) {
+        const was = existing.corpus?.[key];
+        if (!was || was.value !== fresh.value) {
+          console.error(`  ${key}: committed ${was ? was.display : "(absent)"} → store ${fresh.display}`);
+        }
+      }
     }
+    for (const problem of unresolved) console.error(`evidence: ${problem}`);
+
+    if (stale || unresolved.length > 0) process.exit(1);
+
     console.log(
       `evidence: corpus.json is current — ${corpus.totalRuns.display} runs, ` +
-        `${corpus.totalSessions.display} sessions, ${corpus.totalCostUsd.display}.`
+        `${corpus.totalSessions.display} sessions, ${corpus.totalCostUsd.display}; and every ` +
+        `key cited by ${citedEvidence().length} content entries resolves.`
     );
     return;
   }

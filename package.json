@@ -9,6 +9,7 @@
     "preview": "astro preview",
     "check": "astro check && node --test \"test/**/*.test.mjs\"",
     "harvest": "node scripts/harvest.mjs",
+    "evidence": "node scripts/harvest.mjs --check",
     "test": "node --test \"test/**/*.test.mjs\"",
     "headers": "sitekit-headers",
     "content": "sitekit-normalize",
@@ -22,6 +23,7 @@
   "devDependencies": {
     "@astrojs/check": "0.9.10",
     "@types/node": "22.20.1",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "yaml": "2.9.0"
   }
 }

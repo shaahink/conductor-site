@@ -76,9 +76,8 @@
     },
     "df9c4af8": {
       "label": "the-accounting-run",
-      "scenario": "The engine taught to account for itself - what it did, what it cost - and paused, not finished, at 25 of 32",
-      "repoKey": "orchestrator",
-      "disposition": "paused"
+      "scenario": "The engine taught to account for itself - what it did and what it cost - and closed at 25 of 32, seven checkpoints short",
+      "repoKey": "orchestrator"
     },
     "7195e538": {
       "label": "the-third-feature",

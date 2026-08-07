@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-08-06T22:33:26.818Z",
+  "generatedAtUtc": "2026-08-07T00:17:14.345Z",
   "corpus": {
     "totalRuns": {
       "value": 18,
@@ -1524,9 +1524,9 @@
     },
     "the-accounting-run": {
       "label": "the-accounting-run",
-      "scenario": "The engine taught to account for itself - what it did, what it cost - and paused, not finished, at 25 of 32",
+      "scenario": "The engine taught to account for itself - what it did and what it cost - and closed at 25 of 32, seven checkpoints short",
       "repoKey": "orchestrator",
-      "status": "paused",
+      "status": "completed",
       "startedUtc": "2026-08-04T23:27:35.3457908+00:00",
       "figures": {
         "sessions": {
