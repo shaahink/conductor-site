@@ -1,8 +1,8 @@
 ﻿# Conductor — conductor-site - a field guide to agentic engineering run report
 
-_Updated 2026-08-07 04:33 UTC · branch `main` · HEAD `dda0f8f`_
+_Updated 2026-08-07 04:33 UTC · branch `main` · HEAD `1c7e352`_
 
-**Status:** Idle
+**Status:** NeedsHuman — agent asked for a human in the tracker handoff (HUMAN: line) — resolve, then run `conductor resume` [0s ago, 04:33:29Z]
 **Stage:** S7 —  · attempts used 0 · working ▸ S7.4
 **Checkpoints:** 27/28 done · **Sessions run:** 18 · **Cost:** $144.8539 (agent $144.8251 + gates $0.0288) · **Tokens:** 2,672,048 in / 1,135,466 out
 
@@ -90,7 +90,7 @@ _Updated 2026-08-07 04:33 UTC · branch `main` · HEAD `dda0f8f`_
 |---|---|---|---|
 | S7.1 | SEO and social: canonicals, sitemap, robots, OG images per section, `astro.config` `site` pointing at the real production URL | ✅ DONE | [`f7f7d6f`](https://github.com/shaahink/conductor-site/commit/f7f7d6f) |
 | S7.2 | Accessibility and performance pass — keyboard reachable, landmarks, focus visible, reduced motion honoured, both themes legible, no layout shift on theme flip | ✅ DONE | [`9309485`](https://github.com/shaahink/conductor-site/commit/9309485) |
-| S7.3 | Generated files regenerated and clean (`npm run headers`, `npm run content`, `npm run editor`), README written, and the repo's CI green on `main` | ✅ DONE | - |
+| S7.3 | Generated files regenerated and clean (`npm run headers`, `npm run content`, `npm run editor`), README written, and the repo's CI green on `main` | ✅ DONE | [`d95f457`](https://github.com/shaahink/conductor-site/commit/d95f457) |
 | S7.4 | **ownerGated** — the Vercel project is linked and the site is live at its production URL, the owner has read the three reports for anonymisation, and the front page has been looked at in both themes | ⬜ TODO | - |
 
 </details>
@@ -124,24 +124,23 @@ _What this run has cost, from its own `costs` rows. Same numbers as `conductor m
 
 | scope | sessions | tokens | cache reads | cost | checkpoints | tok/ckpt | $/ckpt |
 |---|---|---|---|---|---|---|---|
-| **run total** | 17 | 169.8M | 97.9% | $135.20 | 24 | 7.08M | $5.63 |
+| **run total** | 18 | 183.4M | 97.9% | $144.85 | 25 | 7.34M | $5.79 |
 | stage S1 | 2 | 19.7M | 98.0% | $15.40 | 4 | 4.92M | $3.85 |
 | stage S2 | 2 | 20.4M | 97.7% | $17.04 | 4 | 5.09M | $4.26 |
 | stage S3 | 4 | 17.1M | 97.4% | $14.31 | 2 | 8.55M | $7.15 |
 | stage S4 | 2 | 22.4M | 97.5% | $18.67 | 4 | 5.59M | $4.67 |
 | stage S5 | 3 | 33.3M | 97.9% | $26.25 | 4 | 8.33M | $6.56 |
 | stage S6 | 2 | 27.5M | 98.1% | $21.37 | 4 | 6.87M | $5.34 |
-| stage S7 | 2 | 29.5M | 98.2% | $22.15 | 2 | 14.8M | $11.08 |
-| 2026-08 | 17 | 169.8M | 97.9% | $135.20 | 24 | 7.08M | $5.63 |
+| stage S7 | 3 | 43.1M | 98.3% | $31.81 | 3 | 14.4M | $10.60 |
+| 2026-08 | 18 | 183.4M | 97.9% | $144.85 | 25 | 7.34M | $5.79 |
 
-_Where the money goes: agent $135.17 (100%) · gate $0.03 (0%) · blended $0.80/M tokens._
+_Where the money goes: agent $144.83 (100%) · gate $0.03 (0%) · blended $0.79/M tokens._
 
 ## Timeline
 
 _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 
 ```
-08-07 02:09:50  • session #10 S4 → Advanced · done S4.3,S4.4 · 4 commit(s)  (22m56s)
 08-07 02:09:50  ▸ stage S5 entered
 08-07 02:09:50  • session #11 S5 Deliver started (attempt 1/4)
 08-07 02:36:03  ▪ gate site-fast pass [session]  (12.1s)
@@ -181,6 +180,7 @@ _Transitions with duration, from the event log (`.conductor/events.jsonl`)._
 08-07 05:33:26  ▪ gate site-fast pass [session]  (10.3s)
 08-07 05:33:26  ▪ gate generated pass [session]  (1.8s)
 08-07 05:33:26  ▪ gate evidence pass [session]  (14.3s)
+08-07 05:33:29  • session #18 S7 → Advanced · done S7.3 · 5 commit(s)  (22m12s)
 ```
 
 ## Health
@@ -198,7 +198,7 @@ _Live git snapshot (branch, working tree, sync vs upstream)._
 
 ```
 branch: main
-working tree: clean
+working tree: M TRACKER.md
 vs upstream: up to date
 ```
 
