@@ -1,8 +1,8 @@
 meta:
   title: "The fleet round"
-  description: "A four-site web fleet with one shared component library, taken
-    through a round of coordinated changes by an autonomous run. What it cost
-    and what it caught."
+  description: "A four-site web fleet taken through a round of coordinated
+    changes, and what coordination cost measured against the same fleet's
+    ordinary backlog."
   ogDescription: "A four-site web fleet, one shared component library, one round
     of coordinated changes."
   canonical: "/runs/the-fleet-round/"
@@ -12,38 +12,178 @@ order: 1
 title: "The fleet round"
 scenario: "A four-site web fleet, one shared component library, one round of
   coordinated changes"
-standfirst: "The shape of the work, not the client. A change that has to land in
-  the same way on several sites at once is the case where an orchestrator earns
-  its keep, and the case where a half-applied change is worst."
+standfirst: "The shape of the work, not the client. A change that has to land
+  the same way on several sites at once is where an orchestrator earns its keep,
+  and it is also where a half-applied change is worst. The store has the same
+  fleet doing ordinary work either side of it, which is what makes the round
+  readable."
 
 evidence:
   runs:
+    - "the-fleet-backlog"
     - "the-fleet-round"
+    - "the-fleet-round-after"
   figures:
-    - "checkpointsDone"
     - "sessions"
+    - "checkpointsDone"
     - "costUsd"
+    - "tokensPerCheckpoint"
+    - "costPerMillionTokens"
     - "gatesGreen"
+    - "bugsFiled"
+    - "ownerApprovals"
+    - "dearestStageShare"
 
 sections:
   - heading: "The situation"
     body:
-      - "Several small sites share one component library and one set of build
-        conventions. A change to the shared machinery has to reach every site,
-        and each site has its own content, its own deployment and its own way of
-        being slightly different from the others. Doing it by hand is a day of
-        careful, boring work in which the last site gets less attention than the
-        first."
+      - "Several small marketing sites share one component library and one set
+        of build conventions. Each has its own content, its own deployment and
+        its own accumulated ways of being slightly different from the others. A
+        change to the shared machinery has to reach all of them, and doing it by
+        hand is a day of careful, boring work in which the last site gets less
+        attention than the first."
+      - "That is the shape worth mapping onto your own situation, and it is not
+        specific to websites. Anywhere one library is consumed by several
+        applications that are almost but not quite the same, the same asymmetry
+        holds: the change is easy, the sameness is hard, and the failure mode is
+        not a broken site but a fleet where one member quietly does something
+        else."
       - "The sites and their owners are described by shape here and nowhere by
-        name. That is a rule of this site rather than a courtesy: the runs
+        name. That is a rule of this site rather than a courtesy — the runs
         behind these reports were done on private repositories for private
-        people, and a scenario a stranger can map onto their own situation is
-        more useful to them than a name they do not recognise anyway."
-  - heading: "What it cost"
+        people — but the reason it is written into the schema is the reader's
+        rather than the client's. A scenario you can map onto your own work is
+        worth more to you than a name you would not recognise."
+
+  - heading: "Three runs, not one"
     body:
-      - "The figures come from the corpus, recomputed from the run store. The
-        gate counts are the ones worth reading twice: a round of coordinated
-        changes is exactly the shape of work where a check that runs everywhere
-        is the difference between a change and a regression."
+      - "The strip above carries three runs rather than the one this report is
+        named after, and that is the whole method. A single run's numbers tell
+        you what a run cost. They cannot tell you what anything about it was
+        expensive, because there is nothing to hold still against."
+      - "These three ran on consecutive days against the same fleet, the same
+        component library, the same gates and the same agents, with the same
+        person not watching. The first worked a backlog: an accumulated list of
+        independent items, taken to the end of the list. The second is this
+        report's subject: one round of coordinated changes, the same change
+        landing everywhere. The third is the round after, a shorter list, closed
+        complete."
+      - "One variable moved between the first and the second, and it was the
+        shape of the work rather than its size, its tooling or its supervision.
+        Everything the middle run cost more of is therefore attributable to
+        coordination, which is a claim a single run can never support and this
+        one can."
+
+  - heading: "What coordination actually costs"
+    body:
+      - "Read the tokens-per-checkpoint figures across the three groups. The
+        backlog's is the lowest in the fleet by a wide margin; the coordinated
+        round's is more than three times it; the round after sits between them.
+        That ordering is the finding, and it survives the obvious objection —
+        the coordinated round did not close fewer or larger checkpoints than the
+        backlog. It closed fewer, similar ones, more expensively."
+      - "The mechanism is not mysterious once you have watched it. A backlog
+        item is finished when one site is right. A coordinated checkpoint is not
+        finished until the last site is right, and the last site is reliably the
+        one where the shared assumption turns out not to hold — the one with the
+        older layout, the extra locale, the component someone forked eighteen
+        months ago and nobody remembered. Every session in a coordinated round
+        carries the state of every member of the fleet, because it cannot know
+        which member is about to be the awkward one."
+      - "Now read the blended cost per million tokens in the same three groups,
+        and notice that it moves the other way. The coordinated round paid less
+        per million than the backlog did, not more. It was not charged a
+        premium; it read more. Coordination is a context cost, and context is
+        mostly cache reads, which are the cheap tokens."
+      - "That distinction matters if you are deciding whether to attempt this at
+        all, because the two costs have completely different remedies. A high
+        rate is a model and a caching problem. A high volume is a decomposition
+        problem — and the honest answer is that some of the volume in a
+        coordinated round is irreducible, because keeping several things the
+        same genuinely does require knowing about all of them at once."
+
+  - heading: "Where the money went inside the run"
+    body:
+      - "The dearest-stage share is on the strip for all three runs, and the
+        coordinated round's is the largest: better than a third of the whole run
+        in one stage, against roughly a quarter for the two ordinary rounds
+        either side."
+      - "This is the concentration a plan author should expect and usually does
+        not. Work that has to land identically in several places does not spread
+        its cost evenly across the plan; it piles it into whichever stage first
+        makes the shared change, because that is the stage where every site's
+        differences are discovered one at a time. The stages after it are
+        cheaper than they look on paper, and the stage before it is a
+        rehearsal."
+      - "The corpus publishes the shape of that stage — its share, its sessions,
+        its checkpoints — and deliberately not its name, because a plan's stage
+        names describe a client's work. If you want the same measurement on your
+        own store, the per-stage split comes out of the money verb rather than
+        out of a query you write yourself, and the difference is not academic:
+        the whole reason this site quotes the verbs is that a hand-written
+        version of exactly this analysis divided one window's cost by another
+        window's checkpoints and was wrong by a factor nobody noticed."
+
+  - heading: "Every gate green, which on its own means nothing"
+    body:
+      - "All three runs closed every checkpoint they opened and every gate they
+        ran came back green. That is a pleasant sentence and it is not evidence
+        of anything, for the reason the article on verification sets out at
+        length: a checking system that never catches anything reports exactly
+        the same pass rate as one that had nothing to catch, and the two are
+        indistinguishable from the outside."
+      - "What is worth reading instead is the bugs-filed figure, because a bug
+        is the one thing in the store that only exists when somebody chose to
+        write it. The coordinated round filed nearly three times what the
+        backlog did against fewer checkpoints. Those are defects the run found,
+        decided not to fix inside the checkpoint it was on, and recorded so the
+        next session would not rediscover them."
+      - "Read that as the coordination tax showing up in a second place.
+        Touching several near-identical codebases in one pass is the most
+        efficient possible way to notice that they have drifted, and noticing is
+        most of what a fleet round is for. A round that files nothing has
+        probably only looked at one site properly."
+
+  - heading: "Nobody was asked anything"
+    body:
+      - "Owner approvals across all three runs: none. Rollovers: none. Soft
+        breaks: none. These ran end to end unattended, which is what the fleet
+        was set up for, and it is worth being precise about what that does and
+        does not mean."
+      - "It means no session ran out of room mid-checkpoint and no session
+        stopped to ask. It does not mean nothing needed a person. An approval
+        gate only fires where a plan author put one, so a run with none recorded
+        is a run whose author judged in advance that nothing in it was a
+        judgement call. For a mechanical round across a fleet, that is usually
+        right."
+      - "It is not always right, and this fleet has the scar. The tool that
+        sweeps up unattended work merges any pull request whose build is green
+        and which nobody has marked, which is exactly what it is for and is
+        wrong precisely once: when a person is still deciding. It once put an
+        unpicked redesign onto a live site that way. The fix was not to make the
+        tool cleverer — it cannot know — but to make the deciding legible to it,
+        with a label on the request itself rather than a note in a plan file the
+        tool does not read."
+      - "If you take one operational thing from this report, take that one. An
+        unattended pipeline will do the thing you did not decide against, and
+        the place to record an undecided thing is wherever the automation is
+        already looking."
+
+  - heading: "If you have a fleet"
+    body:
+      - "Run the coordinated change as its own run rather than as items inside a
+        backlog. Not for tidiness: a backlog item that fails leaves a list, and
+        a coordinated checkpoint that fails leaves a fleet in two states, and
+        those want different rollback stories and different checkpoint
+        boundaries."
+      - "Expect cost per checkpoint to rise and cost per token to fall, and
+        check both before concluding anything about efficiency. A round that
+        looks expensive per checkpoint and cheap per token is behaving
+        correctly. A round that is expensive on both is a caching problem and
+        worth stopping for."
+      - "Budget for the stage where the shared change first lands, and let the
+        rest of the plan be thin. Count bugs filed as a signal rather than as
+        debt. And put the label on the pull request, not in the plan."
 
 readNext: []
