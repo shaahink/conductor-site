@@ -1,0 +1,21 @@
+{
+  "corpusGeneratedAtUtc": "2026-08-07T02:13:47.458Z",
+  "cards": {
+    "concepts": {
+      "png": "/og/concepts.png",
+      "text": "field guide conductor-site-virid.vercel.app The concepts Ten concepts in agentic engineering, each one worked end to end in a real orchestrator. 340 sessions $10.51 per checkpoint closed 167 bugs filed"
+    },
+    "articles": {
+      "png": "/og/articles.png",
+      "text": "field guide conductor-site-virid.vercel.app The articles Longer pieces on cost, verification, budgets, and telemetry you cannot trust. 29 gates red 53 rollovers 98.3% of the corpus's tokens were cache reads"
+    },
+    "runs": {
+      "png": "/og/runs.png",
+      "text": "field guide conductor-site-virid.vercel.app The runs Reports from real autonomous runs, published as scenarios rather than as clients. 18 runs 7 repositories 6/18 runs that ever saw a red gate"
+    },
+    "home": {
+      "png": "/og/home.png",
+      "text": "field guide conductor-site-virid.vercel.app A field guide to agentic engineering Ten concepts, each worked end to end in a real orchestrator, with what it cost. 18 runs 287/300 checkpoints closed $3,016.29 spent across the corpus"
+    }
+  }
+}

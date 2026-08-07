@@ -33,6 +33,26 @@
   --text-h2: clamp(1.5rem, 1.3393rem + 0.7143vi, 1.875rem);
   --text-h1: clamp(2rem, 1.6786rem + 1.4286vi, 2.75rem);
 
+  /* ── the social cards ─────────────────────────────────────────────────
+     A separate branch of the scale, and separate on purpose: a card is a
+     1200×630 picture seen at maybe 500px wide in a feed, so it is set to be
+     read at roughly half size. The reading scale's display end tops out at
+     44px, which is right on a page and thin in a thumbnail.
+
+     Fixed rather than fluid — the viewport that renders a card is always
+     exactly 1200px, so a clamp here would resolve to its own maximum every
+     time and only hide the number that is actually in force.
+
+     The floor is the reason the quiet steps are the size they are. Nothing on
+     a card is smaller than 24px, because `--overlay` clears the Face's bar at
+     3:1 and 3:1 is WCAG's bar for large text — 24px regular or 18.66px bold.
+     Set a label at 18px and the same colour that passes here fails. */
+  --text-card-mark: 1.5rem; /* 24px — wordmark and host */
+  --text-card-label: 1.5rem; /* 24px — the figure labels; the floor */
+  --text-card-lead: 1.875rem; /* 30px — the sentence under the title */
+  --text-card-figure: 2.75rem; /* 44px — the mono figures */
+  --text-card-title: 3.75rem; /* 60px — the card's one headline */
+
   /* ── leading and weight ───────────────────────────────────────────────
      1.65 on body copy: the site's main job is long-form reading. */
   --leading-body: 1.65;

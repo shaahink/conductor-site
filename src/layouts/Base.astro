@@ -8,6 +8,7 @@
    look like nothing else in the fleet. */
 import { Font } from "astro:assets";
 import { absolute } from "@shaahink/sitekit/seo";
+import { ogCardFor } from "../lib/seo.js";
 import Footer from "../components/Footer.astro";
 import TopBar from "../components/TopBar.astro";
 import "../styles/styles.css";
@@ -43,7 +44,15 @@ const {
    domain change never touches this file. Scrapers reject relative
    canonical/og:image anyway. */
 const canonicalUrl = absolute(Astro.site!, canonical);
-const ogImageUrl = ogImage && absolute(Astro.site!, ogImage);
+
+/* Every page gets a card. `meta.ogImage` is the override for a page that has
+   earned its own picture; with nothing set, `ogCardFor` hands back the card
+   for the section the canonical falls under, so no page can be published with
+   a grey box in the feed because somebody forgot a field. There is no page
+   here without an og:image, which is why the fallback is a function call
+   rather than a default in the schema — a schema default is a value fourteen
+   content files would each carry a copy of. src/lib/seo.ts. */
+const ogImageUrl = absolute(Astro.site!, ogImage ?? ogCardFor(canonical));
 ---
 
 <html lang="en">
@@ -66,10 +75,10 @@ const ogImageUrl = ogImage && absolute(Astro.site!, ogImage);
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={ogDescription} />
-    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+    <meta property="og:image" content={ogImageUrl} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
-    {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
+    <meta name="twitter:image" content={ogImageUrl} />
 
     <!-- Two things that have to happen before first paint. The `js` class
          enables progressive-enhancement styles. The second half reads a theme

@@ -1,0 +1,38 @@
+S7.1 gate battery — 2026-08-07T03:35:27Z
+commit at time of run: 4b16877 (+ the S7.1 working tree)
+
+$ npm run check
+✔ no font-size literal outside type.css (0.6111ms)
+✔ no font-family names a face; every family comes through a cssVariable (0.7688ms)
+✔ every font cssVariable astro.config declares is consumed by type.css (0.8923ms)
+✔ no physical left/right properties (1.3107ms)
+ℹ tests 93
+ℹ suites 0
+ℹ pass 93
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 546.6764
+
+$ npm run build
+04:35:37 [@shaahink/sitekit:editor-route] edit/index.html: dropped 9 build-wide style hashes from style-src-elem, which were switching off the 'unsafe-inline' Google's sign-in stylesheet needs
+04:35:37 [WARN] [@shaahink/sitekit:editor-route] sitekit: /sk-editor.webmanifest has no icons, because this site ships none of favicon.svg, icon.svg, favicon.png or favicon.ico in its publicDir. The editor will work and will never be offered as an installable app. Add one of those files, or pass editorRoute({ app: { icons: [...] } }).
+04:35:37 [@shaahink/sitekit:check-annotations] 478 annotations on 21 pages all resolve
+04:35:37 [build] 27 page(s) built in 1.65s
+04:35:37 [build] Complete!
+
+$ npm run evidence
+> node scripts/harvest.mjs --check
+
+evidence: corpus.json is current — 18 runs, 340 sessions, $3,016.29; and every key cited by 17 content entries resolves.
+
+$ npm run anonymity
+> node scripts/anonymity.mjs
+
+anonymity: 42 built files carry none of 51 machine paths, 15 private names, 4 distinctive tokens, 41 three-word run-name phrases or 8 secret shapes — of those, 10 vendored file(s) were checked for paths and secrets only, not for names; NOT CHECKED for quoted prose: no docs/dev/FIELD-NOTES-*.md on this machine, which is expected in CI because they are untracked — this run did not test that half of the rule.
+
+$ npm run seo
+> node scripts/seo.mjs
+
+seo: https://conductor-site-virid.vercel.app — 22 public page(s) all carry their own canonical, og:url and og:image; the sitemap lists exactly the 21 crawlable one(s); robots.txt disallows only [/api/, /edit, /og/]; and 4 social card(s) at 1200×630 still render the text their PNGs were taken from.

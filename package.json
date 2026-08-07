@@ -11,6 +11,8 @@
     "harvest": "node scripts/harvest.mjs",
     "evidence": "node scripts/harvest.mjs --check",
     "anonymity": "node scripts/anonymity.mjs",
+    "seo": "node scripts/seo.mjs",
+    "seo:cards": "node scripts/seo.mjs --cards",
     "test": "node --test \"test/**/*.test.mjs\"",
     "headers": "sitekit-headers",
     "content": "sitekit-normalize",

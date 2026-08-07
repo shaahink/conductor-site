@@ -1,0 +1,251 @@
+---
+/* The social cards, rendered as pages so they are made of the site.
+   ---------------------------------------------------------------------------
+   Four 1200×630 cards — one per section, plus the front page — served to
+   scrapers as PNGs from `public/og/`. This route is where those PNGs come
+   from: it renders each card as a real page in the site's own tokens, at its
+   own type scale, in its own two faces, and the PNG is a screenshot of it at
+   exactly that size. `docs/OG-CARDS.md` is the four-step recipe.
+
+   Three reasons it is a route rather than an image file somebody drew:
+
+   - **The card cannot drift from the face.** It reads `tokens.css` and
+     `type.css` like every other page, so a palette change moves the cards or
+     turns the gate red. A card drawn in a graphics tool is correct once.
+   - **The words come from the same content the page does.** Title and lead are
+     the section's own `title` and `meta.ogDescription` — the sentence the
+     schema already caps at a card's second line, which is what it was for.
+     A card and the page it advertises cannot disagree.
+   - **The figures are resolved, not typed.** The three numbers on each card go
+     through `resolveEvidence` like every other figure on this site, so a key
+     the corpus stopped carrying fails the build. `scripts/seo.mjs` closes the
+     other half — it re-renders this text at gate time and compares it to the
+     manifest written when the PNGs were taken, so a corpus that moves under a
+     card is caught before the stale picture is shared again.
+
+   Mocha, not latte: a card is one image and cannot follow a reader's scheme,
+   and mocha is what `conductor-face` shows out of the box (SPEC Part II). The
+   `data-theme="dark"` below pins it, because a renderer on a machine set to
+   light would otherwise be served latte through `prefers-color-scheme`.
+
+   Not for readers: `/og/` is disallowed in robots.txt and appears in no
+   sitemap. It is a rendering surface, and the thing that gets shared is the
+   PNG beside it. */
+import { Font } from "astro:assets";
+import { getCollection } from "astro:content";
+import { resolveEvidence } from "../../lib/evidence.js";
+import { OG_CARDS } from "../../lib/seo.js";
+import "../../styles/tokens.css";
+import "../../styles/type.css";
+
+/** The three figures each card carries, chosen so the four cards say four
+    different things about the same corpus rather than the same thing four
+    times. Corpus-wide keys only — a card is the whole site's face, not one
+    run's. Every key is checked against `corpus.json` at build. */
+const FIGURES: Record<string, string[]> = {
+  home: ["totalRuns", "totalCheckpointsDone", "totalCostUsd"],
+  concepts: ["totalSessions", "costPerCheckpoint", "totalBugsFiled"],
+  articles: ["totalGatesRed", "totalRollovers", "totalCacheReadShare"],
+  runs: ["totalRuns", "totalRepos", "runsWithARedGate"]
+};
+
+export async function getStaticPaths() {
+  const home = (await getCollection("homePage"))[0]!;
+  const sections = await getCollection("sectionPages");
+
+  return OG_CARDS.map((card) => {
+    if (card.key === "home") {
+      return {
+        params: { card: card.key },
+        props: { title: home.data.hero.title, lead: home.data.meta.ogDescription }
+      };
+    }
+
+    /* The section a card covers is the one whose index lives at the card's
+       base path, so a section that moves takes its card with it instead of
+       leaving one addressed to a URL nobody serves. */
+    const section = sections.find((entry) => entry.data.meta.canonical === card.base);
+    if (!section) {
+      throw new Error(
+        `OG_CARDS has a card keyed "${card.key}" for "${card.base}", but no section page ` +
+          `publishes that canonical. Sections: ` +
+          `${sections.map((entry) => entry.data.meta.canonical).join(", ")}.`
+      );
+    }
+    return {
+      params: { card: card.key },
+      props: { title: section.data.title, lead: section.data.meta.ogDescription }
+    };
+  });
+}
+
+interface Props {
+  title: string;
+  lead: string;
+}
+
+const { card } = Astro.params;
+const { title, lead } = Astro.props;
+
+const keys = FIGURES[card!];
+if (!keys) {
+  throw new Error(
+    `No figures are chosen for the "${card}" card. Add it to FIGURES in this file — a card ` +
+      `with no numbers on it is the one thing this site's cards are for.`
+  );
+}
+
+/* Through the same door every other figure on the site goes through: a key the
+   corpus does not carry fails here, not on a picture nobody re-reads. */
+const { groups } = resolveEvidence(`og/${card}`, { runs: [], figures: keys });
+const cells = groups[0]!.cells;
+
+/* The host, from astro.config's `site` — the one line the whole of S7.1
+   derives from, printed on the card so the card says where it came from. */
+const host = new URL(Astro.site!).host;
+---
+
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{title} — social card</title>
+    <meta name="robots" content="noindex" />
+    <Font cssVariable="--font-sans" preload />
+    <Font cssVariable="--font-mono" preload />
+  </head>
+
+  <body>
+    {/* `data-og-card` is what scripts/seo.mjs reads: the gate takes the text
+        inside this element, normalises its whitespace and compares it to the
+        manifest. Everything that ends up in the picture has to be inside it. */}
+    <div class="card" data-og-card={card}>
+      <div class="mark">
+        <span class="wordmark">field guide</span>
+        <span class="host">{host}</span>
+      </div>
+
+      <div class="say">
+        <h1>{title}</h1>
+        <p>{lead}</p>
+      </div>
+
+      <dl class="strip">
+        {
+          cells.map((cell) => (
+            <div class="cell">
+              <dt>{cell.display}</dt>
+              <dd>{cell.label}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </body>
+</html>
+
+<style is:global>
+  /* The card is the whole document and the document is the picture, so the
+     page's own margins would be a border nobody asked for. */
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+</style>
+
+<style>
+  .card {
+    /* Facebook and X both read 1200×630, and the renderer's viewport is set to
+       the same numbers — so this box is the picture, edge to edge. Fixed in
+       px because it is a picture size rather than a reading measure: the one
+       place on this site where a physical dimension is the honest unit. */
+    inline-size: 1200px;
+    block-size: 630px;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: var(--space-l);
+    padding: var(--space-2xl);
+    background: var(--base);
+    color: var(--text);
+    font-family: var(--sans);
+  }
+
+  .mark {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-m);
+    font-family: var(--mono);
+    font-size: var(--text-card-mark);
+  }
+
+  .wordmark {
+    color: var(--accent);
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.01em;
+  }
+
+  /* Large text, so `--overlay` clears the 3:1 bar the Face holds it to. Every
+     quiet thing on this card is at least this size for that reason — see
+     type.css, where the card steps are declared together. */
+  .host {
+    color: var(--overlay);
+  }
+
+  .say {
+    align-self: center;
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: var(--text-card-title);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.02em;
+    /* The card is wider than a reading column and the title is a headline, so
+       it gets the picture's width rather than the site's measure — but it is
+       still held short of the frame so a two-line title breaks somewhere a
+       designer would break it. */
+    max-inline-size: 20ch;
+    text-wrap: balance;
+  }
+
+  .say p {
+    margin: 0;
+    font-size: var(--text-card-lead);
+    line-height: var(--leading-snug);
+    color: var(--overlay);
+    max-inline-size: 40ch;
+    text-wrap: pretty;
+  }
+
+  /* The evidence strip, in the shape it has everywhere else on the site: mono
+     figures, a hairline above them, the label under the number rather than
+     beside it. This is the part that makes the card worth having — it is the
+     one thing in a feed that says the page has numbers behind it. */
+  .strip {
+    display: flex;
+    gap: var(--space-2xl);
+    margin: 0;
+    padding-block-start: var(--space-m);
+    border-block-start: var(--rule);
+  }
+
+  .cell dt {
+    font-family: var(--mono);
+    font-size: var(--text-card-figure);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-tight);
+  }
+
+  .cell dd {
+    margin: 0;
+    margin-block-start: var(--space-3xs);
+    font-size: var(--text-card-label);
+    line-height: var(--leading-snug);
+    color: var(--overlay);
+  }
+</style>

@@ -4,18 +4,26 @@ import { checkAnnotations, checkPlaceholders, editorRoute } from "@shaahink/site
 import { editable } from "./src/content/schema.js";
 
 export default defineConfig({
-  /* The Vercel project `conductor-site` was linked in the planning session.
-     S7.1 confirms this against the deployed production URL — canonical,
-     hreflang, og:url, og:image, sitemap, robots and the footer credit all
-     derive from this one line.
+  /* The one line canonical, og:url, og:image, every sitemap entry, robots.txt's
+     Sitemap: line and the footer credit all derive from.
 
      ⚠ The short alias `conductor-site.vercel.app` is NOT this project. That
-     name was already taken and serves a third party's rail-tracking site, so
-     the planning session's value was publishing every canonical and every
-     sitemap entry under someone else's domain. The project's real public
-     production alias is below; the `-sheevajans-projects` alias is team-login
-     gated and cannot serve as a public canonical. S7.1 must re-confirm this
-     against the deployed URL rather than trusting this comment. */
+     name was already taken and serves a third party, so the planning session's
+     value was publishing every canonical and every sitemap entry under someone
+     else's domain. The `-sheevajans-projects` alias is team-login gated and
+     cannot serve as a public canonical either.
+
+     CONFIRMED AT S7.1 against the deployment rather than against this comment,
+     which is what the checkpoint asked for and is a different question from
+     "what does the plan file say". Both hosts answer 200, so reachability
+     proves nothing; what settles it is what they serve. The value below
+     returns this site — Astro, `<title>A field guide to agentic engineering`,
+     the hashed same-origin faces the Fonts API builds. The short alias returns
+     a Next.js application that is not ours. Re-confirm the same way if the
+     domain ever moves: fetch it and read the title, do not ping it.
+
+     `scripts/seo.mjs` holds the rest of the site to this string — every
+     absolute URL in `dist/` has to be on it, or the gate is red. */
   site: "https://conductor-site-virid.vercel.app",
 
   /* The owner's editor. The whole route is the kit's — this site owns no
