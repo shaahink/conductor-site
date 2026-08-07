@@ -1,0 +1,199 @@
+meta:
+  title: "Agent observability"
+  description: "An agent shows you almost nothing by default. What to record while
+    it runs, and what you have to be able to ask about it once it has stopped."
+  ogDescription: "What to record while an agent runs, and what you have to be able
+    to ask about it afterwards."
+  canonical: "/concepts/agent-observability/"
+
+slug: "agent-observability"
+order: 9
+title: "Agent observability"
+alsoKnownAs:
+  - "LLM observability"
+  - "agent tracing"
+  - "run telemetry"
+  - "cost attribution"
+oneLine: "The question is not whether it is logging. It is whether you can ask
+  something nobody planned for and get an answer."
+
+theIdea:
+  - "Observability is not logging, and the difference decides what you can find
+    out later. A log is a set of sentences a programmer wrote for a reader they
+    imagined. Observability is being able to ask a question that reader was
+    never imagined asking. With agents the gap is wider than usual, because the
+    quantities that turn out to matter — what a piece of work cost, how long it
+    spent waiting, what it actually decided — are rarely in the narrative the
+    thing prints about itself."
+  - "The shape that makes questions answerable is structured events: one record
+    per transition, appended in order, with fields rather than sentences. A
+    record you can filter, count, join and replay answers a question you thought
+    of afterwards. A record you have to write a regular expression against
+    answers only the questions its author already had, and answers them slowly
+    enough that nobody asks a second one."
+  - "Three quantities get skipped most often, and all three are the ones people
+    eventually need. Money, because agent work is the first tooling many teams
+    have run where the marginal cost of an afternoon is both visible and large.
+    Time, because most of the elapsed time is spent waiting, and waiting leaves
+    no event unless something deliberately records it. Outcome, because the
+    agent's own account of how it went is the least reliable field in the record
+    and the one every summary downstream is built on."
+  - "Then the denominator rule, which is where honest telemetry usually goes
+    wrong. Every per-unit figure is a division, and the mistake is nearly always
+    underneath. The set of things that happened and the set of things that
+    recorded a measurement are different populations, and a rate computed over
+    one and labelled with the other is wrong in a way that survives review,
+    because both numbers are real and neither looks odd. Name the denominator on
+    the figure, every time, and keep the whole surface on one."
+  - "Read-only is a property of a telemetry tool rather than a courtesy it
+    extends. The moment the thing that reads a run can also change it, the
+    record stops being evidence and becomes an account that somebody with an
+    interest in the answer had write access to. It is a cheap property to keep
+    and impossible to add back later, because the doubt attaches to every row
+    already written."
+  - "Last, and most easily missed: an empty result and a broken connection look
+    identical on a screen. Of the two, saying nothing is happening when you
+    cannot find out is much the more dangerous, because it is the sentence that
+    stops somebody looking. A surface that cannot tell those apart will
+    eventually report calm in the middle of an outage, and it will do it in a
+    completely normal-looking way."
+
+theProblem:
+  - "With no record of its own, all you have is the agent's summary, which is
+    prose written by the thing being measured. The problem is not that it lies.
+    A summary is a compression, the compressor chose what to drop, and what it
+    dropped is everything nobody thought to ask it for — which is precisely the
+    set of things you will want later."
+  - "Then cost. Work that spans days and dozens of sessions has a bill, and if
+    nothing attributed it while it ran, the only answers available afterwards
+    are the total and a shrug. Which stage was expensive, which sessions were
+    wasted, what a configuration change actually bought: none of those can be
+    recovered from a number that was never broken down, and all of them are what
+    you need to decide whether to do it again."
+  - "And the data that quietly is not there. A field that was defined but never
+    populated reads as zero rather than as missing, and zero is a claim. This
+    one outlives all the others, because nothing fails: the query returns, the
+    panel renders, the number is plausible, and the only way to catch it is to
+    go and check that something ever wrote to it."
+
+inConductor:
+  mechanism:
+    - "The spine is a typed append-only event for every orchestrator transition
+      — run started, stage entered, session started and finished, gate finished,
+      checkpoint confirmed, approval requested and granted, token delta, note
+      added, soft break requested, and the rest. Each is one compact line,
+      written by a single background writer the orchestrator never blocks on, so
+      lines are never interleaved or torn. The buffer is flushed after every
+      drained batch, which means a process kill leaves a complete log rather
+      than half a line — the property the whole idea rests on, since telemetry
+      that does not survive the event it was recording is decoration."
+    - "The reading verbs are separate programs over that store and every one of
+      them opens it read-only. History browses every run this machine has done;
+      it needs no plan and no repository, because history is a property of the
+      machine rather than of a working tree. That framing was bought rather than
+      designed: the store used to live in a directory ignored by git under a
+      bare pattern, so every run died with the tree it ran in. Money builds the
+      cost table from billed dollars and recorded tokens, and the engine
+      deliberately holds no price table, so nothing on that table is modelled.
+      Budget takes no figures from its caller — not the cap, not the ratio, not
+      the floor — because the run recorded all of them itself. Journey prints
+      what is going to happen before a token is spent."
+    - "This site is the same claim made from outside the engine. Every figure on
+      it is recomputed from that store by a harvest that opens it read-only, and
+      the build fails when a page names a key the harvest cannot produce. Two
+      figures carry their own corrections in the record rather than in a
+      footnote: soft breaks are counted from the events, because the sessions
+      table's own column for them is empty for every run in the store; and the
+      per-session cost states its denominator on the figure, because the number
+      of sessions that exist and the number that recorded any spend are not the
+      same number and the difference is not small."
+    - "The terminal face reads a live run over an event stream, and reconnects
+      from the last sequence it saw rather than replaying the backlog. Its
+      snapshot panes are fetched independently, so one endpoint failing cannot
+      blank the others. Exactly one pane breaks that rule on purpose: the owner
+      queue reports its own failure instead of swallowing it, because an empty
+      queue and an unreachable one look identical on the pane, and nothing is
+      owed is the more dangerous of the two to say wrongly."
+  citations:
+    - path: "src/Conductor.Core/Events/ConductorEvent.cs"
+      line: 6
+      note: "The spine: one typed, append-only event per orchestrator transition. The
+        list of derived types under this comment is the vocabulary — everything
+        the engine can later be asked about had to become one of these first."
+    - path: "src/Conductor.Core/Events/EventLog.cs"
+      line: 26
+      note: "A single writer, an unbounded channel the orchestrator never blocks on,
+        and a flush after every drained batch — so a process kill leaves a
+        complete log rather than a torn line. Telemetry that does not survive
+        what it was recording is decoration."
+    - path: "src/Conductor/Commands/HistoryCommand.cs"
+      line: 12
+      note: "Why the catalogue exists. The store lived in a directory git ignores
+        under a bare pattern, so every run died with its working tree. The data
+        was being produced correctly and thrown away."
+    - path: "src/Conductor/Commands/HistoryCommand.cs"
+      line: 18
+      note: "History needs no plan and no repository, because it is a property of the
+        machine rather than of a tree. Standing somewhere that has never held a
+        plan still answers."
+    - path: "src/Conductor/Commands/HistoryCommand.cs"
+      line: 16
+      note: "And it is opened read-only. The verb that reads a finished run cannot
+        alter it, which is what keeps the run evidence rather than an account."
+    - path: "src/Conductor/Commands/MoneyCommand.cs"
+      line: 19
+      note: "Billed dollars and recorded tokens only. The engine holds no price table
+        by design, so nothing in the cost table is modelled — which is the
+        difference between a measurement and an estimate wearing one's clothes."
+    - path: "src/Conductor/Commands/BudgetCommand.cs"
+      line: 16
+      note: "The verb takes no figures from its caller — not the cap, not the ratio,
+        not the floor — because the run stamped all of them into its own events
+        while it was running. Measurement, rather than a restatement of what
+        somebody configured."
+    - path: "src/Conductor/Commands/JourneyCommand.cs"
+      line: 13
+      note: "Observability before the fact: what will run, in what order, under what
+        model, gated by what, and every point a person might be asked to step in
+        — printed before a token is spent or a byte of state is written."
+    - path: "face-go/internal/tui/conn.go"
+      line: 28
+      note: "The one pane that reports its own failure rather than swallowing it. An
+        empty owner queue and an unreachable one look identical, and of the two,
+        saying nothing is owed is the dangerous one to get wrong."
+    - path: "face-go/internal/api/sse.go"
+      line: 16
+      note: "Reconnect resumes from the last sequence seen rather than replaying the
+        backlog, so a dropped connection costs a gap rather than a flood — the
+        difference between a live view that recovers and one that has to be
+        restarted."
+
+evidence:
+  runs:
+    - "the-accounting-run"
+    - "the-terminal-face"
+  figures:
+    - "totalRuns"
+    - "totalSessions"
+    - "costedSessions"
+    - "totalSoftBreaks"
+
+tryIt:
+  - command: "git log --format='%H %ct %s' | head"
+    note: "The cheapest structured event log there is, and you already have it: one
+      record per transition, machine-readable fields, appended and never
+      rewritten. It is also the limit of what comes free — it can tell you what
+      changed and never what it cost, how long anything waited, or whether the
+      change was any good."
+  - command: "conductor history --json --limit 0"
+    note: "Every run this machine has recorded, as data rather than as a screen. The
+      store is opened read-only, so this is safe to point at a run that is
+      happening right now. Every figure on this site was computed from this."
+  - command: "conductor money"
+    note: "The cost table: sessions, tokens, cache-read share, spend, checkpoints,
+      and the per-checkpoint divisions — plus the cuts a lifetime average hides,
+      which are the windows either side of a settings change, the per-stage
+      split, and the calendar month."
+
+readNext:
+  - "agent-memory"

@@ -1,0 +1,198 @@
+meta:
+  title: "Agent memory"
+  description: "A session forgets everything it learned. What is worth carrying to
+    the next one, what carrying it costs, and why memory nobody prunes turns
+    into rent."
+  ogDescription: "What one session should carry to the next, what carrying it
+    costs, and when memory becomes rent."
+  canonical: "/concepts/agent-memory/"
+
+slug: "agent-memory"
+order: 10
+title: "Agent memory"
+alsoKnownAs:
+  - "long-term memory"
+  - "persistent context"
+  - "session continuity"
+  - "lessons learned"
+oneLine: "Everything a session works out dies with it unless something writes it
+  down, and everything written down is paid for by every session after it."
+
+theIdea:
+  - "An agent session starts empty. Whatever the last one worked out — the root
+    cause it found, the approach it ruled out, the constraint that surprised it
+    — is gone unless something wrote it somewhere the next one will read. That
+    is the whole problem, and a larger context window does not touch it, because
+    the next session is a different process with a different context that was
+    never present for any of it."
+  - "Memory is not free, and the price is charged on the far side from where it
+    is earned. Writing costs once. Reading is charged on every prompt
+    afterwards, indefinitely, whether or not the line mattered that time. So the
+    question to ask of any candidate memory is not whether it is true. It is
+    whether it will change what the next session does. A paragraph of status
+    naming commits and counts is perfectly true and worth nothing to somebody
+    reading it next week."
+  - "Which gives memory its shape: rules and facts, not narrative. Never do
+    this. That thing lives there. The obvious fix for this does not work, and
+    here is why. Each of those earns its rent every time it is read. A summary
+    of what happened does not, and a system that accumulates summaries ends up
+    paying, on every prompt, to re-read its own diary."
+  - "It has to be bounded, deduplicated, and written by exactly one writer, and
+    each of those exists because the alternative has actually happened
+    somewhere. Unbounded memory grows until it crowds out the work it was meant
+    to help. Undeduplicated memory says the same thing several times, which is
+    how a reader learns to skim the rest of it. And two writers to one file
+    produce repetition that looks like emphasis, so the noise arrives wearing
+    the costume of a signal."
+  - "Different memories have different lifetimes, and mixing them is where the
+    quiet failures live. What one session hands the next is short-lived by
+    design. A defect that is open is alive until somebody fixes it, which may be
+    several plans from now. A rule about how this codebase actually behaves
+    outlives both, and probably outlives the project it was learned on. Scope
+    each to its real life — and check that the scope you got is not just the
+    narrowest one that was easy to implement."
+  - "Last, the most dangerous state a memory can be in is empty when it should
+    not be. A ledger that returns nothing reads as a clean slate, and a clean
+    slate reads as good news. Nothing errors, nothing is red, the query returns
+    promptly, and the thing that would have stopped somebody is simply not there
+    to be read."
+
+theProblem:
+  - "Without memory, every session re-derives. That is expensive, and it is
+    worse than expensive, because the second session does not know the first
+    already ruled an approach out. So it tries it, spends the same money,
+    arrives at the same dead end, and writes down the same nothing — and the
+    third one does it again."
+  - "With too much of it, the cost lands where nobody is looking. Memory is read
+    into every prompt, so a page of accumulated narrative is a page paid for on
+    every session for the rest of the project. It fails quietly by construction:
+    nothing breaks, the run simply costs more than it should, and the handful of
+    lines that were worth keeping get harder to find among the rest."
+  - "The scoping failure is the one to watch, because it is silent in both
+    directions. Scoped too tightly, what should have carried forward disappears
+    at a boundary nobody thought of as a boundary. Scoped too loosely, something
+    that was true of one situation is applied to another where it is wrong — and
+    it arrives carrying the authority of a thing the system itself wrote down."
+
+inConductor:
+  mechanism:
+    - "Three memories with three lifetimes. The knowledge ledger is what a
+      session writes with the note verb, read back into the next session's
+      prompt out of the same store the query serves, so what one session worked
+      out compounds instead of dying with it. The engine's own bookkeeping
+      entries are filtered out of that injection rather than echoed back at the
+      agent as if they were knowledge — memory that quotes itself is how a
+      record starts to look busier than it is."
+    - "The lessons file is the rules memory, and it is worth reading as a
+      correction rather than as a feature. It used to be a diary: the reflection
+      step pasted the opening of each session's result under a dated heading,
+      and several of those were pasted into every following prompt — cache-read
+      rent on prose that teaches nothing, since a status paragraph naming
+      commits and gate counts is worth nothing to whoever reads it next week. It
+      also duplicated itself, because the trim step re-parsed content it had
+      already prepended to. Now only sentences that state a rule land, matched
+      by a deliberately narrow cue and capped both per session and overall. A
+      session that reported nothing rule-shaped contributes nothing and the file
+      stays empty, on the explicit reasoning that an empty memory is strictly
+      better than a misleading one."
+    - "The bug ledger is the long-lived one, and it carries the trap this page
+      exists to name. A tracked bug was built to outlive the session that found
+      it, and it did exactly that — but every read was filtered by run, so it
+      did not outlive the run. Measured on this corpus: one run finished with
+      open bugs, the next plan started a new run in the same repository, and the
+      list came back with almost nothing on it. No error and no warning. An
+      empty ledger that reads as a clean one, which is worse than a missing
+      feature, because a missing feature is at least visible. Open bugs from
+      earlier runs in the same store are now carried forward, each with the name
+      of the plan that filed it."
+    - "What makes these memory rather than an archive is where they are read.
+      All three are assembled into the next prompt at the moment it is built, so
+      the ledger reaches the session that needs it, and the open bugs reach the
+      session most likely to re-find one. A record nothing reads at the moment
+      of use is a filing cabinet, and a filing cabinet has never stopped anybody
+      making the same mistake twice."
+  citations:
+    - path: "src/Conductor.Core/PromptBattery.Knowledge.cs"
+      line: 6
+      note: "The ledger reaching the next prompt, read from the same rows the query
+        verb serves — so what an agent noted compounds instead of dying with the
+        session that learned it. One store, one set of rows, two readers."
+    - path: "src/Conductor.Core/PromptBattery.Knowledge.cs"
+      line: 21
+      note: "Engine bookkeeping filtered out of the injection. Those rows are the
+        machine's own record-keeping, not something an agent learned, and
+        echoing them back would pad every later prompt with the system quoting
+        itself."
+    - path: "src/Conductor.Core/PromptBattery.Knowledge.cs"
+      line: 27
+      note: "The sentence at the head of the injected section, and the whole intent in
+        one line: do not re-derive or re-discover these. It is what an agent
+        reads before it starts spending on a question already answered."
+    - path: "src/Conductor.Core/PromptBattery.Knowledge.cs"
+      line: 44
+      note: "Open bugs into the next prompt, so a session stops re-finding a defect an
+        earlier one already filed and a fix session knows what is outstanding.
+        Same rows the list verb and the audit phase read."
+    - path: "src/Conductor.Core/LessonsManager.cs"
+      line: 9
+      note: "What it used to be: the opening of each session's result pasted under a
+        dated heading, several of them re-read on every following prompt. The
+        comment names the cost in the right words — rent on prose that teaches
+        nothing."
+    - path: "src/Conductor.Core/LessonsManager.cs"
+      line: 14
+      note: "And it repeated itself. The trim step re-parsed content it had already
+        prepended the new entry to, so any append that crossed the cap emitted
+        that entry twice. One writer and one cap is the fix, and the shape that
+        produced it is gone."
+    - path: "src/Conductor.Core/LessonsManager.cs"
+      line: 18
+      note: "Only sentences that state a rule land. A session that reported nothing
+        rule-shaped contributes nothing and the file stays empty, because an
+        empty memory is strictly better than a misleading one."
+    - path: "src/Conductor.Core/LessonsManager.cs"
+      line: 31
+      note: "The cue, and the reasoning for keeping it narrow: missing a rule costs
+        one absent line, while a false positive costs prose in every later
+        prompt. The asymmetry is the whole argument for erring toward silence."
+    - path: "src/Conductor.Core/Store/SqliteRunStore.Bugs.cs"
+      line: 6
+      note: "What a tracked bug was promised to be: a row that outlives the session
+        that found it, injected into later prompts and consumed by the audit
+        phase."
+    - path: "src/Conductor.Core/Store/SqliteRunStore.Bugs.cs"
+      line: 26
+      note: "And what it turned out to be. Every read was filtered by run, so the bug
+        outlived the session and not the run. The measurement is on this line,
+        and so is the reason it matters: an empty ledger looks like a clean one,
+        which reads as good news."
+
+evidence:
+  runs:
+    - "the-orchestrator-core"
+    - "the-terminal-face"
+  figures:
+    - "totalBugsFiled"
+    - "totalLedgerEntries"
+    - "bugsFiled"
+    - "ledgerEntries"
+
+tryIt:
+  - command: "cat AGENTS.md CLAUDE.md 2>/dev/null"
+    note: "The memory nearly every repository with an agent in it already has, and
+      the one nobody audits. Read it a line at a time and ask of each: would the
+      next session behave differently without this? The lines that fail that
+      question are being paid for on every prompt from now on."
+  - command: "conductor note \"the thing you just worked out\""
+    note: "One fact into the ledger, at the moment of learning rather than at the
+      end. A session that is killed takes everything it did not write down with
+      it, and the next one gets to rediscover it at full price."
+  - command: "conductor bug list"
+    note: "What is open, including defects carried forward from earlier runs in the
+      same store with the name of the plan that filed each. Run it before
+      hunting: the known ones are already here, and re-filing one is how a
+      ledger stops being readable."
+
+readNext:
+  - "context-engineering"
+  - "agentic-engineering"
