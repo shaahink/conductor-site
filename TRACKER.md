@@ -4,36 +4,42 @@
 
 ## Handoff (overwrite this block, ≤12 lines, no history)
 
-last: **session 11** delivered **S5.1** (1ef5db5) and **S5.2**. QA of session 10: **no findings**
-  — battery re-run green from a clean tree before any edit (0 errors, 45 tests, build exit 0, 255
-  annotations, evidence gate green over 12 entries, all 74 citations resolve at `1632b9f`).
-now on disk: articles 1 and 2, both figure-free prose (1,629 and 1,394 words) with every quantity
-  in evidence keys. Battery: **0 errors, 49 tests, 306 annotations on 17 pages, evidence gate
-  green over 13 cited entries.** The harvest now asks **`conductor money --run <id> --json` once
-  per published run** (`readMoney`, +9.5s) — that is where `tokensPerCheckpoint`,
-  `costPerMillionTokens`, `cacheReadShare` and the four `dearestStage*` keys come from.
-  `refuseBudgetShaped` now tests a figure's **source**, not its name: budget-shaped keys ship
-  only when `conductor money`/`conductor budget` answered them. Four new tests cover that.
-next: **S5.3** (the measured-budget article) then **S5.4**. S5.3 needs window-level figures —
-  `conductor budget <run> --json` gives `windows[]` with cap, nudge, floor, medianCloser,
-  wrapUp, rolloverRate, tokensPerCheckpoint per window, and run-level `capPayoff`. Per-run keys
-  must be uniform across all 18 runs, so a window namespace is probably needed in `corpus.json`
-  plus a branch in `src/lib/evidence.ts`. **S5.4 is already measured, do not re-derive:** of
-  `the-long-build`'s 34 rolled-over sessions, **0 recorded a commit, 34 recorded no gate summary,
-  34 recorded no claim, 32 of 34 no result summary — but all 34 wrote a digest.** The git ground
-  truth that contradicts it lives in a private repo, so it cannot be gate-verified: publish the
-  artifact and describe the git check in words, printing no ratio for it.
-open: **SPEC Part V article 1's `$51.98` / `23%` are now re-measured: `$52.06` / `23.2%`, 10
-  sessions, 4 checkpoints** (`conductor money`, the-fleet-backlog's dearest stage). Concept 2's
-  advisor split and concept 8's "push-only" corrections still stand. Bug #3 and bug #2 still
-  open. **S7.1 must re-confirm `site`.**
+last: **session 12** delivered **S5.3** — machinery in `3896cb8`, article in `c33d05b`. QA of
+  session 11: **no findings** — battery re-run green before any edit (0 errors, 45→49 tests, build
+  exit 0, 306 annotations on 17 pages, evidence green over 13 entries); both articles on disk
+  match their claimed shape.
+now on disk: articles 1–3, all figure-free. Battery at head: **0 errors, 57 tests, build 20 pages
+  / 341 annotations, evidence gate green over 14 cited entries.** New: a **third evidence
+  namespace, `windows`** — `conductor budget <run> --json` once per published run, 22 windows, 8
+  under a measured ceiling. Content names them in **`evidence.windows`**. Window keys are
+  `<run-label>-uncapped` / `<run-label>-capped-<N>m`. **A window need not carry every key** (an
+  uncapped one has no nudge/headroom/wrap-up); the build fails only when *no named window* has a
+  cited key. New corpus keys: `cappedWindows` 8/22, `sessionsUnderACeiling` 168, `nudgesDelivered`
+  122, `nudgesHonoured` 72/122, `killedAtACeiling` 50, `killedAfterANudge` **50/50**.
+next: **S5.4** ("The ledger that lied"), the last of stage S5. **It is fully measured — the ledger
+  note has every figure, do not re-derive.** Corpus-wide: 53 rolled-over sessions, **0** with a
+  commit, **0** with a gate summary, **0** with a claim, 4 with a result summary, **52 with a
+  digest**; against 287 other sessions with 246 commits, 264 gate summaries, 203 claims, 273
+  result summaries and only **139** digests. That inversion is the article. Cause and fix are both
+  in the engine at `1632b9f`: the rollover branch in `SessionRunner.cs` (~424) now records the
+  facts before the resume hint, via `RecordRolloverFacts` in `VerdictEngine.Claims.cs`. The corpus
+  predates that fix. Needs ~7 new corpus keys off the `sessions` table (`commit_count`,
+  `gate_summary`, `newly_done`, `result_summary`, `digest`) — source `STORE`, none budget-shaped.
+open: git ground truth for S5.4 lives in a private repo — **describe it in words, publish no ratio
+  for it**. SPEC Part V article 3's `26 costed`/`15.5M` are stale (now **30**/**16.8M**) and its
+  `25–54M`/`12.8–15.3M` were stage-level, not windows — corrections are in
+  `docs/evidence/S5.3-the-nudge-below-the-median.md`. Article 1's `$52.06`/`23.2%` correction,
+  concept 2's advisor split and concept 8's "push-only" still stand. Bugs #2 and #3 still open.
+  **S7.1 must re-confirm `site`.**
 tooling: prose refuses any number of two digits or more, and a currency/percent/decimal/ratio
-  too — let the strip carry every quantity. **Never round-trip a content file through PowerShell
-  `Get-Content`/`Set-Content`**: it mangled every em dash to mojibake and added a BOM this
-  session (repaired with node). Mutate with node, restore with `npm run harvest` or git. Commit
-  messages to a file, then `-F`. Battery is ~35s now, still fine in the foreground. **A failed
-  Astro build exits 0xC0000409, not 1.** `conductor history --json` emits a UTF-8 BOM on Windows.
-  **One run.db holds several runs** — filter by `run_id`, and `conductor money` needs `--run`.
+  too — so a `file.cs:411` citation **cannot go in article prose**, and articles have no
+  `citations` field; name it in words. **Never round-trip a content file through PowerShell
+  `Get-Content`/`Set-Content`** (mojibake + BOM); mutate with node. `npm run content` rewraps
+  YAML, so run it before quoting your own lines back. Commit messages to a file, then `-F`.
+  Battery is ~60s now (the harvest makes two verb calls per run). **A failed Astro build exits
+  0xC0000409, not 1.** `conductor history --json` emits a UTF-8 BOM on Windows. **One run.db holds
+  several runs** — filter by `run_id`; `conductor money` needs `--run`, `conductor budget` takes
+  the run id positionally.
 
 
 ## Baseline numbers (from run.db)
