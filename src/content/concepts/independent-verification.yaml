@@ -156,4 +156,4 @@ tryIt:
       the summary does."
 
 readNext:
-  - "multi-agent-orchestration"
+  - "durable-execution"

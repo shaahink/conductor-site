@@ -1,0 +1,42 @@
+﻿S4.3 — every file:line citation on concepts 7 and 8, opened against the engine checkout
+scripts/citations.mjs, run 2026-08-07 against conductor at 1632b9f (branch feat/karvan)
+
+── concepts/durable-execution
+   ok       src/Conductor.Core/Events/RunStateProjection.cs:22
+            | /// <summary>Rebuild the <see cref="RunState"/> spine by folding the log in sequence order.</summary>
+   ok       src/Conductor.Core/Events/RunStateProjection.cs:90
+            | /// <summary>The information needed to resume a session whose <see cref="SessionStarted"/> was
+   ok       src/Conductor.Core/Orchestration/RunLoop.Control.cs:84
+            | // An aborted run is stopped, not discarded: `conductor run` on it means "continue". Without
+   ok       src/Conductor.Core/Orchestration/RunLoop.Control.cs:101
+            | _verdicts.QueueResume(last, "conductor crashed or was killed mid-session");
+   ok       src/Conductor.Core/Orchestration/RunLoop.cs:100
+            | _ctx.RestoreBudget();
+   ok       src/Conductor.Core/Orchestration/RunLoop.cs:113
+            | if (Dispatcher.ConsumeReloadPending() || PlanFileChangedOnDisk()) ApplyPlanReload();
+   ok       src/Conductor.Core/Orchestration/SessionRunner.cs:426
+            | rec.Outcome = SessionOutcome.RolledOver;
+   ok       src/Conductor.Core/Orchestration/VerdictEngine.Claims.cs:97
+            | /// <c>AttemptsThisStage</c>, run no gate battery and advance no workflow step: a rollover still
+── concepts/human-in-the-loop
+   ok       src/Conductor.Core/OwnerQueue.cs:11
+            | /// Three fields carry the whole idea — what it is, what it UNBLOCKS, and the exact command that
+   ok       src/Conductor.Core/OwnerQueue.cs:16
+            | /// <param name="Command">The literal command that clears the entry, or <c>""</c> when NOTHING the
+   ok       src/Conductor.Core/OwnerQueue.cs:43
+            | /// <para>Every entry is DERIVED, never stored. That is the whole clearing mechanism: approve the
+   ok       src/Conductor.Core/OwnerApproval.cs:7
+            | /// an approval-mode/budget park must NOT confirm the stage (that would advance past unfinished work).</summary>
+   ok       src/Conductor.Core/Orchestration/RunLoop.cs:344
+            | _ctx.Events.Emit(new OwnerApprovalRequested { StageId = stage.Id });
+   ok       src/Conductor.Core/Orchestration/RunLoop.cs:267
+            | if (HandoffWantsHuman(track))
+   ok       src/Conductor.Core/Orchestration/VerdictEngine.Blocked.cs:75
+            | _ctx.Log($"session #{rec.Number} BlockedUntil — {BlockedUntilRequest.Describe(req.UntilUtc, req.Reason, now)}; sleeping at the session boundary, no attempt burned (attempts stay {_ctx.State.AttemptsThisStage}/{MaxAttempts(stage)})",
+   ok       src/Conductor.Core/Integrations/TelegramService.cs:18
+            | /// <summary>Pushes status messages to a Telegram bot; handles /status and (B6.2) inline-keyboard
+   ok       src/Conductor.Core/Integrations/TelegramService.cs:24
+            | /// <summary>SF0.1 / FU-OWNER-12: <c>null</c> when a push from this run will actually be
+
+citations: all 54 resolve at 1632b9f.
+exit 0

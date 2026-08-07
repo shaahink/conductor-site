@@ -1,0 +1,190 @@
+meta:
+  title: "Durable execution and resumability"
+  description: "A long job outlives the process running it. What it takes for
+    progress to survive a crash, a throttle or a ceiling — and what resuming
+    should cost."
+  ogDescription: "Progress that survives the process running it, and why running
+    out of room is not the same as failing."
+  canonical: "/concepts/durable-execution/"
+
+slug: "durable-execution"
+order: 7
+title: "Durable execution and resumability"
+alsoKnownAs:
+  - "workflow orchestration"
+  - "checkpointing"
+  - "crash recovery"
+  - "resumable workflows"
+  - "long-running agents"
+oneLine: "If the work is longer than the thing doing it, the work has to live
+  somewhere the worker does not."
+
+theIdea:
+  - "Durable execution is the property that work survives the thing doing it. It
+    matters whenever a job is longer than one process is guaranteed to live, and
+    with agents that is nearly always: a session ends when its context fills,
+    when a provider throttles it, when a machine reboots, when somebody closes a
+    laptop. None of those are failures of the work. They are failures of the
+    worker, and a system that cannot tell the two apart will throw away good
+    output because the thing holding it went away."
+  - "The move that makes it possible is to put the state somewhere the worker is
+    not. A worker that keeps its own status in memory and writes it out at the
+    end has a window — between deciding something and recording it — where a
+    kill loses the decision. An append-only log does not have that window,
+    because there is nothing to update: each fact is written once, in order, and
+    the current state is what you get by reading them all back. Restarting is
+    then a replay, which is arithmetic, rather than an inference, which is a
+    guess."
+  - "Replay only helps if there is a defined place to stop. Work has to be cut
+    into steps with boundaries between them, and a boundary is where every
+    invariant holds: nothing half-written, nothing in flight, the log agreeing
+    with the world. A worker killed in the middle of a step leaves a mess no
+    amount of logging resolves; a worker killed at a boundary leaves a question
+    that has an answer. Which is also why the boundary is the only sane place to
+    change anything — swap the plan, adjust the budget, apply a decision
+    somebody made while you were not looking."
+  - "Then the evidence problem: how does the next process know it is recovering
+    rather than starting? The honest answer is written in what is missing. A
+    record saying a step began, with no matching record saying it ended, is the
+    crash. Nothing has to catch the crash, log it or tidy up after itself —
+    which is fortunate, because a process that is killed does not get to run its
+    cleanup. Absence is the most reliable signal a dead thing can leave behind."
+  - "Resuming is a cost decision as much as a correctness one. Redoing
+    everything from the start is always correct and often ruinous; picking up
+    where the last worker stopped is cheap, and safe only if the record can be
+    trusted. What makes it trustworthy is that the state was never the worker's
+    to remember."
+  - "The last piece is the one that gets misfiled most often: running out of
+    room is not failing. A worker that reaches a ceiling, writes down where it
+    got to and hands over has done its job. File that outcome alongside crashes
+    and errors and the system spends its patience on things that were never
+    wrong, then gives up on work that was going fine."
+
+theProblem:
+  - "Without durability, the longest thing a system can do is the shortest
+    interval between interruptions — and that interval is far shorter than it
+    sounds. A run measured in days will meet a rate limit, an update, a network
+    blip and a full context window, and any one of them is enough to take the
+    whole thing back to the beginning."
+  - "The subtler cost is in what a resumed run believes. If the state lived
+    inside the worker, the recovered version is a reconstruction, and
+    reconstructions are optimistic: they tend to conclude that whatever was in
+    progress had finished. Work gets skipped and nothing announces it, because
+    from the inside a skipped step and a completed step look identical."
+  - "The third is accounting. A run that files every interruption as a failed
+    attempt burns its own patience on the ones that were only interruptions; a
+    run that treats each resumption as a fresh start pays twice for the same
+    output. Both are quiet. The first shows up as a system that gives up too
+    early, the second as one that costs more than it should for reasons nobody
+    can point at."
+
+inConductor:
+  mechanism:
+    - "The durable spine of a run is an append-only event log, and the run's
+      state is a fold over it: plan identity, current stage, the session
+      counter, which stages are confirmed, and every session's cost and tokens,
+      all rebuilt by replaying events in sequence order. The fold reads nothing
+      but the events — no disk, no wall-clock — so the same log always produces
+      the same state. It landed additively and was proven equal to the state
+      file it replaces for a recorded run before anything was allowed to trust
+      it, which is the order those two steps have to happen in."
+    - "Crash recovery reads the log for what is missing. A session start with no
+      matching finish is an interrupted session, and the engine resumes that
+      agent session rather than opening a fresh one. A run that was aborted is
+      treated as stopped rather than discarded, because running the command
+      again on it means continue — without that reset the loop's first status
+      check re-exited immediately, which from the outside is indistinguishable
+      from a clean finish."
+    - "The top of the run loop is the session boundary, and it is where
+      everything that changes a run happens. The plan is hot-swapped there and
+      only there, so an edit made while the run is parked is live before the
+      next session and never lands in the middle of one. The budget is restored
+      there from the store, so an engine restarted mid-run keeps counting rather
+      than opening a new window. A wait an agent declared lives in run state
+      rather than in a field of the process, so an engine restarted mid-wait
+      resumes the wait instead of paying for a session that would only re-derive
+      the same timestamp."
+    - "Rollover is the ceiling case, and it is its own outcome rather than a
+      failure. A session whose tokens cross the cap is closed as rolled over
+      with its handoff written, and the next session picks up from there. It
+      burns no attempt, runs no gate battery and advances no workflow step —
+      that is what rollover means. The correction underneath it is worth
+      reading: because the rollover branch returns before the verdict pass,
+      nothing was filling in the session's commits, so every board and report
+      showed a rolled-over session as having committed nothing while the
+      repository said otherwise. One of them was called idle after shipping a
+      pull request. Those facts are now recorded explicitly on that path."
+  citations:
+    - path: "src/Conductor.Core/Events/RunStateProjection.cs"
+      line: 22
+      note: "The fold. A run's durable state is what you get by replaying its events
+        in sequence order — there is no other constructor, and the function
+        touches neither disk nor clock, so a log always folds to the same
+        state."
+    - path: "src/Conductor.Core/Events/RunStateProjection.cs"
+      line: 90
+      note: "Recovery from what is missing. A session start with no matching finish is
+        the crash evidence, and it is readable even when the state file is stale
+        or gone."
+    - path: "src/Conductor.Core/Orchestration/RunLoop.Control.cs"
+      line: 84
+      note: "An aborted run is stopped, not discarded. Running the command again on
+        one means continue; without this reset the loop's first status check
+        re-exited instantly, which reads from outside exactly like a clean
+        finish."
+    - path: "src/Conductor.Core/Orchestration/RunLoop.Control.cs"
+      line: 101
+      note: "The resume is queued against the interrupted session itself, and the
+        reason is recorded in plain words rather than as a code — so the record
+        says the engine was killed mid-session, which is what the next reader
+        needs."
+    - path: "src/Conductor.Core/Orchestration/RunLoop.cs"
+      line: 100
+      note: "The budget is restored from the store as the loop starts, so an engine
+        restarted mid-run keeps counting where it was instead of opening a fresh
+        window on the same money."
+    - path: "src/Conductor.Core/Orchestration/RunLoop.cs"
+      line: 113
+      note: "The top of the loop is the session boundary, and the plan is swapped only
+        here. Parked iterations pass through it too, so an edit made while the
+        run is standing still is live before the next resume."
+    - path: "src/Conductor.Core/Orchestration/SessionRunner.cs"
+      line: 426
+      note: "Crossing the cap ends the session as a rollover, with its handoff
+        written. Not an error and not an attempt — a different outcome, with its
+        own name."
+    - path: "src/Conductor.Core/Orchestration/VerdictEngine.Claims.cs"
+      line: 97
+      note: "And what a rollover deliberately does not touch: the stage's attempt
+        count, the gate battery, the workflow step. The paragraph above this
+        line is the measurement that forced a rolled-over session's facts to be
+        recorded on this path at all."
+
+evidence:
+  runs:
+    - "the-long-build"
+    - "the-terminal-face"
+  figures:
+    - "totalRollovers"
+    - "totalSoftBreaks"
+    - "rollovers"
+    - "softBreaks"
+
+tryIt:
+  - command: "git reflog"
+    note: "The same move in a tool you already have. Every position HEAD has held,
+      appended and never edited, kept outside the working tree — which is why a
+      branch you deleted is recoverable and an edit you never committed is not.
+      Durability is about what got written down, not about how careful the
+      process was."
+  - command: "conductor status"
+    note: "Where the run thinks it is. The answer is rebuilt from the log rather
+      than remembered by a process, so it is the same answer whether the engine
+      is running, parked, or was killed an hour ago."
+  - command: "conductor resume"
+    note: "Continue rather than restart. On a run killed mid-session it picks the
+      interrupted agent session back up; on one parked for a person it clears
+      the park. Neither replays work that already landed."
+
+readNext:
+  - "human-in-the-loop"

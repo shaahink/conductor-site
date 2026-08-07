@@ -1,0 +1,196 @@
+meta:
+  title: "Human in the loop"
+  description: "A stop the machine cannot pass without a person. What makes one
+    worth having: what it is, what it unblocks, and the exact command that
+    clears it."
+  ogDescription: "Oversight is not watching. It is a place the machine stops, that
+    says exactly what clears it."
+  canonical: "/concepts/human-in-the-loop/"
+
+slug: "human-in-the-loop"
+order: 8
+title: "Human in the loop"
+alsoKnownAs:
+  - "HITL"
+  - "human oversight"
+  - "approval workflows"
+  - "escalation policy"
+oneLine: "Oversight is not somebody watching. It is a place the machine stops,
+  that says what it is waiting for and exactly what clears it."
+
+theIdea:
+  - "Human in the loop names something narrower than it sounds. It is not that a
+    person is available, or paying attention, or on call. It is that there are
+    defined points where the machine stops and cannot continue until a person
+    does a specific thing. Everything else — dashboards, alerts, a channel
+    somebody skims — is monitoring, and monitoring is what you have instead of a
+    stop, not a weaker version of one."
+  - "Which points, and how many, is the actual design decision, and it fails in
+    both directions. Too few, and the system does irreversible things on its own
+    judgement at hours when nobody is awake. Too many, and the person stops
+    reading: an approval asked for constantly becomes a keystroke, and a
+    keystroke is not oversight, it is a rubber stamp with a login. The useful
+    test is whether a reasonable person would ever answer no. If the answer is
+    never, the stop is theatre, and it is spending attention that a real stop
+    will need later."
+  - "A stop is only usable if it says three things: what it is, what it is
+    holding up, and the exact thing that clears it. Miss the second and the
+    person cannot rank it against anything else they could be doing. Miss the
+    third and they have to go and find out how to say yes, which is how an
+    obligation sits for a day because answering it turned out to be a small
+    research project. A line reading awaiting approval is a status, not a
+    request."
+  - "The list of what is owed should be derived rather than kept. A file
+    somebody maintains goes stale in the direction that hurts: entries outlive
+    the conditions that raised them, the reader learns the list is unreliable,
+    and then a real item gets ignored along with the ghosts. Recompute the list
+    each time from the state that raised each entry and an item cannot survive
+    its own cause — resolve the thing and the entry is gone at the next render,
+    with nothing to clean up."
+  - "Not everything the machine is waiting on is waiting on a person, and
+    pretending otherwise costs a little every time. A job sleeping until a
+    window opens will wake itself. Putting a command beside it because every
+    other row has one sends somebody to a keyboard to do nothing. Empty is a
+    fact worth printing, and printing it is what makes the rest of the list
+    credible."
+  - "Last, a stop nobody hears about lasts until somebody happens to look.
+    Reaching the person is part of the mechanism rather than a nicety wrapped
+    around it — and so is not reaching them twice about the same thing, because
+    a channel that repeats itself is a channel people stop reading. The system
+    also has to be able to say, early and unasked, that it cannot reach anybody
+    at all, because silence reads exactly like nothing having happened."
+
+theProblem:
+  - "Without real stops, an autonomous run is unattended in precisely the cases
+    where being attended mattered. It is easy to be present for the first hour
+    and for the demo. Nobody is present in the middle of the night, which is
+    where most of the elapsed time is, and therefore where most of the decisions
+    land."
+  - "Then there is the record. An approval that happened in a chat message, or
+    as a shrug, or as somebody typing a command with no trace of why, is not
+    evidence of anything afterwards. When a decision is questioned — and on the
+    decisions worth gating, it will be — the useful artefact is an event with a
+    time on it, not a memory."
+  - "And there is the escalation the machine itself needs to raise. Some things
+    only the worker knows are undecidable: an ambiguity in the brief, a choice
+    between two defensible readings, a wall it cannot get past. With no way to
+    stop and ask, it will do what the incentives say — pick one, confidently,
+    and report that the work is done."
+
+inConductor:
+  mechanism:
+    - "A stage can be marked owner-gated, and a gated stage does not advance on
+      green gates. The run parks and emits the request as an event, so the
+      approval is on the record with a time on it rather than in somebody's
+      memory. What approving then means is decided from why the run parked, and
+      it is kept as a pure function so a unit test can pin a branch the
+      orchestrator cannot easily be tested through. That test exists for one
+      outcome in particular: an approval that came from approval mode or from a
+      budget park must not confirm the stage, because confirming would advance
+      the run past work that is not finished."
+    - "The owner queue collects every open obligation the engine already knows
+      about into one list — the park it is sitting in, escalation lines an agent
+      wrote in the tracker handoff, owner-gated stages nobody has approved, a
+      live declared wait, checkpoints a session parked, and stages skipped for
+      review. Each entry carries what it is, what it unblocks, and the command
+      that clears it, because an entry without those last two is a status line
+      rather than a request. Every entry is derived and none is stored, which is
+      the whole clearing mechanism: approve the gate and its entry is gone at
+      the next render, and no item can outlive the condition that raised it.
+      That is exactly how the hand-kept list it replaced went stale."
+    - "One kind of entry carries an empty command on purpose. A declared wait
+      wakes itself — the engine sleeps at the session boundary until the window
+      opens and then spawns exactly one session, burning no attempt and
+      cancelling nothing that was already owed — so inventing a command for it
+      would send the owner to a keyboard for nothing. In the other direction,
+      the agent can raise a stop from inside: an escalation line in the tracker
+      handoff parks the whole loop, because there is nothing else the engine can
+      safely run. Clearing that one is two acts rather than one — decide, then
+      take the line out, or the next session parks on it again."
+    - "The notification lane is not push-only, and this page carries that
+      correction against its own plan. It long-polls, and it handles
+      inline-keyboard callbacks that write a control file the run loop consumes
+      at the next session boundary, so a reply from a phone is an instruction
+      rather than an acknowledgement. It also answers at startup whether a push
+      from this run will actually be delivered. That exists because a run once
+      said nothing whatsoever about notifications, and an operator watching a
+      quiet channel had no way to tell nothing happened from nothing can be
+      delivered."
+  citations:
+    - path: "src/Conductor.Core/OwnerQueue.cs"
+      line: 11
+      note: "The three fields that make an entry a request rather than a status line:
+        what it is, what it unblocks, and the exact command that clears it. The
+        comment says an entry missing those last two is a status line, and the
+        shape was copied from a list the owner had been keeping by hand."
+    - path: "src/Conductor.Core/OwnerQueue.cs"
+      line: 16
+      note: "The empty command, deliberately. Nothing the owner types clears a
+        declared wait, because the wait wakes itself — and the comment says out
+        loud that empty is a fact, not a gap."
+    - path: "src/Conductor.Core/OwnerQueue.cs"
+      line: 43
+      note: "Every entry derived, nothing stored. Resolve the condition and the entry
+        is gone at the next render; there is no queue file to garbage-collect,
+        and no way for an item to outlive its cause. Which is how the hand-kept
+        version went stale."
+    - path: "src/Conductor.Core/OwnerApproval.cs"
+      line: 7
+      note: "What an approval does is derived from why the run parked, and kept as a
+        pure function so a test can hold it. The case it exists for is named on
+        this line: an approval-mode or budget park must not confirm the stage."
+    - path: "src/Conductor.Core/Orchestration/RunLoop.cs"
+      line: 344
+      note: "The park before a session under approval mode, emitted as an event first.
+        The event is what makes the approval evidence afterwards rather than a
+        recollection."
+    - path: "src/Conductor.Core/Orchestration/RunLoop.cs"
+      line: 267
+      note: "The agent's own escalation. A line in the tracker handoff asking for a
+        person parks the loop, because with a decision outstanding there is
+        nothing else the engine can safely run."
+    - path: "src/Conductor.Core/Orchestration/VerdictEngine.Blocked.cs"
+      line: 75
+      note: "A declared wait sleeps at the session boundary and burns no attempt. The
+        comment above it lists what is deliberately left alone — a fix already
+        queued is still owed after the wait, because a block defers work rather
+        than cancelling it."
+    - path: "src/Conductor.Core/Integrations/TelegramService.cs"
+      line: 18
+      note: "Long-polling, and inline-keyboard callbacks that write the control file —
+        so the lane carries instructions back, not only messages out. Where this
+        site's own plan said push-only, this is the line that corrects it."
+    - path: "src/Conductor.Core/Integrations/TelegramService.cs"
+      line: 24
+      note: "Whether a push from this run will actually be delivered, answered at
+        startup in the same words the doctor prints. It exists because an
+        operator watching a silent channel could not tell nothing happened from
+        nothing can be delivered."
+
+evidence:
+  runs:
+    - "the-long-build"
+    - "the-orchestrator-core"
+  figures:
+    - "totalOwnerApprovals"
+    - "ownerApprovals"
+
+tryIt:
+  - command: "gh pr status"
+    note: "The shape, in a tool you probably already have. The last section is the
+      list of things waiting specifically on you, derived fresh each time from
+      the state that raised them rather than from a list anybody maintains.
+      Notice what it does not tell you: what each one is holding up, and what
+      exactly clears it."
+  - command: "cat .conductor/OWNER-QUEUE.md"
+    note: "The rendered queue, rewritten at every session boundary. When nothing is
+      waiting on you it says so in a sentence, because a file that simply stops
+      after its header cannot be told apart from a stale one."
+  - command: "conductor approve"
+    note: "Clears whichever park the run is actually sitting in, which is not always
+      the same act. On a gated stage it confirms the stage; before a session
+      under approval mode it runs exactly that one session; on a budget park it
+      resets the window and continues."
+
+readNext:
+  - "agentic-engineering"
