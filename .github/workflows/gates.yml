@@ -1,0 +1,72 @@
+# This site's own gates — the four the shared pipeline does not know about.
+#
+# `ci.yml` calls the fleet's reusable workflow, which runs the things every
+# site in the fleet has: the types, the build, and the three generated files
+# still matching their sources. It cannot run the gates that exist only here,
+# and it should not have to know about them — that is the price of one shared
+# pipeline, and it is worth paying.
+#
+# So they run here instead, because a gate that only ever runs on one laptop is
+# a gate that rots. Two of the four run whole; two run the half that needs no
+# run store, and each says on every run which half it did not do:
+#
+#   seo        — whole. Canonicals, sitemap, robots and the social cards, all
+#                recomputed from dist/. None of it is visible on the page, so
+#                nothing else would catch it.
+#   a11y       — whole. Landmarks, one identified <main>, a working skip link,
+#                accessible names, tab order. Contrast, focus visibility and
+#                layout shift need a browser and are measured by hand — see
+#                docs/evidence/S7.2-accessibility-and-performance.md.
+#   evidence   — the citations half. Every key a page cites resolves against the
+#                committed corpus. Whether that corpus still matches the store
+#                is the other half and needs the store, which is not here.
+#   anonymity  — the shapes half. A path out of a terminal, a token, a chat id.
+#                The forbidden list itself is derived from the run store and is
+#                deliberately never written down, so it cannot travel to CI.
+#
+# The gate steps run even after one of them fails, so a single red does not
+# hide the other three — finding out about the second failure on the next push
+# costs a whole round trip for nothing. They are still skipped when the build
+# itself failed, because all four read dist/ and four "there is no dist" lines
+# report nothing the build has not already said.
+name: Gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      # Every gate below reads dist/, not src/ — the bytes a stranger would
+      # download rather than the source they came from.
+      - id: build
+        run: npm run build
+
+      - name: SEO — canonicals, sitemap, robots, social cards
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: npm run seo
+
+      - name: Accessibility — landmarks, skip link, accessible names
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: npm run a11y
+
+      - name: Evidence — every cited key resolves against the committed corpus
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: npm run evidence:cited
+
+      - name: Anonymity — no secret shape in the built output
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: npm run anonymity:shapes

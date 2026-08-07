@@ -1,0 +1,24 @@
+=== deliberate red: the two store-free gate halves, proven to fail ===
+=== head d95f457, 2026-08-07T04:20:32Z ===
+
+--- 1. evidence:cited - a content entry citing a figure key no harvest produced ---
+injected: a figure key no harvest ever produced
+
+> evidence:cited
+> node scripts/harvest.mjs --cited
+
+evidence: concepts/agent-memory.yaml: evidence.figures names "aFigureNobodyHarvested", which is not in the corpus. A key with no figure behind it is a claim with no evidence behind it.
+EXIT=1
+
+--- 2. anonymity:shapes - a working copy path in the built home page ---
+injected: a working copy path into the built home page
+
+> anonymity:shapes
+> node scripts/anonymity.mjs --shapes
+
+anonymity: 1 finding(s) in the built output.
+
+  index.html: a home directory on someone's machine — C·······\ (9 chars)
+
+The match is redacted because a build log is published too. Re-run with --reveal on a machine that is allowed to see it. NOT CHECKED at all in this mode: the derived list — machine paths, private repository names, distinctive tokens, run-name phrases and the field notes — which is the half that needs the run store. Only the secret shapes ran.
+EXIT=1

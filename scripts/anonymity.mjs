@@ -195,6 +195,12 @@ export function publishedVocabulary(anonymise) {
 
     `self` is dropped entirely. This site's own run is in the same store, and
     this site is allowed to be about itself. */
+/** No derived list at all: the shapes still fire, every named source is empty.
+    ---------------------------------------------------------------------------
+    What `--shapes` runs with on a machine that has no run store. Named rather
+    than written inline so the CI half and the tests describe one object. */
+export const EMPTY_LIST = { paths: [], names: [], tokens: [], phrases: new Set() };
+
 /** The last segment of a path, read the same way on every platform.
     ---------------------------------------------------------------------------
     Not `basename`. The store records the paths of the machine each run happened
@@ -400,6 +406,17 @@ export function audit({ files, list, notePhrases }) {
 
 function main() {
   const reveal = process.argv.includes("--reveal");
+  /* The half of this check that needs no store, for the machine that has none.
+     ---------------------------------------------------------------------------
+     The forbidden list is derived from `conductor history`, which is the whole
+     point of it — but it means the strongest gate on this site is the one that
+     cannot run where the site is built, and a gate that only ever runs on one
+     laptop is a gate that rots. The shapes need nothing: a path out of a
+     terminal, an API token, a chat id and a reference to the field notes are
+     patterns, not names. So CI runs those, and says in one line that it ran
+     half a check. This does not soften `npm run anonymity`, which is unchanged
+     and still what the owner runs before a report goes out. */
+  const shapesOnly = process.argv.includes("--shapes");
 
   if (!existsSync(distDir)) {
     console.error("anonymity: there is no dist/ to read. Run `npm run build` first — this check " +
@@ -407,21 +424,39 @@ function main() {
     process.exit(1);
   }
 
-  const anonymise = JSON.parse(readFileSync(join(repoRoot, "anonymise.json"), "utf8"));
-  const list = forbidden(readHistory(), { anonymise });
-  const notes = fieldNotePhrases();
+  const anonymise = shapesOnly
+    ? { runs: {} }
+    : JSON.parse(readFileSync(join(repoRoot, "anonymise.json"), "utf8"));
+  const list = shapesOnly ? EMPTY_LIST : forbidden(readHistory(), { anonymise });
+  const notes = shapesOnly ? { files: [], phrases: new Set() } : fieldNotePhrases();
   const files = builtFiles();
   const findings = audit({ files, list, notePhrases: notes.phrases });
 
   /* What did not run is printed whether or not anything failed. A reader of
      this output has to be able to tell a clean pass from a pass with a hole in
      it, and the hole is the normal case on CI. */
-  const coverage = notes.files.length
-    ? `${notes.files.length} field-note file(s) read for quoted prose`
-    : "NOT CHECKED for quoted prose: no docs/dev/FIELD-NOTES-*.md on this machine, which is " +
-      "expected in CI because they are untracked — this run did not test that half of the rule";
+  const coverage = shapesOnly
+    ? "NOT CHECKED at all in this mode: the derived list — machine paths, private repository " +
+      "names, distinctive tokens, run-name phrases and the field notes — which is the half that " +
+      "needs the run store. Only the secret shapes ran"
+    : notes.files.length
+      ? `${notes.files.length} field-note file(s) read for quoted prose`
+      : "NOT CHECKED for quoted prose: no docs/dev/FIELD-NOTES-*.md on this machine, which is " +
+        "expected in CI because they are untracked — this run did not test that half of the rule";
 
   const vendored = files.filter(([path]) => isVendor(path)).length;
+
+  if (findings.length === 0 && shapesOnly) {
+    console.log(
+      `anonymity: ${files.length} built files carry none of ${SHAPES.length} secret shapes — a ` +
+        `path out of a terminal, an API token, a bearer secret, a chat id, a bot token or a ` +
+        `reference to the field notes. NOT CHECKED here, and it is the larger half: the machine ` +
+        `paths, private repository names, distinctive tokens and run-name phrases, all of which ` +
+        `are derived from the run store rather than written down. Run \`npm run anonymity\` on a ` +
+        `machine that has the store before a report goes out.`
+    );
+    return;
+  }
 
   if (findings.length === 0) {
     console.log(

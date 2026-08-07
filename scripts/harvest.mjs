@@ -1420,7 +1420,43 @@ const payloadOf = (json) => {
   return JSON.stringify(rest);
 };
 
+/** The half of the evidence gate that needs no run store.
+    ---------------------------------------------------------------------------
+    `--check` is two questions in one: does the committed corpus still match the
+    store, and does every key a page cites have something behind it. The first
+    needs the store and therefore only ever runs on the owner's machine. The
+    second needs nothing but the committed file and the content — so it can run
+    where the site is built, which is where a page citing a key that went away
+    would otherwise ship.
+
+    It is a strictly weaker gate and it says so on every run, because a green
+    line that reads like the full check is worse than no line at all. */
+function citedOnly() {
+  let existing;
+  try {
+    existing = JSON.parse(readFileSync(corpusPath, "utf8"));
+  } catch {
+    console.error("evidence: src/data/corpus.json is missing or unreadable. Run `npm run harvest`.");
+    process.exit(1);
+  }
+
+  const cited = citedEvidence();
+  const unresolved = unresolvedCitations(existing, cited);
+  for (const problem of unresolved) console.error(`evidence: ${problem}`);
+  if (unresolved.length > 0) process.exit(1);
+
+  console.log(
+    `evidence: every key cited by ${cited.length} content entries resolves against the committed ` +
+      `corpus.json — ${existing.corpus.totalRuns.display} runs, ${existing.corpus.totalSessions.display} ` +
+      `sessions. NOT CHECKED here, and it is the half that catches a moved number: whether that ` +
+      `file still says what the run store says, which needs the store. Run \`npm run evidence\` ` +
+      `on a machine that has it.`
+  );
+}
+
 function main() {
+  if (process.argv.includes("--cited")) return citedOnly();
+
   const check = process.argv.includes("--check");
   const { payload, excluded } = harvest();
   const corpus = payload.corpus;

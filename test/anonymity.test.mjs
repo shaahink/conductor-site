@@ -14,6 +14,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  EMPTY_LIST,
   PUBLIC_NAMES,
   SHAPES,
   forbidden,
@@ -188,6 +189,18 @@ test("secret shapes are caught wherever they appear", () => {
   for (const text of cases) {
     assert.ok(scan(text, {}).length > 0, `${text} should have matched a shape`);
   }
+});
+
+test("the shapes half stands on its own, with nothing derived", () => {
+  /* What `--shapes` runs in CI, where there is no run store and therefore no
+     forbidden list. The shapes still have to fire — they are patterns, not
+     names — and a private name must NOT, because a finding of that kind in
+     this mode would mean the list had come from somewhere it cannot have come
+     from. Both halves of that matter: the first is the check still working,
+     the second is it not quietly pretending to be the whole check. */
+  assert.deepEqual(scan("harrowgate-linens is a name this mode cannot know", EMPTY_LIST), []);
+  assert.equal(scan("C:\\Users\\someone\\code\\notes", EMPTY_LIST).length, 1);
+  assert.equal(scan("see docs/dev/FIELD-NOTES-fleet.md", EMPTY_LIST).length, 1);
 });
 
 test("vendored bundles are checked for secrets but not for names", () => {
