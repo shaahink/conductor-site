@@ -4,41 +4,34 @@
 
 ## Handoff (overwrite this block, ≤12 lines, no history)
 
-last: **session 4** delivered S2.3 (a6d5f98) and S2.4 (bd66fc9, evidence 689854a). **S2 is
-  complete.** QA of session 3: both its claims hold on fresh artifacts — I re-broke the
-  `readNext` gate and the build died naming the entry, the bad slug and the known entries. One
-  real finding, fixed: the concept cited `PromptBuilder.cs:276` for the ledger going in first,
-  and that line is the *comment* describing it, not the code. Now `:283`, plus
-  `PromptBattery.cs:55` beside it, because "goes in first" means nothing until you can see the
-  cap cuts from the end.
-now on disk: three litmus tests that used to be intentions are gates, all inside `ordered()` so
-  they run because a page renders. `src/lib/figures.ts` refuses a figure typed into prose
-  (currency, percent, multiplier, ratio, decimal, thousands separator, any count of two digits
-  or more — a *single* digit still gets through, and the header says so). `theIdea` naming
-  Conductor fails the build. `meta` carries its own bar in `schema.ts` (description 60–160, og
-  45–120, neither may be the title, canonical shape-checked) and `collections.ts` holds each
-  entry's canonical against the route it is served at, using the section page's own canonical as
-  the base. `test/meta.test.mjs` adds annotation **coverage** — and a correction worth having:
-  `checkAnnotations` does not ignore an unannotated page, it warns twice and passes. Battery is
-  0 errors, 33 tests, 63 annotations on 8 pages, 10 pages built.
-next: **S3.1**, the harvest. It now owes five keys, because S3.3 makes a page naming a missing
-  one fail the build: `sessions`, `cacheRead`, `ledgerEntries` (context-engineering) and
-  `tokensIn`, `tokensOut`, `costPerSession` (token-economics). `ledgerEntries` is countable —
-  the store has its own `ledger` table (`SqliteRunStore.Sessions.cs:188`). Checkpoint counts
-  come from `conductor history --json --limit 0`, never SQL; anything budget-shaped from
-  `conductor budget` / `conductor money`; open every run.db `mode=ro`.
-open: bug #2 — `--overlay` prose is ~3.3:1: over the Face's own bar for the role, under WCAG AA
-  for normal text; S7.2's call, not a CSS tweak. Published scenario labels are `the-long-build`,
-  `the-engine-run`, `the-fleet-round` — S3.2's `anonymise.json` must map run ids to exactly
-  those. **S7.1 must re-confirm `site` against the deployed URL, not the config.** The wordmark
-  `field guide` and the footer's owner name are owner calls.
-tooling: **never `git checkout --` a file whose new version is uncommitted** — it restores HEAD,
-  not what you were holding, and it silently reverted a finished page here (the tell was the
-  annotation count dropping back). Commit first, break-test second. A `git commit -m` here-string
-  breaks on embedded double quotes; write the message to a file and use `-F`. `conductor bg`
-  cannot exec bare `npm` — use `npm.cmd`; the battery is ~10s, so run it in the foreground. A
-  failed Astro build does not exit 1. **Never spell a recursive glob inside a block comment in a
-  .ts file** — it closes the comment and `astro sync` dies with PARSE_ERROR.
+last: **session 5** delivered all four of S3 — harvest (cb373bb), fail-closed (24bfb37,
+  4cfdc00), strip (0f5f4c9, ddebdf6), gate (6ca4398, 3a97fd3). **S3 is complete.** QA of
+  session 4: no findings. Its S2.4 page named `sessions`, `cacheRead`, `ledgerEntries` and all
+  three resolved against a corpus built afterwards from the store, with nothing adjusted to fit.
+now on disk: `npm run harvest` reads `conductor history --json --limit 0` plus each run.db
+  read-only into `src/data/corpus.json`, and reproduces Appendix A to the digit — 18 runs, 7
+  repos, 340 sessions, 287/300, $3,016.29, 47.5M/17.8M/3.8B, 648/677, 53 rollovers, 123 soft
+  breaks, 7 approvals, 167 bugs. `npm run evidence` is the gate: red on a stale corpus (naming
+  the field that moved) and red on a cited key or run label the corpus lacks. `EvidenceStrip`
+  renders keys at the foot of concepts and inline in long-form; `ordered()` fails the build on a
+  key that does not resolve. Battery: 0 errors, 42 tests, 10 pages, 63 annotations.
+next: **S4.1** — concepts 1–3. `context-engineering` is already written (S2.4); agentic
+  engineering and multi-agent orchestration are new. Corpus keys available to cite are printed by
+  any failing build, or read `corpus` and any run's `figures` in corpus.json. Per-run and
+  corpus-wide are **separate namespaces**: `sessions` is one run, `totalSessions` is the corpus,
+  and a per-run key on a page naming no runs is refused.
+open: **three published figures in SPEC do not reproduce and must never be retyped** — bug #3:
+  Appendix A's `$9.37` a session is `$8.87` (3016.29/340) and `~$10.85` a checkpoint is `$10.51`
+  (3016.29/287); its "315 costed sessions" is 314 under the definition the corpus states. The
+  totals are all exact; only the divisions are wrong. S5.1 names the keys and gets the right
+  ones. Bug #2 — `--overlay` prose ~3.3:1, S7.2's call. **S7.1 must re-confirm `site` against
+  the deployed URL.** The wordmark and the footer's owner name are owner calls.
+tooling: **never `git checkout --` a file whose new version is uncommitted** — commit first,
+  break-test second. Write commit messages to a file and use `-F`. `conductor bg` cannot exec
+  bare `npm` — use `npm.cmd`; the battery is ~15s, so foreground it. **A failed Astro build
+  exits 0xC0000409 after a libuv assertion, not 1** — which is why the evidence gate is plain
+  Node and not a build wrapper. `conductor history --json` emits a UTF-8 BOM on Windows; strip
+  it before `JSON.parse`. **One run.db holds several runs** — filter every query by `run_id`.
 
 
 ## Baseline numbers (from run.db)
